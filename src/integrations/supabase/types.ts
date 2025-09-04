@@ -14,7 +14,163 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      admin_profiles: {
+        Row: {
+          created_at: string
+          full_name: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      event_pledges: {
+        Row: {
+          amount: number
+          amount_in_kes: number
+          amount_in_usd: number
+          created_at: string
+          currency: string
+          email: string | null
+          event_id: string
+          id: string
+          message: string | null
+          name: string
+          payment_type: string
+        }
+        Insert: {
+          amount: number
+          amount_in_kes: number
+          amount_in_usd: number
+          created_at?: string
+          currency?: string
+          email?: string | null
+          event_id: string
+          id?: string
+          message?: string | null
+          name: string
+          payment_type: string
+        }
+        Update: {
+          amount?: number
+          amount_in_kes?: number
+          amount_in_usd?: number
+          created_at?: string
+          currency?: string
+          email?: string | null
+          event_id?: string
+          id?: string
+          message?: string | null
+          name?: string
+          payment_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_pledges_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "fundraising_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_sessions: {
+        Row: {
+          attendee_name: string | null
+          event_id: string
+          id: string
+          joined_at: string
+          last_activity: string
+          session_token: string
+        }
+        Insert: {
+          attendee_name?: string | null
+          event_id: string
+          id?: string
+          joined_at?: string
+          last_activity?: string
+          session_token: string
+        }
+        Update: {
+          attendee_name?: string | null
+          event_id?: string
+          id?: string
+          joined_at?: string
+          last_activity?: string
+          session_token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_sessions_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "fundraising_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fundraising_events: {
+        Row: {
+          admin_id: string
+          created_at: string
+          description: string | null
+          duration_minutes: number | null
+          goal_amount: number
+          id: string
+          is_active: boolean | null
+          passcode: string
+          scheduled_at: string
+          share_link: string
+          status: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          admin_id: string
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number | null
+          goal_amount?: number
+          id?: string
+          is_active?: boolean | null
+          passcode: string
+          scheduled_at: string
+          share_link: string
+          status?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          admin_id?: string
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number | null
+          goal_amount?: number
+          id?: string
+          is_active?: boolean | null
+          passcode?: string
+          scheduled_at?: string
+          share_link?: string
+          status?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
