@@ -14,9 +14,17 @@ export function HeroSection() {
             </span>
           </div>
           
+          <div className="mb-8">
+            <img 
+              src="/lovable-uploads/13128b51-d663-4bf6-a206-7156f08cf567.png"
+              alt="Tuendelee Foundation Logo - Empowering students through education"
+              className="w-64 md:w-80 mx-auto h-auto"
+            />
+          </div>
+          
           <h1 className="text-4xl md:text-6xl font-bold mb-6">
             <span className="bg-gradient-primary bg-clip-text text-transparent">
-              Tuendelee Foundation
+              Annual Fundraising Campaign
             </span>
           </h1>
           
