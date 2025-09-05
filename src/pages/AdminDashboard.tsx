@@ -8,8 +8,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, Calendar, Users, Link2, LogOut, Play, Square, Copy, CheckCircle } from "lucide-react";
+import { Plus, Calendar, Users, Link2, LogOut, Play, Square, Copy, CheckCircle, Key } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 
@@ -34,6 +35,10 @@ export default function AdminDashboard() {
   const [isCreating, setIsCreating] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [copiedLink, setCopiedLink] = useState<string | null>(null);
+  const [showPasswordChange, setShowPasswordChange] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordChangeLoading, setPasswordChangeLoading] = useState(false);
 
   // New event form state
   const [newEvent, setNewEvent] = useState({
@@ -47,6 +52,13 @@ export default function AdminDashboard() {
   useEffect(() => {
     checkAuth();
     loadEvents();
+    
+    // Check if we should show password change prompt
+    const shouldShowPrompt = localStorage.getItem("showPasswordChangePrompt");
+    if (shouldShowPrompt === "true") {
+      setShowPasswordChange(true);
+      localStorage.removeItem("showPasswordChangePrompt");
+    }
   }, []);
 
   const checkAuth = async () => {
@@ -159,6 +171,36 @@ export default function AdminDashboard() {
     navigate("/admin/auth");
   };
 
+  const handlePasswordChange = async () => {
+    if (newPassword !== confirmPassword) {
+      toast.error("Passwords do not match!");
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      toast.error("Password must be at least 8 characters long!");
+      return;
+    }
+
+    setPasswordChangeLoading(true);
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+
+      if (error) throw error;
+
+      toast.success("Password changed successfully!");
+      setShowPasswordChange(false);
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to change password");
+    } finally {
+      setPasswordChangeLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-background">
       <div className="container mx-auto px-4 py-8">
@@ -167,10 +209,16 @@ export default function AdminDashboard() {
             <h1 className="text-3xl font-bold">Admin Dashboard</h1>
             <p className="text-muted-foreground">Manage your fundraising events</p>
           </div>
-          <Button variant="outline" onClick={handleLogout}>
-            <LogOut className="w-4 h-4 mr-2" />
-            Logout
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={() => setShowPasswordChange(true)}>
+              <Key className="w-4 h-4 mr-2" />
+              Change Password
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleLogout}>
+              <LogOut className="w-4 h-4 mr-2" />
+              Logout
+            </Button>
+          </div>
         </div>
 
         <Tabs defaultValue="events" className="space-y-4">
@@ -370,6 +418,69 @@ export default function AdminDashboard() {
           </TabsContent>
         </Tabs>
       </div>
+      
+      {/* Password Change Dialog */}
+      <Dialog open={showPasswordChange} onOpenChange={setShowPasswordChange}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Change Your Password</DialogTitle>
+            <DialogDescription>
+              {localStorage.getItem("showPasswordChangePrompt") === "true" 
+                ? "Welcome! For security, we recommend changing your default password."
+                : "Enter a new password for your admin account."}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="new-password">New Password</Label>
+              <Input
+                id="new-password"
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="Enter new password (min. 8 characters)"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="confirm-password">Confirm Password</Label>
+              <Input
+                id="confirm-password"
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Confirm your new password"
+              />
+            </div>
+            
+            {newPassword && confirmPassword && newPassword !== confirmPassword && (
+              <Alert variant="destructive">
+                <AlertDescription>Passwords do not match</AlertDescription>
+              </Alert>
+            )}
+          </div>
+          
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setShowPasswordChange(false);
+                setNewPassword("");
+                setConfirmPassword("");
+              }}
+            >
+              Skip for now
+            </Button>
+            <Button 
+              onClick={handlePasswordChange}
+              disabled={passwordChangeLoading || !newPassword || !confirmPassword || newPassword !== confirmPassword}
+            >
+              {passwordChangeLoading ? "Changing..." : "Change Password"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

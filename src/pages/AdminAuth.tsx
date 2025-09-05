@@ -16,6 +16,7 @@ export default function AdminAuth() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [showResetInfo, setShowResetInfo] = useState(false);
+  const [isFirstTimeSetup, setIsFirstTimeSetup] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,14 +24,50 @@ export default function AdminAuth() {
     setError("");
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      // First, try to sign in
+      const { error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (error) throw error;
-      toast.success("Welcome to Tuendelee Foundation Admin Portal!");
-      navigate("/admin/dashboard");
+      if (signInError) {
+        // Check if this is the first time setup with default password
+        if (password === "TuendeleeAdmin2025!" && signInError.message.includes("Invalid login credentials")) {
+          // Create the admin account with default password
+          const { error: signUpError } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+              emailRedirectTo: `${window.location.origin}/admin/dashboard`,
+              data: {
+                full_name: 'Tuendelee Foundation Admin'
+              }
+            }
+          });
+
+          if (signUpError) throw signUpError;
+          
+          // Now sign in with the newly created account
+          const { error: newSignInError } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+          });
+          
+          if (newSignInError) throw newSignInError;
+          
+          setIsFirstTimeSetup(true);
+          toast.success("Admin account created successfully! Redirecting to dashboard...");
+          
+          // Store flag for first-time setup
+          localStorage.setItem("showPasswordChangePrompt", "true");
+          navigate("/admin/dashboard");
+        } else {
+          throw signInError;
+        }
+      } else {
+        toast.success("Welcome to Tuendelee Foundation Admin Portal!");
+        navigate("/admin/dashboard");
+      }
     } catch (err: any) {
       setError(err.message || "An error occurred");
       toast.error(err.message);
