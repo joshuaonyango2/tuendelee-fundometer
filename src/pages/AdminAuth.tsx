@@ -11,43 +11,26 @@ import { toast } from "sonner";
 
 export default function AdminAuth() {
   const navigate = useNavigate();
-  const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState("admin@tuendeleefoundation.org");
   const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState("");
   const [error, setError] = useState("");
+  const [showResetInfo, setShowResetInfo] = useState(false);
 
-  const handleAuth = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
 
     try {
-      if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-        if (error) throw error;
-        toast.success("Welcome back!");
-        navigate("/admin/dashboard");
-      } else {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/admin/dashboard`,
-            data: {
-              full_name: fullName,
-            },
-          },
-        });
-
-        if (error) throw error;
-        toast.success("Account created! Please check your email to confirm.");
-      }
+      if (error) throw error;
+      toast.success("Welcome to Tuendelee Foundation Admin Portal!");
+      navigate("/admin/dashboard");
     } catch (err: any) {
       setError(err.message || "An error occurred");
       toast.error(err.message);
@@ -87,37 +70,33 @@ export default function AdminAuth() {
               <Lock className="w-8 h-8 text-primary" />
             </div>
           </div>
-          <CardTitle className="text-2xl">Admin Portal</CardTitle>
+          <CardTitle className="text-2xl">Tuendelee Foundation</CardTitle>
           <CardDescription>
-            {isLogin ? "Sign in to manage fundraising events" : "Create an admin account"}
+            Sign in to manage fundraising events
           </CardDescription>
         </CardHeader>
         
         <CardContent>
-          <form onSubmit={handleAuth} className="space-y-4">
-            {!isLogin && (
-              <div className="space-y-2">
-                <Label htmlFor="fullName">Full Name</Label>
-                <Input
-                  id="fullName"
-                  type="text"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  required={!isLogin}
-                  disabled={isLoading}
-                />
-              </div>
-            )}
-            
+          {showResetInfo && (
+            <Alert className="mb-4">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                Password reset link will be sent to the admin email address.
+              </AlertDescription>
+            </Alert>
+          )}
+          
+          <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">Admin Email</Label>
               <Input
                 id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                disabled={isLoading}
+                disabled
+                className="bg-muted"
               />
             </div>
             
@@ -130,6 +109,7 @@ export default function AdminAuth() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 disabled={isLoading}
+                placeholder="Enter your password"
               />
             </div>
 
@@ -141,33 +121,28 @@ export default function AdminAuth() {
             )}
 
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Processing..." : isLogin ? "Sign In" : "Create Account"}
+              {isLoading ? "Signing in..." : "Sign In"}
             </Button>
           </form>
 
-          <div className="mt-4 space-y-2">
-            {isLogin && (
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={handlePasswordReset}
-                disabled={isLoading}
-              >
-                Forgot Password?
-              </Button>
-            )}
-            
+          <div className="mt-4">
             <Button
-              variant="ghost"
+              variant="outline"
               className="w-full"
-              onClick={() => {
-                setIsLogin(!isLogin);
-                setError("");
-              }}
+              onClick={handlePasswordReset}
               disabled={isLoading}
             >
-              {isLogin ? "Need an account? Sign up" : "Already have an account? Sign in"}
+              Forgot Password?
             </Button>
+          </div>
+          
+          <div className="mt-4 p-3 bg-muted/50 rounded-lg">
+            <p className="text-xs text-muted-foreground text-center">
+              Default credentials: <br />
+              Email: admin@tuendeleefoundation.org<br />
+              Password: TuendeleeAdmin2025!<br />
+              <span className="font-medium">Please change password after first login</span>
+            </p>
           </div>
         </CardContent>
       </Card>
