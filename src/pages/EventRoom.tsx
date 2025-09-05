@@ -78,12 +78,9 @@ export default function EventRoom() {
       if (eventError) throw eventError;
       setEvent(eventData);
 
-      // Load pledges from public view (anonymized)
+      // Load pledges using the public function (anonymized)
       const { data: pledgesData, error: pledgesError } = await supabase
-        .from("public_event_pledges")
-        .select("*")
-        .eq("event_id", eventId)
-        .order("created_at", { ascending: false });
+        .rpc("get_public_pledges", { p_event_id: eventId });
 
       if (pledgesError) throw pledgesError;
       setPledges(pledgesData || []);
@@ -120,15 +117,15 @@ export default function EventRoom() {
         async (payload) => {
           // Fetch the anonymized version of the new pledge
           const { data } = await supabase
-            .from("public_event_pledges")
-            .select("*")
-            .eq("id", (payload.new as any).id)
-            .single();
+            .rpc("get_public_pledges", { p_event_id: eventId });
           
-          if (data) {
-            setPledges(prev => [data as EventPledge, ...prev]);
-            setTotalRaised(prev => prev + (payload.new as any).amount_in_usd);
-            toast.success(`New pledge received!`);
+          if (data && data.length > 0) {
+            const newPledge = data.find((p: any) => p.id === (payload.new as any).id);
+            if (newPledge) {
+              setPledges(prev => [newPledge as EventPledge, ...prev]);
+              setTotalRaised(prev => prev + (payload.new as any).amount_in_usd);
+              toast.success(`New pledge received!`);
+            }
           }
         }
       )
