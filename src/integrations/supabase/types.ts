@@ -173,10 +173,59 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_event_pledges: {
+        Row: {
+          amount: number | null
+          amount_in_kes: number | null
+          amount_in_usd: number | null
+          created_at: string | null
+          currency: string | null
+          display_name: string | null
+          event_id: string | null
+          id: string | null
+          message: string | null
+          payment_type: string | null
+        }
+        Insert: {
+          amount?: number | null
+          amount_in_kes?: number | null
+          amount_in_usd?: number | null
+          created_at?: string | null
+          currency?: string | null
+          display_name?: never
+          event_id?: string | null
+          id?: string | null
+          message?: string | null
+          payment_type?: string | null
+        }
+        Update: {
+          amount?: number | null
+          amount_in_kes?: number | null
+          amount_in_usd?: number | null
+          created_at?: string | null
+          currency?: string | null
+          display_name?: never
+          event_id?: string | null
+          id?: string | null
+          message?: string | null
+          payment_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_pledges_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "fundraising_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
-      [_ in never]: never
+      can_view_public_pledges: {
+        Args: { p_event_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never

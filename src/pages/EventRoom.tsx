@@ -27,11 +27,13 @@ interface EventDetails {
 
 interface EventPledge {
   id: string;
-  name: string;
+  display_name: string; // Changed from 'name' to 'display_name' for anonymized display
   amount: number;
   currency: string;
   amount_in_usd: number;
+  amount_in_kes: number;
   payment_type: string;
+  message?: string;
   created_at: string;
 }
 
@@ -76,9 +78,9 @@ export default function EventRoom() {
       if (eventError) throw eventError;
       setEvent(eventData);
 
-      // Load pledges
+      // Load pledges from public view (anonymized)
       const { data: pledgesData, error: pledgesError } = await supabase
-        .from("event_pledges")
+        .from("public_event_pledges")
         .select("*")
         .eq("event_id", eventId)
         .order("created_at", { ascending: false });
@@ -115,10 +117,19 @@ export default function EventRoom() {
           table: 'event_pledges',
           filter: `event_id=eq.${eventId}`
         },
-        (payload) => {
-          setPledges(prev => [payload.new as EventPledge, ...prev]);
-          setTotalRaised(prev => prev + (payload.new as any).amount_in_usd);
-          toast.success(`New pledge from ${(payload.new as any).name}!`);
+        async (payload) => {
+          // Fetch the anonymized version of the new pledge
+          const { data } = await supabase
+            .from("public_event_pledges")
+            .select("*")
+            .eq("id", (payload.new as any).id)
+            .single();
+          
+          if (data) {
+            setPledges(prev => [data as EventPledge, ...prev]);
+            setTotalRaised(prev => prev + (payload.new as any).amount_in_usd);
+            toast.success(`New pledge received!`);
+          }
         }
       )
       .on(
@@ -302,10 +313,15 @@ export default function EventRoom() {
               <Card key={pledge.id}>
                 <CardContent className="p-4 flex justify-between items-center">
                   <div>
-                    <p className="font-semibold">{pledge.name}</p>
+                    <p className="font-semibold">{pledge.display_name}</p>
                     <p className="text-sm text-muted-foreground">
                       {format(new Date(pledge.created_at), "p")}
                     </p>
+                    {pledge.message && (
+                      <p className="text-sm text-muted-foreground italic mt-1">
+                        "{pledge.message}"
+                      </p>
+                    )}
                   </div>
                   <div className="text-right">
                     <Badge variant={pledge.payment_type === 'cash' ? 'default' : 'secondary'}>

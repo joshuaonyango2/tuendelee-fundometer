@@ -5,7 +5,8 @@ import { formatDistanceToNow } from "date-fns";
 
 export interface Pledge {
   id: string;
-  name: string;
+  name?: string; // Optional for backward compatibility
+  display_name?: string; // Anonymized name from public view
   amount: number;
   currency: string;
   message?: string;
@@ -52,10 +53,10 @@ export function RecentPledges({ pledges }: RecentPledgesProps) {
                   <div className="flex items-start justify-between">
                     <div className="flex items-start gap-3">
                       <div className="w-10 h-10 rounded-full bg-gradient-secondary flex items-center justify-center text-white font-bold">
-                        {pledge.name.charAt(0).toUpperCase()}
+                        {(pledge.display_name || pledge.name || 'A').charAt(0).toUpperCase()}
                       </div>
                       <div>
-                        <p className="font-semibold text-foreground">{pledge.name}</p>
+                        <p className="font-semibold text-foreground">{pledge.display_name || pledge.name || 'Anonymous'}</p>
                         <p className="text-sm text-muted-foreground">
                           {formatDistanceToNow(pledge.timestamp, { addSuffix: true })}
                         </p>
