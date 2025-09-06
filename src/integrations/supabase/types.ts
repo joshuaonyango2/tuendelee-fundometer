@@ -195,6 +195,21 @@ export type Database = {
           payment_type: string
         }[]
       }
+      get_session_by_token: {
+        Args: { p_session_token: string }
+        Returns: {
+          attendee_name: string
+          event_id: string
+          id: string
+          joined_at: string
+          last_activity: string
+          session_token: string
+        }[]
+      }
+      update_session_activity: {
+        Args: { p_session_token: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
