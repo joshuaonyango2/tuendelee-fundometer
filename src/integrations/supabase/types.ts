@@ -180,6 +180,10 @@ export type Database = {
         Args: { p_event_id: string }
         Returns: boolean
       }
+      count_active_sessions: {
+        Args: { p_event_id: string }
+        Returns: number
+      }
       get_public_pledges: {
         Args: { p_event_id: string }
         Returns: {

@@ -109,10 +109,11 @@ export default function EventRoom() {
       const total = pledgesData?.reduce((sum, p) => sum + p.amount_in_usd, 0) || 0;
       setTotalRaised(total);
 
-      // Count active sessions - only admins can directly query this
-      // For public users, just show a generic count or skip this
-      // Since we can't directly query sessions anymore, we'll skip the exact count
-      setActiveUsers(1); // Default to showing at least the current user
+      // Count active sessions using the secure function
+      const { data: sessionCount } = await supabase
+        .rpc('count_active_sessions', { p_event_id: eventId });
+      
+      setActiveUsers(sessionCount || 0);
     } catch (error: any) {
       toast.error("Failed to load event details");
     } finally {
