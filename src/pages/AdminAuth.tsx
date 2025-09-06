@@ -12,11 +12,14 @@ import { toast } from "sonner";
 export default function AdminAuth() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const [email, setEmail] = useState("admin@tuendeleefoundation.org");
+  const [email, setEmail] = useState("joshuaonyango372@gmail.com");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [showResetInfo, setShowResetInfo] = useState(false);
   const [isFirstTimeSetup, setIsFirstTimeSetup] = useState(false);
+  
+  const DEFAULT_ADMIN_EMAIL = "joshuaonyango372@gmail.com";
+  const DEFAULT_ADMIN_PASSWORD = "TuendeleeAdmin2025!";
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,8 +34,8 @@ export default function AdminAuth() {
       });
 
       if (signInError) {
-        // Check if this is the first time setup with default password
-        if (password === "TuendeleeAdmin2025!" && signInError.message.includes("Invalid login credentials")) {
+        // Check if this is the first time setup with default credentials
+        if (email === DEFAULT_ADMIN_EMAIL && password === DEFAULT_ADMIN_PASSWORD && signInError.message.includes("Invalid login credentials")) {
           // Create the admin account with default password
           const { error: signUpError } = await supabase.auth.signUp({
             email,
@@ -132,8 +135,8 @@ export default function AdminAuth() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                disabled
-                className="bg-muted"
+                disabled={isLoading}
+                placeholder="Enter admin email"
               />
             </div>
             
@@ -176,9 +179,9 @@ export default function AdminAuth() {
           <div className="mt-4 p-3 bg-muted/50 rounded-lg">
             <p className="text-xs text-muted-foreground text-center">
               Default credentials: <br />
-              Email: admin@tuendeleefoundation.org<br />
+              Email: joshuaonyango372@gmail.com<br />
               Password: TuendeleeAdmin2025!<br />
-              <span className="font-medium">Please change password after first login</span>
+              <span className="font-medium">Please change email and password after first login</span>
             </p>
           </div>
         </CardContent>

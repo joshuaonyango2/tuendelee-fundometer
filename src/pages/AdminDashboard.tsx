@@ -9,8 +9,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, Calendar, Users, Link2, LogOut, Play, Square, Copy, CheckCircle, Key } from "lucide-react";
+import { Plus, Calendar, Users, Link2, LogOut, Play, Square, Copy, CheckCircle, Key, Settings } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 
@@ -39,6 +40,9 @@ export default function AdminDashboard() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordChangeLoading, setPasswordChangeLoading] = useState(false);
+  const [showAccountSettings, setShowAccountSettings] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newEmail, setNewEmail] = useState("");
 
   // New event form state
   const [newEvent, setNewEvent] = useState({
@@ -68,6 +72,7 @@ export default function AdminDashboard() {
       return;
     }
     setUser(user);
+    setNewEmail(user.email || "");
   };
 
   const loadEvents = async () => {
@@ -201,6 +206,69 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleAccountUpdate = async () => {
+    if (!currentPassword) {
+      toast.error("Please enter your current password");
+      return;
+    }
+
+    setPasswordChangeLoading(true);
+    try {
+      // Verify current password first
+      const { error: verifyError } = await supabase.auth.signInWithPassword({
+        email: user.email,
+        password: currentPassword,
+      });
+
+      if (verifyError) {
+        toast.error("Current password is incorrect");
+        return;
+      }
+
+      // Update email if changed
+      if (newEmail && newEmail !== user.email) {
+        const { error: emailError } = await supabase.auth.updateUser({
+          email: newEmail,
+        });
+        if (emailError) throw emailError;
+        toast.success("Email update initiated. Please check your new email for confirmation.");
+      }
+
+      // Update password if provided
+      if (newPassword) {
+        if (newPassword !== confirmPassword) {
+          toast.error("New passwords do not match");
+          return;
+        }
+
+        if (newPassword.length < 8) {
+          toast.error("Password must be at least 8 characters");
+          return;
+        }
+
+        const { error: passwordError } = await supabase.auth.updateUser({
+          password: newPassword,
+        });
+
+        if (passwordError) throw passwordError;
+        toast.success("Password updated successfully!");
+      }
+
+      // Clear form and close dialog
+      setShowAccountSettings(false);
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      
+      // Reload user data
+      await checkAuth();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update account");
+    } finally {
+      setPasswordChangeLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-background">
       <div className="container mx-auto px-4 py-8">
@@ -210,9 +278,12 @@ export default function AdminDashboard() {
             <p className="text-muted-foreground">Manage your fundraising events</p>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={() => setShowPasswordChange(true)}>
-              <Key className="w-4 h-4 mr-2" />
-              Change Password
+            <Button variant="outline" size="sm" onClick={() => {
+              setShowAccountSettings(true);
+              setNewEmail(user?.email || "");
+            }}>
+              <Settings className="w-4 h-4 mr-2" />
+              Account Settings
             </Button>
             <Button variant="outline" size="sm" onClick={handleLogout}>
               <LogOut className="w-4 h-4 mr-2" />
@@ -477,6 +548,104 @@ export default function AdminDashboard() {
               disabled={passwordChangeLoading || !newPassword || !confirmPassword || newPassword !== confirmPassword}
             >
               {passwordChangeLoading ? "Changing..." : "Change Password"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Account Settings Dialog */}
+      <Dialog open={showAccountSettings} onOpenChange={setShowAccountSettings}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Account Settings</DialogTitle>
+            <DialogDescription>
+              Update your email address and password
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="current-pass">Current Password*</Label>
+              <Input
+                id="current-pass"
+                type="password"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                placeholder="Enter current password to make changes"
+                required
+              />
+            </div>
+            
+            <Separator />
+            
+            <div className="space-y-2">
+              <Label htmlFor="new-email">Email Address</Label>
+              <Input
+                id="new-email"
+                type="email"
+                value={newEmail}
+                onChange={(e) => setNewEmail(e.target.value)}
+                placeholder="Enter new email address"
+              />
+              <p className="text-xs text-muted-foreground">
+                Leave unchanged if you don't want to update
+              </p>
+            </div>
+            
+            <Separator />
+            
+            <div className="space-y-2">
+              <Label htmlFor="new-pass">New Password</Label>
+              <Input
+                id="new-pass"
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="Enter new password (min. 8 characters)"
+              />
+              <p className="text-xs text-muted-foreground">
+                Leave blank if you don't want to change password
+              </p>
+            </div>
+            
+            {newPassword && (
+              <div className="space-y-2">
+                <Label htmlFor="confirm-pass">Confirm New Password</Label>
+                <Input
+                  id="confirm-pass"
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Confirm your new password"
+                />
+              </div>
+            )}
+            
+            {newPassword && confirmPassword && newPassword !== confirmPassword && (
+              <Alert variant="destructive">
+                <AlertDescription>New passwords do not match</AlertDescription>
+              </Alert>
+            )}
+          </div>
+          
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setShowAccountSettings(false);
+                setCurrentPassword("");
+                setNewPassword("");
+                setConfirmPassword("");
+                setNewEmail(user?.email || "");
+              }}
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleAccountUpdate}
+              disabled={passwordChangeLoading || !currentPassword}
+            >
+              {passwordChangeLoading ? "Updating..." : "Update Account"}
             </Button>
           </DialogFooter>
         </DialogContent>
