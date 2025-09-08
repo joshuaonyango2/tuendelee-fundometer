@@ -11,9 +11,11 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, Calendar, Users, Link2, LogOut, Play, Square, Copy, CheckCircle, Key, Settings } from "lucide-react";
+import { Plus, Calendar, Users, Link2, LogOut, Play, Square, Copy, CheckCircle, Key, Settings, Video } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import MeetingIntegrations from "@/components/meetings/MeetingIntegrations";
+import CreateMeetingDialog from "@/components/meetings/CreateMeetingDialog";
 
 interface FundraisingEvent {
   id: string;
@@ -43,6 +45,8 @@ export default function AdminDashboard() {
   const [showAccountSettings, setShowAccountSettings] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newEmail, setNewEmail] = useState("");
+  const [showCreateMeeting, setShowCreateMeeting] = useState(false);
+  const [selectedEventForMeeting, setSelectedEventForMeeting] = useState<FundraisingEvent | null>(null);
 
   // New event form state
   const [newEvent, setNewEvent] = useState({
@@ -302,6 +306,10 @@ export default function AdminDashboard() {
               <Plus className="w-4 h-4 mr-2" />
               Create Event
             </TabsTrigger>
+            <TabsTrigger value="integrations">
+              <Video className="w-4 h-4 mr-2" />
+              Meeting Platforms
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="events" className="space-y-4">
@@ -401,6 +409,17 @@ export default function AdminDashboard() {
                           <Users className="w-4 h-4 mr-2" />
                           View Details
                         </Button>
+
+                        <Button
+                          variant="outline"
+                          onClick={() => {
+                            setSelectedEventForMeeting(event);
+                            setShowCreateMeeting(true);
+                          }}
+                        >
+                          <Video className="w-4 h-4 mr-2" />
+                          Create Meeting
+                        </Button>
                       </div>
                     </CardContent>
                   </Card>
@@ -487,8 +506,30 @@ export default function AdminDashboard() {
               </CardContent>
             </Card>
           </TabsContent>
+
+          <TabsContent value="integrations">
+            <MeetingIntegrations 
+              onIntegrationComplete={() => {
+                toast.success("Integration complete! You can now create meetings.");
+              }}
+            />
+          </TabsContent>
         </Tabs>
       </div>
+
+      {selectedEventForMeeting && (
+        <CreateMeetingDialog
+          eventId={selectedEventForMeeting.id}
+          eventTitle={selectedEventForMeeting.title}
+          open={showCreateMeeting}
+          onOpenChange={setShowCreateMeeting}
+          onMeetingCreated={() => {
+            toast.success("Meeting created successfully!");
+            setShowCreateMeeting(false);
+            setSelectedEventForMeeting(null);
+          }}
+        />
+      )}
       
       {/* Password Change Dialog */}
       <Dialog open={showPasswordChange} onOpenChange={setShowPasswordChange}>

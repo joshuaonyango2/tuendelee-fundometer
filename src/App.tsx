@@ -9,6 +9,7 @@ import AdminAuth from "./pages/AdminAuth";
 import AdminDashboard from "./pages/AdminDashboard";
 import JoinEvent from "./pages/JoinEvent";
 import EventRoom from "./pages/EventRoom";
+import MeetingRoom from "./pages/MeetingRoom";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,8 @@ const App = () => (
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/join/:shareLink" element={<JoinEvent />} />
           <Route path="/event/:eventId" element={<EventRoom />} />
+          <Route path="/meeting/:platform/:meetingId" element={<MeetingRoom />} />
+          <Route path="/meeting/room/:meetingId" element={<MeetingRoom />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

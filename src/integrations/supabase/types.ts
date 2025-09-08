@@ -14,6 +14,50 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_meeting_integrations: {
+        Row: {
+          access_token: string | null
+          admin_id: string
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          is_connected: boolean | null
+          platform_id: string
+          refresh_token: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          access_token?: string | null
+          admin_id: string
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          is_connected?: boolean | null
+          platform_id: string
+          refresh_token?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          access_token?: string | null
+          admin_id?: string
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          is_connected?: boolean | null
+          platform_id?: string
+          refresh_token?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_meeting_integrations_platform_id_fkey"
+            columns: ["platform_id"]
+            isOneToOne: false
+            referencedRelation: "meeting_platforms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       admin_profiles: {
         Row: {
           created_at: string
@@ -37,6 +81,69 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      event_meetings: {
+        Row: {
+          created_at: string | null
+          duration_minutes: number | null
+          event_id: string
+          host_url: string | null
+          id: string
+          join_url: string | null
+          meeting_id: string
+          meeting_url: string
+          passcode: string | null
+          platform_id: string
+          start_time: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          duration_minutes?: number | null
+          event_id: string
+          host_url?: string | null
+          id?: string
+          join_url?: string | null
+          meeting_id: string
+          meeting_url: string
+          passcode?: string | null
+          platform_id: string
+          start_time?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          duration_minutes?: number | null
+          event_id?: string
+          host_url?: string | null
+          id?: string
+          join_url?: string | null
+          meeting_id?: string
+          meeting_url?: string
+          passcode?: string | null
+          platform_id?: string
+          start_time?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_meetings_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "fundraising_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_meetings_platform_id_fkey"
+            columns: ["platform_id"]
+            isOneToOne: false
+            referencedRelation: "meeting_platforms"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       event_pledges: {
         Row: {
@@ -168,6 +275,36 @@ export type Database = {
           status?: string | null
           title?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      meeting_platforms: {
+        Row: {
+          created_at: string | null
+          display_name: string
+          icon_url: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          oauth_url: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          display_name: string
+          icon_url?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          oauth_url?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          display_name?: string
+          icon_url?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          oauth_url?: string | null
         }
         Relationships: []
       }
