@@ -10,7 +10,7 @@ import { PaymentOptions } from "@/components/PaymentOptions";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { currencyService } from "@/services/currencyService";
-import { Users, Clock, Target, LogOut, AlertCircle } from "lucide-react";
+import { Users, Clock, Target, LogOut, AlertCircle, Video } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 
