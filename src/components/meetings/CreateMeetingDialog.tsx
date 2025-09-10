@@ -6,9 +6,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
-import { Video, Calendar, Clock, Users, Link2, Copy, CheckCircle } from "lucide-react";
+import { Video, Calendar, Clock, Users, Link2, Copy, CheckCircle, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface CreateMeetingDialogProps {
   eventId: string;
@@ -18,14 +19,15 @@ interface CreateMeetingDialogProps {
   onMeetingCreated?: () => void;
 }
 
-interface ConnectedPlatform {
+interface Platform {
   id: string;
-  platform_id: string;
-  platform: {
-    id: string;
-    name: string;
-    display_name: string;
-  };
+  name: string;
+  display_name: string;
+  icon_url?: string;
+}
+
+interface PlatformWithConnection extends Platform {
+  is_connected: boolean;
 }
 
 export default function CreateMeetingDialog({
@@ -35,11 +37,12 @@ export default function CreateMeetingDialog({
   onOpenChange,
   onMeetingCreated
 }: CreateMeetingDialogProps) {
-  const [connectedPlatforms, setConnectedPlatforms] = useState<ConnectedPlatform[]>([]);
+  const [allPlatforms, setAllPlatforms] = useState<PlatformWithConnection[]>([]);
   const [selectedPlatform, setSelectedPlatform] = useState<string>("");
   const [isCreating, setIsCreating] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
   const [createdMeeting, setCreatedMeeting] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   
   const [meetingDetails, setMeetingDetails] = useState({
     title: `${eventTitle} - Virtual Meeting`,
@@ -50,7 +53,7 @@ export default function CreateMeetingDialog({
 
   useEffect(() => {
     if (open) {
-      loadConnectedPlatforms();
+      loadPlatformsAndConnections();
       // Set default start time to 1 hour from now
       const defaultTime = new Date();
       defaultTime.setHours(defaultTime.getHours() + 1);
@@ -61,36 +64,48 @@ export default function CreateMeetingDialog({
     }
   }, [open, eventTitle]);
 
-  const loadConnectedPlatforms = async () => {
+  const loadPlatformsAndConnections = async () => {
+    setLoading(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data, error } = await supabase
+      // Load all available platforms
+      const { data: platforms, error: platformsError } = await supabase
+        .from("meeting_platforms")
+        .select("*")
+        .eq("is_active", true);
+
+      if (platformsError) throw platformsError;
+
+      // Load user's connected platforms
+      const { data: connections, error: connectionsError } = await supabase
         .from("admin_meeting_integrations")
-        .select(`
-          id,
-          platform_id,
-          platform:meeting_platforms(
-            id,
-            name,
-            display_name
-          )
-        `)
+        .select("platform_id")
         .eq("admin_id", user.id)
         .eq("is_connected", true);
 
-      if (error) throw error;
+      if (connectionsError) throw connectionsError;
+
+      // Merge platforms with connection status
+      const connectedPlatformIds = new Set(connections?.map(c => c.platform_id) || []);
+      const platformsWithConnection = (platforms || []).map(platform => ({
+        ...platform,
+        is_connected: connectedPlatformIds.has(platform.id)
+      }));
+
+      setAllPlatforms(platformsWithConnection);
       
-      const platforms = data?.filter(d => d.platform) || [];
-      setConnectedPlatforms(platforms as ConnectedPlatform[]);
-      
-      if (platforms.length > 0 && !selectedPlatform) {
-        setSelectedPlatform(platforms[0].platform_id);
+      // Auto-select first connected platform if available
+      const firstConnected = platformsWithConnection.find(p => p.is_connected);
+      if (firstConnected && !selectedPlatform) {
+        setSelectedPlatform(firstConnected.id);
       }
     } catch (error) {
       console.error("Error loading platforms:", error);
-      toast.error("Failed to load connected platforms");
+      toast.error("Failed to load meeting platforms");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -108,12 +123,24 @@ export default function CreateMeetingDialog({
       return;
     }
 
+    const platform = allPlatforms.find(p => p.id === selectedPlatform);
+    if (!platform) {
+      toast.error("Selected platform not found");
+      return;
+    }
+
+    if (!platform.is_connected) {
+      toast.error(`Please connect ${platform.display_name} first`);
+      // Navigate to integrations tab
+      handleClose();
+      const integrationsTab = document.querySelector('[value="integrations"]') as HTMLElement;
+      if (integrationsTab) integrationsTab.click();
+      return;
+    }
+
     setIsCreating(true);
 
     try {
-      const platform = connectedPlatforms.find(p => p.platform_id === selectedPlatform);
-      if (!platform) throw new Error("Platform not found");
-
       // Generate meeting details
       const meetingId = generateMeetingId();
       const passcode = generatePasscode();
@@ -124,7 +151,7 @@ export default function CreateMeetingDialog({
       let joinUrl = "";
       let hostUrl = "";
 
-      switch (platform.platform.name) {
+      switch (platform.name) {
         case "zoom":
           meetingUrl = `${baseUrl}/meeting/zoom/${meetingId}`;
           joinUrl = `${meetingUrl}?pwd=${passcode}`;
@@ -150,7 +177,7 @@ export default function CreateMeetingDialog({
           break;
         
         default:
-          meetingUrl = `${baseUrl}/meeting/${platform.platform.name}/${meetingId}`;
+          meetingUrl = `${baseUrl}/meeting/${platform.name}/${meetingId}`;
           joinUrl = meetingUrl;
           hostUrl = meetingUrl;
       }
@@ -177,10 +204,10 @@ export default function CreateMeetingDialog({
 
       setCreatedMeeting({
         ...data,
-        platform_name: platform.platform.display_name
+        platform_name: platform.display_name
       });
 
-      toast.success(`Meeting created successfully on ${platform.platform.display_name}!`);
+      toast.success(`Meeting created successfully on ${platform.display_name}!`);
       onMeetingCreated?.();
     } catch (error) {
       console.error("Error creating meeting:", error);
@@ -211,6 +238,9 @@ export default function CreateMeetingDialog({
     });
     onOpenChange(false);
   };
+
+  const connectedPlatforms = allPlatforms.filter(p => p.is_connected);
+  const selectedPlatformData = allPlatforms.find(p => p.id === selectedPlatform);
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
@@ -306,24 +336,9 @@ export default function CreateMeetingDialog({
           </div>
         ) : (
           <div className="space-y-4">
-            {connectedPlatforms.length === 0 ? (
-              <div className="p-4 border border-dashed rounded-lg text-center">
-                <Video className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
-                <p className="text-sm text-muted-foreground mb-3">
-                  No meeting platforms connected yet
-                </p>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    handleClose();
-                    // Navigate to integrations tab
-                    const integrationsTab = document.querySelector('[value="integrations"]') as HTMLElement;
-                    if (integrationsTab) integrationsTab.click();
-                  }}
-                >
-                  Connect Platform
-                </Button>
+            {loading ? (
+              <div className="text-center py-4">
+                <p className="text-sm text-muted-foreground">Loading platforms...</p>
               </div>
             ) : (
               <>
@@ -331,17 +346,43 @@ export default function CreateMeetingDialog({
                   <Label htmlFor="platform">Meeting Platform</Label>
                   <Select value={selectedPlatform} onValueChange={setSelectedPlatform}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a platform" />
+                      <SelectValue placeholder="Select a meeting platform" />
                     </SelectTrigger>
                     <SelectContent>
-                      {connectedPlatforms.map((platform) => (
-                        <SelectItem key={platform.platform_id} value={platform.platform_id}>
-                          {platform.platform.display_name}
+                      {allPlatforms.map((platform) => (
+                        <SelectItem key={platform.id} value={platform.id}>
+                          <div className="flex items-center gap-2">
+                            <span>{platform.display_name}</span>
+                            {!platform.is_connected && (
+                              <span className="text-xs text-muted-foreground">(Not connected)</span>
+                            )}
+                          </div>
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
+
+                {selectedPlatformData && !selectedPlatformData.is_connected && (
+                  <Alert>
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>
+                      You need to connect {selectedPlatformData.display_name} first. 
+                      <Button
+                        variant="link"
+                        size="sm"
+                        className="px-1"
+                        onClick={() => {
+                          handleClose();
+                          const integrationsTab = document.querySelector('[value="integrations"]') as HTMLElement;
+                          if (integrationsTab) integrationsTab.click();
+                        }}
+                      >
+                        Go to Integrations
+                      </Button>
+                    </AlertDescription>
+                  </Alert>
+                )}
 
                 <div className="space-y-2">
                   <Label htmlFor="title">Meeting Title</Label>
@@ -392,6 +433,15 @@ export default function CreateMeetingDialog({
                   </div>
                 </div>
 
+                {connectedPlatforms.length === 0 && (
+                  <Alert>
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>
+                      No meeting platforms connected yet. Connect at least one platform to create meetings.
+                    </AlertDescription>
+                  </Alert>
+                )}
+
                 <div className="flex gap-2">
                   <Button
                     variant="outline"
@@ -402,7 +452,7 @@ export default function CreateMeetingDialog({
                   </Button>
                   <Button
                     onClick={handleCreateMeeting}
-                    disabled={isCreating || !selectedPlatform}
+                    disabled={isCreating || !selectedPlatform || (selectedPlatformData && !selectedPlatformData.is_connected)}
                     className="flex-1"
                   >
                     {isCreating ? "Creating..." : "Create Meeting"}
