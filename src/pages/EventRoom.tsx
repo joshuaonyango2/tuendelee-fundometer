@@ -1,18 +1,19 @@
-import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Calendar, Clock, Users, Target, AlertCircle, Video } from "lucide-react";
 import { FundraisingThermometer } from "@/components/FundraisingThermometer";
 import { PledgeForm, PledgeData } from "@/components/PledgeForm";
 import { PaymentOptions } from "@/components/PaymentOptions";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { LoadingSpinner, ConnectionStatus, ErrorFallback, ThermometerSkeleton, PledgeSkeleton } from "@/components/ui/loading-states";
 import { supabase } from "@/integrations/supabase/client";
+import { useRealtimePledges } from "@/hooks/useRealtimePledges";
+import { formatDistanceToNow } from "date-fns";
 import { currencyService } from "@/services/currencyService";
-import { Users, Clock, Target, LogOut, AlertCircle, Video } from "lucide-react";
-import { toast } from "sonner";
-import { format } from "date-fns";
+import { toast } from 'sonner';
 
 interface EventDetails {
   id: string;
@@ -27,7 +28,8 @@ interface EventDetails {
 
 interface EventPledge {
   id: string;
-  display_name: string; // Changed from 'name' to 'display_name' for anonymized display
+  event_id: string;
+  display_name: string;
   amount: number;
   currency: string;
   amount_in_usd: number;
@@ -41,29 +43,37 @@ export default function EventRoom() {
   const { eventId } = useParams();
   const navigate = useNavigate();
   const [event, setEvent] = useState<EventDetails | null>(null);
-  const [pledges, setPledges] = useState<EventPledge[]>([]);
   const [activeUsers, setActiveUsers] = useState(0);
+  const [isEventLoading, setIsEventLoading] = useState(true);
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
   const [currentPledge, setCurrentPledge] = useState<PledgeData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [totalRaised, setTotalRaised] = useState(0);
+  const [liveMeeting, setLiveMeeting] = useState<any>(null);
+  
+  const {
+    pledges: realtimePledges,
+    totalRaised,
+    isLoading: pledgesLoading,
+    error: pledgesError,
+    connectionStatus,
+    createPledge,
+    reloadPledges
+  } = useRealtimePledges({ eventId: eventId || '', enableOptimistic: true });
 
   useEffect(() => {
     checkSession();
     loadEventDetails();
-    subscribeToUpdates();
   }, [eventId]);
 
   const checkSession = async () => {
-    const session = localStorage.getItem("event_session");
+    const session = localStorage.getItem('event_session');
     if (!session) {
-      navigate("/");
+      navigate('/');
       return;
     }
 
     const sessionData = JSON.parse(session);
     if (sessionData.eventId !== eventId) {
-      navigate("/");
+      navigate('/');
       return;
     }
 
@@ -74,159 +84,119 @@ export default function EventRoom() {
         .single();
 
       if (!data || data.event_id !== eventId) {
-        localStorage.removeItem("event_session");
-        navigate("/");
+        localStorage.removeItem('event_session');
+        navigate('/');
         return;
       }
 
       // Update activity using secure function
       await supabase.rpc('update_session_activity', { p_session_token: sessionData.sessionToken });
     } catch (error) {
-      localStorage.removeItem("event_session");
-      navigate("/");
+      localStorage.removeItem('event_session');
+      navigate('/');
     }
   };
 
   const loadEventDetails = async () => {
+    if (!eventId) return;
+
     try {
+      setIsEventLoading(true);
+      
+      // Load event details
       const { data: eventData, error: eventError } = await supabase
-        .from("fundraising_events")
-        .select("*")
-        .eq("id", eventId)
+        .from('fundraising_events')
+        .select('*')
+        .eq('id', eventId)
         .single();
 
       if (eventError) throw eventError;
+
       setEvent(eventData);
 
-      // Load pledges using the public function (anonymized)
-      const { data: pledgesData, error: pledgesError } = await supabase
-        .rpc("get_public_pledges", { p_event_id: eventId });
+      // Load live meeting if exists
+      const { data: meetingData } = await supabase
+        .from('event_meetings')
+        .select('*')
+        .eq('event_id', eventId)
+        .eq('status', 'active')
+        .single();
 
-      if (pledgesError) throw pledgesError;
-      setPledges(pledgesData || []);
-      
-      // Calculate total raised
-      const total = pledgesData?.reduce((sum, p) => sum + p.amount_in_usd, 0) || 0;
-      setTotalRaised(total);
+      if (meetingData) {
+        setLiveMeeting(meetingData);
+      }
 
-      // Count active sessions using the secure function
-      const { data: sessionCount } = await supabase
+      // Count active sessions
+      const { data: sessionCount, error: sessionError } = await supabase
         .rpc('count_active_sessions', { p_event_id: eventId });
-      
-      setActiveUsers(sessionCount || 0);
-    } catch (error: any) {
-      toast.error("Failed to load event details");
+
+      if (sessionError) {
+        console.error('Error counting sessions:', sessionError);
+      } else {
+        setActiveUsers(sessionCount || 0);
+      }
+    } catch (error) {
+      console.error('Error loading event:', error);
+      toast.error('Failed to load event details');
     } finally {
-      setIsLoading(false);
+      setIsEventLoading(false);
     }
-  };
-
-  const subscribeToUpdates = () => {
-    const channel = supabase
-      .channel('event_updates')
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'event_pledges',
-          filter: `event_id=eq.${eventId}`
-        },
-        async (payload) => {
-          // Fetch the anonymized version of the new pledge
-          const { data } = await supabase
-            .rpc("get_public_pledges", { p_event_id: eventId });
-          
-          if (data && data.length > 0) {
-            const newPledge = data.find((p: any) => p.id === (payload.new as any).id);
-            if (newPledge) {
-              setPledges(prev => [newPledge as EventPledge, ...prev]);
-              setTotalRaised(prev => prev + (payload.new as any).amount_in_usd);
-              toast.success(`New pledge received!`);
-            }
-          }
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'fundraising_events',
-          filter: `id=eq.${eventId}`
-        },
-        (payload) => {
-          setEvent(payload.new as EventDetails);
-          if (!(payload.new as any).is_active) {
-            toast.info("This event has ended. Thank you for participating!");
-          }
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
   };
 
   const handlePledgeSubmit = async (pledgeData: PledgeData) => {
     try {
-      // Convert to multiple currencies
-      const conversions = await currencyService.convertToMultiple(
-        pledgeData.amount,
-        pledgeData.currency,
-        ['KES', 'USD']
-      );
-
-      // Determine payment type
-      const paymentType = pledgeData.message?.toLowerCase().includes('cash') ? 'cash' : 'pledge';
-
-      // Save pledge to database
-      const { error } = await supabase.from("event_pledges").insert({
-        event_id: eventId,
-        name: pledgeData.name,
-        email: pledgeData.email,
+      // Convert currency if needed
+      const amountInUSD = await currencyService.convertAmount(pledgeData.amount, pledgeData.currency, 'USD');
+      const amountInKES = await currencyService.convertAmount(pledgeData.amount, pledgeData.currency, 'KES');
+      
+      await createPledge({
+        event_id: eventId!,
+        display_name: pledgeData.name,
         amount: pledgeData.amount,
+        amount_in_usd: amountInUSD,
+        amount_in_kes: amountInKES,
         currency: pledgeData.currency,
-        amount_in_usd: conversions.USD || 0,
-        amount_in_kes: conversions.KES || 0,
-        payment_type: paymentType,
         message: pledgeData.message,
+        payment_type: 'pending'
       });
-
-      if (error) throw error;
 
       setCurrentPledge(pledgeData);
       setShowPaymentDialog(true);
       
-      toast.success(`Thank you for your ${paymentType === 'cash' ? 'cash donation' : 'pledge'}!`);
-    } catch (error: any) {
-      toast.error("Failed to process pledge. Please try again.");
+      toast.success('Pledge submitted successfully!');
+    } catch (error) {
+      console.error('Error processing pledge:', error);
+      toast.error('Failed to process pledge');
     }
   };
 
   const handleLeaveEvent = () => {
-    localStorage.removeItem("event_session");
-    navigate("/");
+    localStorage.removeItem('event_session');
+    navigate('/');
   };
 
-  if (isLoading) {
+  if (isEventLoading) {
     return (
-      <div className="min-h-screen bg-gradient-background flex items-center justify-center">
-        <p>Loading event...</p>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <LoadingSpinner size="lg" />
+          <p className="text-muted-foreground">Loading event...</p>
+        </div>
       </div>
     );
   }
 
   if (!event) {
     return (
-      <div className="min-h-screen bg-gradient-background flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <Card>
-          <CardContent className="p-8">
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>Event not found</AlertDescription>
-            </Alert>
+          <CardContent className="p-8 text-center">
+            <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="font-semibold text-lg mb-2">Event Not Found</h3>
+            <p className="text-muted-foreground">The event you're looking for doesn't exist or has been removed.</p>
+            <Button onClick={() => navigate('/')} className="mt-4">
+              Go Home
+            </Button>
           </CardContent>
         </Card>
       </div>
@@ -236,126 +206,195 @@ export default function EventRoom() {
   return (
     <div className="min-h-screen bg-gradient-background">
       <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-bold">{event.title}</h1>
-            <p className="text-muted-foreground">{event.description}</p>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* Event Header */}
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-3xl font-bold">{event.title}</CardTitle>
+                  <div className="flex items-center gap-2">
+                    <ConnectionStatus 
+                      isConnected={connectionStatus.isConnected}
+                      isReconnecting={connectionStatus.isReconnecting}
+                    />
+                    <Badge variant={event.is_active ? "default" : "secondary"}>
+                      {event.is_active ? "Live" : "Ended"}
+                    </Badge>
+                  </div>
+                </div>
+                {event.description && (
+                  <CardDescription className="text-lg">
+                    {event.description}
+                  </CardDescription>
+                )}
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-5 w-5 text-primary" />
+                    <div>
+                      <p className="text-sm text-muted-foreground">Date</p>
+                      <p className="font-semibold">
+                        {new Date(event.scheduled_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-5 w-5 text-primary" />
+                    <div>
+                      <p className="text-sm text-muted-foreground">Time</p>
+                      <p className="font-semibold">
+                        {new Date(event.scheduled_at).toLocaleTimeString([], { 
+                          hour: '2-digit', 
+                          minute: '2-digit' 
+                        })}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Users className="h-5 w-5 text-primary" />
+                    <div>
+                      <p className="text-sm text-muted-foreground">Participants</p>
+                      <p className="font-semibold">{activeUsers}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-5 w-5 text-primary" />
+                    <div>
+                      <p className="text-sm text-muted-foreground">Duration</p>
+                      <p className="font-semibold">{event.duration_minutes} min</p>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Live Meeting Button */}
+                {liveMeeting && event.is_active && (
+                  <div className="mt-4 p-4 bg-gradient-secondary rounded-lg">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="font-semibold text-white">Live Meeting in Progress</h3>
+                        <p className="text-secondary-foreground/80">Join the conversation and see real-time progress</p>
+                      </div>
+                      <Button 
+                        onClick={() => window.open(`/meeting/room/${liveMeeting.id}`, '_blank')}
+                        className="bg-white text-secondary hover:bg-white/90"
+                      >
+                        <Video className="mr-2 h-4 w-4" />
+                        Join Live Meeting
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Fundraising Progress */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Target className="h-6 w-6 text-success" />
+                  Fundraising Progress
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {pledgesLoading ? (
+                  <ThermometerSkeleton />
+                ) : pledgesError ? (
+                  <ErrorFallback 
+                    error={pledgesError} 
+                    onRetry={reloadPledges}
+                  />
+                ) : (
+                  <FundraisingThermometer
+                    currentAmount={totalRaised}
+                    goalAmount={event.goal_amount}
+                    currency="USD"
+                  />
+                )}
+              </CardContent>
+            </Card>
           </div>
-          <Button variant="outline" onClick={handleLeaveEvent}>
-            <LogOut className="w-4 h-4 mr-2" />
-            Leave Event
-          </Button>
-        </div>
 
-        {/* Event Info Bar */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <Card>
-            <CardContent className="p-4 flex items-center gap-3">
-              <Users className="w-5 h-5 text-primary" />
-              <div>
-                <p className="text-sm text-muted-foreground">Participants</p>
-                <p className="font-semibold">{activeUsers}</p>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardContent className="p-4 flex items-center gap-3">
-              <Clock className="w-5 h-5 text-primary" />
-              <div>
-                <p className="text-sm text-muted-foreground">Duration</p>
-                <p className="font-semibold">{event.duration_minutes} min</p>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardContent className="p-4 flex items-center gap-3">
-              <Target className="w-5 h-5 text-primary" />
-              <div>
-                <p className="text-sm text-muted-foreground">Goal</p>
-                <p className="font-semibold">${event.goal_amount.toLocaleString()}</p>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardContent className="p-4">
-              <Badge variant={event.is_active ? "default" : "secondary"} className="w-full justify-center">
-                {event.is_active ? "LIVE" : "ENDED"}
-              </Badge>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Main Content */}
-        <div className="grid lg:grid-cols-2 gap-8">
-          {/* Thermometer */}
-          <div className="flex justify-center">
-            <FundraisingThermometer
-              currentAmount={totalRaised}
-              goalAmount={event.goal_amount}
-              currency="USD"
-            />
-          </div>
-
-          {/* Pledge Form */}
-          <div>
+          {/* Sidebar */}
+          <div className="space-y-6">
+            {/* Recent Pledges */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Recent Donations</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {pledgesLoading ? (
+                  <PledgeSkeleton count={3} />
+                ) : pledgesError ? (
+                  <ErrorFallback error={pledgesError} onRetry={reloadPledges} />
+                ) : realtimePledges.length === 0 ? (
+                  <p className="text-center text-muted-foreground py-8">
+                    No donations yet. Be the first to contribute!
+                  </p>
+                ) : (
+                  <div className="space-y-4">
+                    {realtimePledges.slice(0, 10).map((pledge) => (
+                      <div key={pledge.id} className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg">
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="font-medium text-sm">{pledge.display_name}</span>
+                            <span className="text-xs text-muted-foreground">
+                              {formatDistanceToNow(new Date(pledge.created_at), { addSuffix: true })}
+                            </span>
+                          </div>
+                          {pledge.message && (
+                            <p className="text-sm text-muted-foreground mb-2">{pledge.message}</p>
+                          )}
+                          <div className="flex items-center justify-between">
+                            <span className="font-semibold text-primary">
+                              {pledge.currency} {pledge.amount.toLocaleString()}
+                            </span>
+                            <span className="text-xs text-muted-foreground">
+                              ≈ ${pledge.amount_in_usd.toLocaleString()}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+            
+            {/* Action Button */}
             {event.is_active ? (
               <PledgeForm onSubmit={handlePledgeSubmit} />
             ) : (
               <Card>
-                <CardContent className="p-8 text-center">
-                  <h3 className="text-xl font-semibold mb-2">Event Has Ended</h3>
-                  <p className="text-muted-foreground mb-4">
-                    Thank you for participating! The final amount raised was:
-                  </p>
-                  <p className="text-3xl font-bold text-primary">
-                    ${totalRaised.toLocaleString()}
-                  </p>
+                <CardContent className="text-center py-8">
+                  <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="font-semibold text-lg mb-2">Event Has Ended</h3>
+                  <p className="text-muted-foreground">This fundraising event is no longer accepting pledges.</p>
                 </CardContent>
               </Card>
             )}
           </div>
         </div>
 
-        {/* Recent Pledges */}
-        <div className="mt-12">
-          <h2 className="text-2xl font-bold mb-4">Recent Contributions</h2>
-          <div className="grid gap-3">
-            {pledges.slice(0, 10).map((pledge) => (
-              <Card key={pledge.id}>
-                <CardContent className="p-4 flex justify-between items-center">
-                  <div>
-                    <p className="font-semibold">{pledge.display_name}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {format(new Date(pledge.created_at), "p")}
-                    </p>
-                    {pledge.message && (
-                      <p className="text-sm text-muted-foreground italic mt-1">
-                        "{pledge.message}"
-                      </p>
-                    )}
-                  </div>
-                  <div className="text-right">
-                    <Badge variant={pledge.payment_type === 'cash' ? 'default' : 'secondary'}>
-                      {pledge.payment_type}
-                    </Badge>
-                    <p className="font-semibold mt-1">
-                      {pledge.currency} {pledge.amount.toLocaleString()}
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+        {/* Leave Event Button */}
+        <div className="fixed bottom-4 right-4">
+          <Button variant="outline" onClick={handleLeaveEvent}>
+            Leave Event
+          </Button>
         </div>
       </div>
 
       {/* Payment Dialog */}
       <Dialog open={showPaymentDialog} onOpenChange={setShowPaymentDialog}>
-        <DialogContent className="max-w-lg p-0 overflow-hidden">
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Complete Your Donation</DialogTitle>
+            <DialogDescription>
+              Choose your preferred payment method to complete your contribution.
+            </DialogDescription>
+          </DialogHeader>
           {currentPledge && (
             <PaymentOptions
               amount={currentPledge.amount}
