@@ -150,39 +150,57 @@ export type Database = {
           amount: number
           amount_in_kes: number
           amount_in_usd: number
+          confirmed_at: string | null
           created_at: string
           currency: string
+          donor_address: string | null
+          donor_phone: string | null
           email: string | null
           event_id: string
           id: string
+          is_confirmed: boolean | null
           message: string | null
           name: string
+          payment_method: string | null
+          payment_reference: string | null
           payment_type: string
         }
         Insert: {
           amount: number
           amount_in_kes: number
           amount_in_usd: number
+          confirmed_at?: string | null
           created_at?: string
           currency?: string
+          donor_address?: string | null
+          donor_phone?: string | null
           email?: string | null
           event_id: string
           id?: string
+          is_confirmed?: boolean | null
           message?: string | null
           name: string
+          payment_method?: string | null
+          payment_reference?: string | null
           payment_type: string
         }
         Update: {
           amount?: number
           amount_in_kes?: number
           amount_in_usd?: number
+          confirmed_at?: string | null
           created_at?: string
           currency?: string
+          donor_address?: string | null
+          donor_phone?: string | null
           email?: string | null
           event_id?: string
           id?: string
+          is_confirmed?: boolean | null
           message?: string | null
           name?: string
+          payment_method?: string | null
+          payment_reference?: string | null
           payment_type?: string
         }
         Relationships: [
@@ -308,9 +326,57 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_methods: {
+        Row: {
+          account_details: Json
+          created_at: string
+          id: string
+          is_active: boolean | null
+          name: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          account_details?: Json
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          name: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          account_details?: Json
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
-      [_ in never]: never
+      event_participants: {
+        Row: {
+          attendee_name: string | null
+          event_id: string | null
+          joined_at: string | null
+          last_activity: string | null
+          pledge_count: number | null
+          total_pledged: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_sessions_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "fundraising_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       can_view_public_pledges: {
