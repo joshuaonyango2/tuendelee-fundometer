@@ -1,0 +1,238 @@
+import { useState } from 'react';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { ArrowLeft, CheckCircle } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from 'sonner';
+
+interface PaymentConfirmationProps {
+  pledgeId: string;
+  amount: number;
+  currency: string;
+  paymentMethod: any;
+  onBack: () => void;
+  onComplete: () => void;
+}
+
+export function PaymentConfirmation({ 
+  pledgeId, 
+  amount, 
+  currency, 
+  paymentMethod,
+  onBack,
+  onComplete 
+}: PaymentConfirmationProps) {
+  const [formData, setFormData] = useState({
+    phone: '',
+    address: '',
+    reference: '',
+    mpesaCode: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async () => {
+    // Validate required fields
+    if (paymentMethod.type === 'mpesa' && !formData.mpesaCode) {
+      toast.error('Please enter the M-Pesa transaction code');
+      return;
+    }
+
+    if (!formData.phone) {
+      toast.error('Please enter your phone number');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      // Update pledge with payment confirmation
+      const { error } = await supabase
+        .from('event_pledges')
+        .update({
+          payment_method: paymentMethod.type,
+          payment_reference: paymentMethod.type === 'mpesa' ? formData.mpesaCode : formData.reference,
+          donor_phone: formData.phone,
+          donor_address: formData.address,
+          is_confirmed: true,
+          confirmed_at: new Date().toISOString()
+        })
+        .eq('id', pledgeId);
+
+      if (error) throw error;
+
+      toast.success('Payment confirmed successfully!');
+      onComplete();
+    } catch (error) {
+      console.error('Error confirming payment:', error);
+      toast.error('Failed to confirm payment');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const renderPaymentInstructions = () => {
+    const details = paymentMethod.account_details;
+
+    switch (paymentMethod.type) {
+      case 'mpesa':
+        return (
+          <div className="bg-accent p-4 rounded-lg mb-4">
+            <h4 className="font-semibold mb-2">M-Pesa Payment Instructions:</h4>
+            <ol className="list-decimal list-inside space-y-1 text-sm">
+              <li>Go to M-Pesa on your phone</li>
+              <li>Select "Lipa na M-Pesa"</li>
+              <li>Select "Pay Bill"</li>
+              <li>Enter Business Number: <strong>{details.paybill}</strong></li>
+              <li>Enter Account Number: <strong>{details.account_name}</strong></li>
+              <li>Enter Amount: <strong>{currency} {amount}</strong></li>
+              <li>Enter your M-Pesa PIN and confirm</li>
+              <li>Enter the transaction code below</li>
+            </ol>
+            {details.instructions && (
+              <p className="mt-2 text-sm text-muted-foreground">{details.instructions}</p>
+            )}
+          </div>
+        );
+
+      case 'paypal':
+        return (
+          <div className="bg-accent p-4 rounded-lg mb-4">
+            <h4 className="font-semibold mb-2">PayPal Payment Instructions:</h4>
+            <p className="text-sm mb-2">Send payment to:</p>
+            <p className="font-mono font-semibold">{details.email}</p>
+            <p className="text-sm mt-2">Amount: <strong>{currency} {amount}</strong></p>
+            {details.instructions && (
+              <p className="mt-2 text-sm text-muted-foreground">{details.instructions}</p>
+            )}
+          </div>
+        );
+
+      case 'bank_transfer':
+        return (
+          <div className="bg-accent p-4 rounded-lg mb-4">
+            <h4 className="font-semibold mb-2">Bank Transfer Details:</h4>
+            <div className="space-y-1 text-sm">
+              <p><strong>Bank:</strong> {details.bank_name}</p>
+              <p><strong>Account Name:</strong> {details.account_name}</p>
+              <p><strong>Account Number:</strong> {details.account_number}</p>
+              {details.branch && <p><strong>Branch:</strong> {details.branch}</p>}
+              {details.swift_code && <p><strong>SWIFT Code:</strong> {details.swift_code}</p>}
+              <p className="mt-2"><strong>Amount:</strong> {currency} {amount}</p>
+            </div>
+            {details.instructions && (
+              <p className="mt-2 text-sm text-muted-foreground">{details.instructions}</p>
+            )}
+          </div>
+        );
+
+      case 'benevity':
+        return (
+          <div className="bg-accent p-4 rounded-lg mb-4">
+            <h4 className="font-semibold mb-2">Benevity Donation Instructions:</h4>
+            <p className="text-sm mb-2">Organization Name:</p>
+            <p className="font-semibold">{details.account_name}</p>
+            <p className="text-sm mt-2">Amount: <strong>{currency} {amount}</strong></p>
+            <p className="text-sm mt-2 text-muted-foreground">
+              Please complete your donation through your company's Benevity portal
+            </p>
+            {details.instructions && (
+              <p className="mt-2 text-sm text-muted-foreground">{details.instructions}</p>
+            )}
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <Card className="w-full max-w-lg mx-auto">
+      <CardHeader>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onBack}
+          className="w-fit mb-2"
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back
+        </Button>
+        <CardTitle>Confirm Your Payment</CardTitle>
+        <CardDescription>
+          Please follow the instructions and confirm your payment
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        {renderPaymentInstructions()}
+
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="phone">Phone Number *</Label>
+            <Input
+              id="phone"
+              type="tel"
+              value={formData.phone}
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              placeholder="+254 XXX XXX XXX"
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="address">Address (Optional)</Label>
+            <Textarea
+              id="address"
+              value={formData.address}
+              onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+              placeholder="Enter your address"
+            />
+          </div>
+
+          {paymentMethod.type === 'mpesa' && (
+            <div className="space-y-2">
+              <Label htmlFor="mpesaCode">M-Pesa Transaction Code *</Label>
+              <Input
+                id="mpesaCode"
+                value={formData.mpesaCode}
+                onChange={(e) => setFormData({ ...formData, mpesaCode: e.target.value })}
+                placeholder="e.g., QA12B3C4D5"
+                required
+              />
+            </div>
+          )}
+
+          {paymentMethod.type !== 'mpesa' && (
+            <div className="space-y-2">
+              <Label htmlFor="reference">Transaction Reference (Optional)</Label>
+              <Input
+                id="reference"
+                value={formData.reference}
+                onChange={(e) => setFormData({ ...formData, reference: e.target.value })}
+                placeholder="Enter transaction reference"
+              />
+            </div>
+          )}
+
+          <Button
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+            className="w-full"
+          >
+            {isSubmitting ? (
+              'Confirming...'
+            ) : (
+              <>
+                <CheckCircle className="mr-2 h-4 w-4" />
+                Confirm Payment
+              </>
+            )}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}

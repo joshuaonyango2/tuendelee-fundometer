@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { PaymentMethodsManager } from "@/components/admin/PaymentMethodsManager";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
@@ -309,6 +310,10 @@ export default function AdminDashboard() {
             <TabsTrigger value="integrations">
               <Video className="w-4 h-4 mr-2" />
               Meeting Platforms
+            </TabsTrigger>
+            <TabsTrigger value="payments">
+              <Settings className="w-4 h-4 mr-2" />
+              Payment Methods
             </TabsTrigger>
           </TabsList>
 

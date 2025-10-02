@@ -4,9 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock, Users, Target, AlertCircle, Video } from "lucide-react";
-import { FundraisingThermometer } from "@/components/FundraisingThermometer";
+import { ImprovedThermometer } from "@/components/ImprovedThermometer";
 import { PledgeForm, PledgeData } from "@/components/PledgeForm";
-import { PaymentOptions } from "@/components/PaymentOptions";
+import { ImprovedPaymentOptions } from "@/components/ImprovedPaymentOptions";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { LoadingSpinner, ConnectionStatus, ErrorFallback, ThermometerSkeleton, PledgeSkeleton } from "@/components/ui/loading-states";
 import { supabase } from "@/integrations/supabase/client";
@@ -47,6 +47,7 @@ export default function EventRoom() {
   const [isEventLoading, setIsEventLoading] = useState(true);
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
   const [currentPledge, setCurrentPledge] = useState<PledgeData | null>(null);
+  const [currentPledgeId, setCurrentPledgeId] = useState<string | null>(null);
   const [liveMeeting, setLiveMeeting] = useState<any>(null);
   
   const {
@@ -143,25 +144,33 @@ export default function EventRoom() {
     }
   };
 
-  const handlePledgeSubmit = async (pledgeData: PledgeData) => {
+  const handlePledgeSubmit = async (formData: PledgeData) => {
     try {
       // Convert currency if needed
-      const amountInUSD = await currencyService.convertAmount(pledgeData.amount, pledgeData.currency, 'USD');
-      const amountInKES = await currencyService.convertAmount(pledgeData.amount, pledgeData.currency, 'KES');
+      const amountInUSD = await currencyService.convertAmount(formData.amount, formData.currency, 'USD');
+      const amountInKES = await currencyService.convertAmount(formData.amount, formData.currency, 'KES');
       
-      await createPledge({
-        event_id: eventId!,
-        display_name: pledgeData.name,
-        amount: pledgeData.amount,
-        amount_in_usd: amountInUSD,
-        amount_in_kes: amountInKES,
-        currency: pledgeData.currency,
-        message: pledgeData.message,
-        payment_type: 'pending'
-      });
+      const { data: newPledge } = await supabase
+        .from('event_pledges')
+        .insert({
+          event_id: eventId!,
+          name: formData.name,
+          email: formData.email,
+          amount: formData.amount,
+          amount_in_usd: amountInUSD,
+          amount_in_kes: amountInKES,
+          currency: formData.currency,
+          message: formData.message,
+          payment_type: 'pending'
+        })
+        .select()
+        .single();
 
-      setCurrentPledge(pledgeData);
-      setShowPaymentDialog(true);
+      if (newPledge) {
+        setCurrentPledge(formData);
+        setCurrentPledgeId(newPledge.id);
+        setShowPaymentDialog(true);
+      }
       
       toast.success('Pledge submitted successfully!');
     } catch (error) {
@@ -307,10 +316,9 @@ export default function EventRoom() {
                     onRetry={reloadPledges}
                   />
                 ) : (
-                  <FundraisingThermometer
-                    currentAmount={totalRaised}
-                    goalAmount={event.goal_amount}
-                    currency="USD"
+                  <ImprovedThermometer
+                    currentAmountUSD={totalRaised}
+                    currentAmountKES={totalRaised * 150} // Will use real conversion rate
                   />
                 )}
               </CardContent>
@@ -395,8 +403,9 @@ export default function EventRoom() {
               Choose your preferred payment method to complete your contribution.
             </DialogDescription>
           </DialogHeader>
-          {currentPledge && (
-            <PaymentOptions
+          {currentPledge && currentPledgeId && (
+            <ImprovedPaymentOptions
+              pledgeId={currentPledgeId}
               amount={currentPledge.amount}
               currency={currentPledge.currency}
               email={currentPledge.email}
