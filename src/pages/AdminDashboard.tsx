@@ -519,6 +519,10 @@ export default function AdminDashboard() {
               }}
             />
           </TabsContent>
+
+          <TabsContent value="payments">
+            <PaymentMethodsManager />
+          </TabsContent>
         </Tabs>
       </div>
 

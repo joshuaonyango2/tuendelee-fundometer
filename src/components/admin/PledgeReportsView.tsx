@@ -1,0 +1,233 @@
+import { useEffect, useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { format } from 'date-fns';
+import { Download, CheckCircle, XCircle } from 'lucide-react';
+
+interface Pledge {
+  id: string;
+  name: string;
+  email: string;
+  donor_phone: string;
+  amount: number;
+  amount_in_usd: number;
+  currency: string;
+  payment_type: string;
+  payment_method: string;
+  payment_reference: string;
+  is_confirmed: boolean;
+  created_at: string;
+  message: string;
+}
+
+interface PledgeReportsViewProps {
+  eventId: string;
+}
+
+export function PledgeReportsView({ eventId }: PledgeReportsViewProps) {
+  const [pledges, setPledges] = useState<Pledge[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const loadPledges = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('event_pledges')
+        .select('*')
+        .eq('event_id', eventId)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      setPledges(data || []);
+    } catch (error) {
+      console.error('Error loading pledges:', error);
+      toast.error('Failed to load pledges');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!eventId) return;
+
+    loadPledges();
+
+    const channel = supabase
+      .channel('admin-pledges')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'event_pledges',
+          filter: `event_id=eq.${eventId}`
+        },
+        () => {
+          loadPledges();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [eventId]);
+
+  const exportToCSV = (data: Pledge[], filename: string) => {
+    const headers = ['Date', 'Name', 'Email', 'Phone', 'Amount', 'Currency', 'USD Value', 'Payment Method', 'Reference', 'Status', 'Message'];
+    const rows = data.map(p => [
+      format(new Date(p.created_at), 'yyyy-MM-dd HH:mm'),
+      p.name || '',
+      p.email || '',
+      p.donor_phone || '',
+      p.amount,
+      p.currency,
+      p.amount_in_usd,
+      p.payment_method || p.payment_type,
+      p.payment_reference || '',
+      p.is_confirmed ? 'Paid' : 'Pending',
+      p.message || ''
+    ]);
+
+    const csv = [headers, ...rows].map(row => row.join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
+  const paidPledges = pledges.filter(p => p.is_confirmed);
+  const pendingPledges = pledges.filter(p => !p.is_confirmed);
+
+  const PledgeTable = ({ data }: { data: Pledge[] }) => (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Date</TableHead>
+          <TableHead>Name</TableHead>
+          <TableHead>Contact</TableHead>
+          <TableHead>Amount</TableHead>
+          <TableHead>Payment</TableHead>
+          <TableHead>Reference</TableHead>
+          <TableHead>Status</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {data.length === 0 ? (
+          <TableRow>
+            <TableCell colSpan={7} className="text-center text-muted-foreground">
+              No pledges found
+            </TableCell>
+          </TableRow>
+        ) : (
+          data.map((pledge) => (
+            <TableRow key={pledge.id}>
+              <TableCell>{format(new Date(pledge.created_at), 'MMM dd, HH:mm')}</TableCell>
+              <TableCell className="font-medium">{pledge.name}</TableCell>
+              <TableCell>
+                <div className="text-sm">
+                  <div>{pledge.email || '-'}</div>
+                  <div className="text-muted-foreground">{pledge.donor_phone || '-'}</div>
+                </div>
+              </TableCell>
+              <TableCell>
+                <div>
+                  {pledge.currency} {pledge.amount.toLocaleString()}
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  ${pledge.amount_in_usd.toLocaleString()} USD
+                </div>
+              </TableCell>
+              <TableCell>{pledge.payment_method || pledge.payment_type}</TableCell>
+              <TableCell className="font-mono text-xs">{pledge.payment_reference || '-'}</TableCell>
+              <TableCell>
+                {pledge.is_confirmed ? (
+                  <div className="flex items-center gap-1 text-green-600">
+                    <CheckCircle className="w-4 h-4" />
+                    Paid
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1 text-orange-600">
+                    <XCircle className="w-4 h-4" />
+                    Pending
+                  </div>
+                )}
+              </TableCell>
+            </TableRow>
+          ))
+        )}
+      </TableBody>
+    </Table>
+  );
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardContent className="p-8 text-center">
+          <p>Loading pledge reports...</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex justify-between items-center">
+          <CardTitle>Pledge Reports</CardTitle>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => exportToCSV(paidPledges, 'paid-pledges.csv')}
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Export Paid
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => exportToCSV(pendingPledges, 'pending-pledges.csv')}
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Export Pending
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => exportToCSV(pledges, 'all-pledges.csv')}
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Export All
+            </Button>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <Tabs defaultValue="all">
+          <TabsList>
+            <TabsTrigger value="all">All ({pledges.length})</TabsTrigger>
+            <TabsTrigger value="paid">Paid ({paidPledges.length})</TabsTrigger>
+            <TabsTrigger value="pending">Pending ({pendingPledges.length})</TabsTrigger>
+          </TabsList>
+          <TabsContent value="all">
+            <PledgeTable data={pledges} />
+          </TabsContent>
+          <TabsContent value="paid">
+            <PledgeTable data={paidPledges} />
+          </TabsContent>
+          <TabsContent value="pending">
+            <PledgeTable data={pendingPledges} />
+          </TabsContent>
+        </Tabs>
+      </CardContent>
+    </Card>
+  );
+}

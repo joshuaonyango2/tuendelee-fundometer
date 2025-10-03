@@ -1,0 +1,186 @@
+import { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { ArrowLeft, Trash2, TrendingUp, Users, FileText, Plus } from 'lucide-react';
+import { EventThermometer } from '@/components/admin/EventThermometer';
+import { ParticipantsView } from '@/components/admin/ParticipantsView';
+import { PledgeReportsView } from '@/components/admin/PledgeReportsView';
+import { ManualPledgeEntry } from '@/components/admin/ManualPledgeEntry';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+
+export default function EventManagement() {
+  const { eventId } = useParams();
+  const navigate = useNavigate();
+  const [event, setEvent] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    if (!eventId) return;
+    loadEvent();
+  }, [eventId]);
+
+  const loadEvent = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('fundraising_events')
+        .select('*')
+        .eq('id', eventId)
+        .single();
+
+      if (error) throw error;
+      setEvent(data);
+    } catch (error) {
+      console.error('Error loading event:', error);
+      toast.error('Failed to load event');
+      navigate('/admin/dashboard');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDeleteEvent = async () => {
+    if (!eventId) return;
+    
+    setIsDeleting(true);
+    try {
+      const { error } = await supabase
+        .from('fundraising_events')
+        .delete()
+        .eq('id', eventId);
+
+      if (error) throw error;
+
+      toast.success('Event deleted successfully');
+      navigate('/admin/dashboard');
+    } catch (error) {
+      console.error('Error deleting event:', error);
+      toast.error('Failed to delete event');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-background flex items-center justify-center">
+        <p>Loading event...</p>
+      </div>
+    );
+  }
+
+  if (!event) {
+    return (
+      <div className="min-h-screen bg-gradient-background flex items-center justify-center">
+        <Card>
+          <CardContent className="p-8">
+            <p>Event not found</p>
+            <Button onClick={() => navigate('/admin/dashboard')} className="mt-4">
+              Back to Dashboard
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-background">
+      <div className="container mx-auto px-4 py-8">
+        <div className="mb-6 flex justify-between items-center">
+          <div>
+            <Button
+              variant="ghost"
+              onClick={() => navigate('/admin/dashboard')}
+              className="mb-4"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Dashboard
+            </Button>
+            <h1 className="text-3xl font-bold">{event.title}</h1>
+            <p className="text-muted-foreground">{event.description}</p>
+          </div>
+          
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive">
+                <Trash2 className="w-4 h-4 mr-2" />
+                Delete Event
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will permanently delete this event and all associated data including pledges, participants, and meetings.
+                  This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleDeleteEvent}
+                  disabled={isDeleting}
+                  className="bg-destructive hover:bg-destructive/90"
+                >
+                  {isDeleting ? 'Deleting...' : 'Delete Event'}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+
+        <Tabs defaultValue="thermometer" className="space-y-4">
+          <TabsList>
+            <TabsTrigger value="thermometer">
+              <TrendingUp className="w-4 h-4 mr-2" />
+              Thermometer
+            </TabsTrigger>
+            <TabsTrigger value="participants">
+              <Users className="w-4 h-4 mr-2" />
+              Participants
+            </TabsTrigger>
+            <TabsTrigger value="reports">
+              <FileText className="w-4 h-4 mr-2" />
+              Reports
+            </TabsTrigger>
+            <TabsTrigger value="manual">
+              <Plus className="w-4 h-4 mr-2" />
+              Add Pledge
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="thermometer" className="space-y-4">
+            <EventThermometer eventId={eventId!} />
+          </TabsContent>
+
+          <TabsContent value="participants" className="space-y-4">
+            <ParticipantsView eventId={eventId!} />
+          </TabsContent>
+
+          <TabsContent value="reports" className="space-y-4">
+            <PledgeReportsView eventId={eventId!} />
+          </TabsContent>
+
+          <TabsContent value="manual" className="space-y-4">
+            <ManualPledgeEntry eventId={eventId!} />
+          </TabsContent>
+        </Tabs>
+      </div>
+    </div>
+  );
+}
