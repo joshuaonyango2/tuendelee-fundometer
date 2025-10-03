@@ -356,6 +356,24 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       event_participants: {
@@ -382,6 +400,17 @@ export type Database = {
       can_view_public_pledges: {
         Args: { p_event_id: string }
         Returns: boolean
+      }
+      confirm_pledge_payment: {
+        Args: {
+          p_donor_address: string
+          p_donor_phone: string
+          p_payment_method: string
+          p_payment_reference: string
+          p_pledge_id: string
+          p_session_token: string
+        }
+        Returns: undefined
       }
       count_active_sessions: {
         Args: { p_event_id: string }
@@ -413,13 +442,20 @@ export type Database = {
           session_token: string
         }[]
       }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       update_session_activity: {
         Args: { p_session_token: string }
         Returns: undefined
       }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -546,6 +582,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const

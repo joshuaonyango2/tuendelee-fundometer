@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, CheckCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from 'sonner';
+import { z } from 'zod';
 
 interface PaymentConfirmationProps {
   pledgeId: string;
@@ -33,41 +34,68 @@ export function PaymentConfirmation({
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Input validation schema
+  const paymentSchema = z.object({
+    phone: z.string()
+      .min(10, 'Phone must be at least 10 digits')
+      .max(20, 'Phone too long')
+      .regex(/^[\+]?[0-9\s\-]+$/, 'Invalid phone format'),
+    address: z.string().max(500, 'Address too long').optional(),
+    mpesaCode: z.string()
+      .regex(/^[A-Z0-9]{10}$/, 'Invalid M-Pesa code format (10 alphanumeric characters)')
+      .optional(),
+    reference: z.string().max(100, 'Reference too long').optional()
+  });
+
   const handleSubmit = async () => {
-    // Validate required fields
-    if (paymentMethod.type === 'mpesa' && !formData.mpesaCode) {
-      toast.error('Please enter the M-Pesa transaction code');
+    // Validate inputs
+    const validationData = {
+      phone: formData.phone,
+      address: formData.address || undefined,
+      mpesaCode: paymentMethod.type === 'mpesa' ? formData.mpesaCode : undefined,
+      reference: paymentMethod.type !== 'mpesa' ? formData.reference : undefined
+    };
+
+    const result = paymentSchema.safeParse(validationData);
+    if (!result.success) {
+      toast.error(result.error.errors[0].message);
       return;
     }
 
-    if (!formData.phone) {
-      toast.error('Please enter your phone number');
+    if (paymentMethod.type === 'mpesa' && !formData.mpesaCode) {
+      toast.error('Please enter the M-Pesa transaction code');
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      // Update pledge with payment confirmation
-      const { error } = await supabase
-        .from('event_pledges')
-        .update({
-          payment_method: paymentMethod.type,
-          payment_reference: paymentMethod.type === 'mpesa' ? formData.mpesaCode : formData.reference,
-          donor_phone: formData.phone,
-          donor_address: formData.address,
-          is_confirmed: true,
-          confirmed_at: new Date().toISOString()
-        })
-        .eq('id', pledgeId);
+      // Get session token from localStorage
+      const sessionData = localStorage.getItem('event_session');
+      if (!sessionData) {
+        toast.error('Session expired. Please rejoin the event.');
+        return;
+      }
+      
+      const { sessionToken } = JSON.parse(sessionData);
+
+      // Use secure RPC instead of direct update
+      const { error } = await supabase.rpc('confirm_pledge_payment', {
+        p_pledge_id: pledgeId,
+        p_payment_method: paymentMethod.type,
+        p_payment_reference: paymentMethod.type === 'mpesa' ? formData.mpesaCode : formData.reference || null,
+        p_donor_phone: formData.phone,
+        p_donor_address: formData.address || null,
+        p_session_token: sessionToken
+      });
 
       if (error) throw error;
 
       toast.success('Payment confirmed successfully!');
       onComplete();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error confirming payment:', error);
-      toast.error('Failed to confirm payment');
+      toast.error(error.message || 'Failed to confirm payment');
     } finally {
       setIsSubmitting(false);
     }

@@ -8,6 +8,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { Shield, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
+import { z } from 'zod';
 
 export default function JoinEvent() {
   const { shareLink } = useParams();
@@ -17,12 +18,33 @@ export default function JoinEvent() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // Input validation schema
+  const joinSchema = z.object({
+    attendeeName: z.string()
+      .trim()
+      .min(1, 'Name required')
+      .max(100, 'Name too long')
+      .regex(/^[a-zA-Z\s\-']+$/, 'Invalid name format'),
+    passcode: z.string()
+      .length(6, 'Passcode must be 6 characters')
+      .regex(/^[A-Z0-9]+$/, 'Invalid passcode format')
+  });
+
   const handleJoin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
 
     try {
+      // Validate inputs
+      const result = joinSchema.safeParse({
+        attendeeName,
+        passcode: passcode.toUpperCase()
+      });
+
+      if (!result.success) {
+        throw new Error(result.error.errors[0].message);
+      }
       // First, find the event by share link
       const { data: event, error: eventError } = await supabase
         .from("fundraising_events")
@@ -44,15 +66,17 @@ export default function JoinEvent() {
         throw new Error("Invalid passcode. Please try again.");
       }
 
-      // Create a session for this attendee
-      const sessionToken = Math.random().toString(36).substring(2, 15);
+      // Create a secure session token (longer, more random)
+      const sessionToken = Array.from(crypto.getRandomValues(new Uint8Array(32)))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
       
       const { error: sessionError } = await supabase
         .from("event_sessions")
         .insert({
           event_id: event.id,
           session_token: sessionToken,
-          attendee_name: attendeeName,
+          attendee_name: result.data.attendeeName,
         });
 
       if (sessionError) throw sessionError;
@@ -61,7 +85,7 @@ export default function JoinEvent() {
       localStorage.setItem("event_session", JSON.stringify({
         eventId: event.id,
         sessionToken,
-        attendeeName,
+        attendeeName: result.data.attendeeName,
       }));
 
       toast.success("Welcome to the fundraising event!");

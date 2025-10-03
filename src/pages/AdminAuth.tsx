@@ -12,14 +12,11 @@ import { toast } from "sonner";
 export default function AdminAuth() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const [email, setEmail] = useState("joshuaonyango372@gmail.com");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [showResetInfo, setShowResetInfo] = useState(false);
   const [isFirstTimeSetup, setIsFirstTimeSetup] = useState(false);
-  
-  const DEFAULT_ADMIN_EMAIL = "joshuaonyango372@gmail.com";
-  const DEFAULT_ADMIN_PASSWORD = "TuendeleeAdmin2025!";
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,50 +24,15 @@ export default function AdminAuth() {
     setError("");
 
     try {
-      // First, try to sign in
       const { error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (signInError) {
-        // Check if this is the first time setup with default credentials
-        if (email === DEFAULT_ADMIN_EMAIL && password === DEFAULT_ADMIN_PASSWORD && signInError.message.includes("Invalid login credentials")) {
-          // Create the admin account with default password
-          const { error: signUpError } = await supabase.auth.signUp({
-            email,
-            password,
-            options: {
-              emailRedirectTo: `${window.location.origin}/admin/dashboard`,
-              data: {
-                full_name: 'Tuendelee Foundation Admin'
-              }
-            }
-          });
-
-          if (signUpError) throw signUpError;
-          
-          // Now sign in with the newly created account
-          const { error: newSignInError } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-          });
-          
-          if (newSignInError) throw newSignInError;
-          
-          setIsFirstTimeSetup(true);
-          toast.success("Admin account created successfully! Redirecting to dashboard...");
-          
-          // Store flag for first-time setup
-          localStorage.setItem("showPasswordChangePrompt", "true");
-          navigate("/admin/dashboard");
-        } else {
-          throw signInError;
-        }
-      } else {
-        toast.success("Welcome to Tuendelee Foundation Admin Portal!");
-        navigate("/admin/dashboard");
-      }
+      if (signInError) throw signInError;
+      
+      toast.success("Welcome to Tuendelee Foundation Admin Portal!");
+      navigate("/admin/dashboard");
     } catch (err: any) {
       setError(err.message || "An error occurred");
       toast.error(err.message);
@@ -178,10 +140,7 @@ export default function AdminAuth() {
           
           <div className="mt-4 p-3 bg-muted/50 rounded-lg">
             <p className="text-xs text-muted-foreground text-center">
-              Default credentials: <br />
-              Email: joshuaonyango372@gmail.com<br />
-              Password: TuendeleeAdmin2025!<br />
-              <span className="font-medium">Please change email and password after first login</span>
+              <span className="font-medium">Contact your system administrator for login credentials</span>
             </p>
           </div>
         </CardContent>

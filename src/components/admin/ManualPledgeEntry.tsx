@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Plus } from 'lucide-react';
+import { z } from 'zod';
 
 interface ManualPledgeEntryProps {
   eventId: string;
@@ -27,14 +28,40 @@ export function ManualPledgeEntry({ eventId }: ManualPledgeEntryProps) {
     isPaid: false
   });
 
+  // Input validation schema
+  const pledgeSchema = z.object({
+    name: z.string().trim().min(1, 'Name required').max(100, 'Name too long'),
+    email: z.string().email('Invalid email').max(255, 'Email too long').optional().or(z.literal('')),
+    phone: z.string()
+      .regex(/^[\+]?[0-9\s\-]*$/, 'Invalid phone format')
+      .max(20, 'Phone too long')
+      .optional()
+      .or(z.literal('')),
+    amount: z.number().positive('Amount must be positive').max(10000000, 'Amount too large'),
+    message: z.string().max(1000, 'Message too long').optional().or(z.literal('')),
+    paymentReference: z.string().max(100, 'Reference too long').optional().or(z.literal('')),
+  });
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
       const amount = parseFloat(formData.amount);
-      if (isNaN(amount) || amount <= 0) {
-        toast.error('Please enter a valid amount');
+      
+      // Validate inputs
+      const result = pledgeSchema.safeParse({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        amount,
+        message: formData.message,
+        paymentReference: formData.paymentReference
+      });
+
+      if (!result.success) {
+        toast.error(result.error.errors[0].message);
+        setIsSubmitting(false);
         return;
       }
 
