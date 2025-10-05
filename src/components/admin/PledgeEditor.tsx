@@ -103,9 +103,9 @@ export function PledgeEditor({ pledge, onUpdate }: PledgeEditorProps) {
       toast.success('Pledge updated successfully!');
       setIsOpen(false);
       onUpdate();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating pledge:', error);
-      toast.error('Failed to update pledge');
+      toast.error(error?.message || 'Failed to update pledge');
     } finally {
       setIsSubmitting(false);
     }

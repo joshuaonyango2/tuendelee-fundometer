@@ -47,6 +47,14 @@ export function ManualPledgeEntry({ eventId }: ManualPledgeEntryProps) {
     setIsSubmitting(true);
 
     try {
+      // Ensure admin is authenticated
+      const { data: authData, error: authError } = await supabase.auth.getUser();
+      if (authError || !authData?.user) {
+        toast.error('Please sign in as an event admin to add pledges.');
+        setIsSubmitting(false);
+        return;
+      }
+
       const amount = parseFloat(formData.amount);
       
       // Validate inputs
@@ -104,9 +112,9 @@ export function ManualPledgeEntry({ eventId }: ManualPledgeEntryProps) {
         message: '',
         isPaid: false
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error adding pledge:', error);
-      toast.error('Failed to add pledge');
+      toast.error(error?.message || 'Failed to add pledge');
     } finally {
       setIsSubmitting(false);
     }
