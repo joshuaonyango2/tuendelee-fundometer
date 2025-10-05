@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { Download, CheckCircle, XCircle } from 'lucide-react';
+import { PledgeEditor } from './PledgeEditor';
 
 interface Pledge {
   id: string;
@@ -117,12 +118,13 @@ export function PledgeReportsView({ eventId }: PledgeReportsViewProps) {
           <TableHead>Payment</TableHead>
           <TableHead>Reference</TableHead>
           <TableHead>Status</TableHead>
+          <TableHead>Actions</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {data.length === 0 ? (
           <TableRow>
-            <TableCell colSpan={7} className="text-center text-muted-foreground">
+            <TableCell colSpan={8} className="text-center text-muted-foreground">
               No pledges found
             </TableCell>
           </TableRow>
@@ -159,6 +161,9 @@ export function PledgeReportsView({ eventId }: PledgeReportsViewProps) {
                     Pending
                   </div>
                 )}
+              </TableCell>
+              <TableCell>
+                <PledgeEditor pledge={pledge} onUpdate={loadPledges} />
               </TableCell>
             </TableRow>
           ))

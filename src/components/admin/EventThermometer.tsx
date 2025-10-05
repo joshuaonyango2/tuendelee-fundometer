@@ -38,13 +38,25 @@ export function EventThermometer({ eventId }: EventThermometerProps) {
 
     loadPledgeData();
 
-    // Subscribe to real-time updates
+    // Subscribe to real-time updates for both INSERT and UPDATE
     const channel = supabase
       .channel('admin-pledge-updates')
       .on(
         'postgres_changes',
         {
           event: 'INSERT',
+          schema: 'public',
+          table: 'event_pledges',
+          filter: `event_id=eq.${eventId}`
+        },
+        () => {
+          loadPledgeData();
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
           schema: 'public',
           table: 'event_pledges',
           filter: `event_id=eq.${eventId}`
