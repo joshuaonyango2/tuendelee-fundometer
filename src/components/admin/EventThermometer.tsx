@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ImprovedThermometer } from '@/components/ImprovedThermometer';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { currencyService } from '@/services/currencyService';
 
 interface EventThermometerProps {
   eventId: string;
@@ -21,10 +22,10 @@ export function EventThermometer({ eventId }: EventThermometerProps) {
       if (error) throw error;
 
       const usd = data?.reduce((sum: number, p: any) => sum + (p.amount_in_usd || 0), 0) || 0;
-      const kes = data?.reduce((sum: number, p: any) => sum + (p.amount_in_kes || 0), 0) || 0;
+      const kesLive = await currencyService.convertAmount(usd, 'USD', 'KES');
 
       setTotalUSD(usd);
-      setTotalKES(kes);
+      setTotalKES(kesLive);
     } catch (error) {
       console.error('Error loading pledge data:', error);
       toast.error('Failed to load fundraising data');

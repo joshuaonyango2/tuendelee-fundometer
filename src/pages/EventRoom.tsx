@@ -48,7 +48,8 @@ export default function EventRoom() {
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
   const [currentPledge, setCurrentPledge] = useState<PledgeData | null>(null);
   const [currentPledgeId, setCurrentPledgeId] = useState<string | null>(null);
-  const [liveMeeting, setLiveMeeting] = useState<any>(null);
+const [liveMeeting, setLiveMeeting] = useState<any>(null);
+const [totalRaisedKES, setTotalRaisedKES] = useState(0);
   
   const {
     pledges: realtimePledges,
@@ -64,6 +65,17 @@ export default function EventRoom() {
     checkSession();
     loadEventDetails();
   }, [eventId]);
+
+  // Convert total raised (USD) to KES using live exchange rate
+  useEffect(() => {
+    let isMounted = true;
+    const convert = async () => {
+      const kes = await currencyService.convertAmount(totalRaised, 'USD', 'KES');
+      if (isMounted) setTotalRaisedKES(kes);
+    };
+    convert();
+    return () => { isMounted = false; };
+  }, [totalRaised]);
 
   const checkSession = async () => {
     const session = localStorage.getItem('event_session');
@@ -161,7 +173,7 @@ export default function EventRoom() {
           amount_in_kes: amountInKES,
           currency: formData.currency,
           message: formData.message,
-          payment_type: 'pending'
+          payment_type: 'pledge'
         })
         .select()
         .single();
@@ -318,7 +330,7 @@ export default function EventRoom() {
                 ) : (
                   <ImprovedThermometer
                     currentAmountUSD={totalRaised}
-                    currentAmountKES={totalRaised * 150} // Will use real conversion rate
+                    currentAmountKES={totalRaisedKES}
                   />
                 )}
               </CardContent>
