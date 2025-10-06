@@ -39,34 +39,46 @@ export function ImprovedThermometer({
     return () => clearInterval(timer);
   }, [currentAmountUSD, currentAmountKES]);
 
-  // Calculate thermometer height based on logarithmic scale for better visualization
+  // Generate dynamic calibration marks based on current amount
+  const generateCalibrationMarks = () => {
+    const maxAmount = Math.max(currentAmountUSD * 1.5, 1000); // Show 50% above current or minimum $1000
+    
+    const formatLabel = (value: number) => {
+      if (value >= 1000000) return `$${(value / 1000000).toFixed(1)}M`;
+      if (value >= 1000) return `$${(value / 1000).toFixed(0)}K`;
+      return `$${value}`;
+    };
+    
+    // Generate marks at nice round numbers
+    const marks = [];
+    let step = 100;
+    
+    if (maxAmount > 100000) step = 50000;
+    else if (maxAmount > 50000) step = 10000;
+    else if (maxAmount > 10000) step = 5000;
+    else if (maxAmount > 5000) step = 1000;
+    else if (maxAmount > 1000) step = 500;
+    
+    for (let value = step; value <= maxAmount; value += step) {
+      marks.push({ value, label: formatLabel(value) });
+    }
+    
+    return marks;
+  };
+
+  const calibrationMarks = generateCalibrationMarks();
+  const maxCalibration = Math.max(...calibrationMarks.map(m => m.value), currentAmountUSD * 1.2);
+
+  // Calculate thermometer height based on current amount relative to max calibration
   const getThermometerHeight = () => {
     if (currentAmountUSD === 0) return 0;
-    // Use logarithmic scale for better visualization of small and large amounts
-    const logAmount = Math.log10(currentAmountUSD + 1);
-    const maxLog = 6; // Represents $1,000,000
-    return Math.min((logAmount / maxLog) * 100, 100);
+    return Math.min((currentAmountUSD / maxCalibration) * 100, 100);
   };
 
   const thermometerHeight = getThermometerHeight();
 
-  // Generate calibration marks
-  const calibrationMarks = [
-    { value: 100, label: '$100' },
-    { value: 500, label: '$500' },
-    { value: 1000, label: '$1K' },
-    { value: 5000, label: '$5K' },
-    { value: 10000, label: '$10K' },
-    { value: 50000, label: '$50K' },
-    { value: 100000, label: '$100K' },
-    { value: 500000, label: '$500K' },
-    { value: 1000000, label: '$1M' }
-  ];
-
   const getMarkPosition = (value: number) => {
-    const logValue = Math.log10(value + 1);
-    const maxLog = 6;
-    return (logValue / maxLog) * 100;
+    return (value / maxCalibration) * 100;
   };
 
   const formatAmount = (amount: number) => {
