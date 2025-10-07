@@ -35,15 +35,11 @@ export function PledgeReportsView({ eventId }: PledgeReportsViewProps) {
 
   const loadPledges = async () => {
     try {
-      const { data, error } = await supabase
-        .from('event_pledges')
-        .select('*')
-        .eq('event_id', eventId)
-        .order('created_at', { ascending: false });
+      const { data, error } = await supabase.rpc('get_admin_pledges', { p_event_id: eventId });
 
       if (error) throw error;
 
-      setPledges(data || []);
+      setPledges((data as Pledge[]) || []);
     } catch (error) {
       console.error('Error loading pledges:', error);
       toast.error('Failed to load pledges');

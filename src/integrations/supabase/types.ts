@@ -416,6 +416,28 @@ export type Database = {
         Args: { p_event_id: string }
         Returns: number
       }
+      get_admin_pledges: {
+        Args: { p_event_id: string }
+        Returns: {
+          amount: number
+          amount_in_kes: number
+          amount_in_usd: number
+          confirmed_at: string
+          created_at: string
+          currency: string
+          donor_address: string
+          donor_phone: string
+          email: string
+          event_id: string
+          id: string
+          is_confirmed: boolean
+          message: string
+          name: string
+          payment_method: string
+          payment_reference: string
+          payment_type: string
+        }[]
+      }
       get_public_pledges: {
         Args: { p_event_id: string }
         Returns: {
