@@ -182,6 +182,10 @@ export function PledgeReportsView({ eventId }: PledgeReportsViewProps) {
     );
   }
 
+  const totalPaidAmount = paidPledges.reduce((sum, p) => sum + p.amount_in_usd, 0);
+  const totalPendingAmount = pendingPledges.reduce((sum, p) => sum + p.amount_in_usd, 0);
+  const totalAmount = pledges.reduce((sum, p) => sum + p.amount_in_usd, 0);
+
   return (
     <Card>
       <CardHeader>
@@ -215,7 +219,41 @@ export function PledgeReportsView({ eventId }: PledgeReportsViewProps) {
           </div>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-6">
+        {/* Summary Statistics */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Card className="bg-primary/5 border-primary/20">
+            <CardContent className="p-4">
+              <div className="text-sm text-muted-foreground">Total Pledges</div>
+              <div className="text-2xl font-bold mt-1">${totalAmount.toLocaleString()}</div>
+              <div className="text-xs text-muted-foreground mt-1">{pledges.length} pledges</div>
+            </CardContent>
+          </Card>
+          <Card className="bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-800">
+            <CardContent className="p-4">
+              <div className="text-sm text-green-700 dark:text-green-400">Paid</div>
+              <div className="text-2xl font-bold text-green-700 dark:text-green-400 mt-1">
+                ${totalPaidAmount.toLocaleString()}
+              </div>
+              <div className="text-xs text-green-600 dark:text-green-500 mt-1">
+                {paidPledges.length} pledges
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="bg-orange-50 dark:bg-orange-950/20 border-orange-200 dark:border-orange-800">
+            <CardContent className="p-4">
+              <div className="text-sm text-orange-700 dark:text-orange-400">Pending</div>
+              <div className="text-2xl font-bold text-orange-700 dark:text-orange-400 mt-1">
+                ${totalPendingAmount.toLocaleString()}
+              </div>
+              <div className="text-xs text-orange-600 dark:text-orange-500 mt-1">
+                {pendingPledges.length} pledges
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Pledge Tables */}
         <Tabs defaultValue="all">
           <TabsList>
             <TabsTrigger value="all">All ({pledges.length})</TabsTrigger>
