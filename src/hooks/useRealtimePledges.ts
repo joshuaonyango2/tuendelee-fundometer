@@ -27,11 +27,23 @@ export function useRealtimePledges({ eventId, enableOptimistic = true }: UseReal
   const [error, setError] = useState<string | null>(null);
   
   const { status, subscribeToTable } = useSupabaseRealtime({
+    enableAutoReconnect: true,
+    maxReconnectAttempts: 5,
+    reconnectDelay: 2000,
     onConnectionChange: (status) => {
       if (!status.isConnected && status.lastError) {
-        setError(status.lastError);
+        setError('Failed to subscribe to real-time updates');
+        toast({
+          title: "Connection Error",
+          description: "Failed to subscribe to real-time updates",
+          variant: "destructive",
+        });
       } else if (status.isConnected && error) {
         setError(null);
+        toast({
+          title: "Connected",
+          description: "Real-time updates restored",
+        });
       }
     }
   });
