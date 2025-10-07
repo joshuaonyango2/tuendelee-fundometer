@@ -28,6 +28,7 @@ export default function EventManagement() {
   const [event, setEvent] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isAdminForEvent, setIsAdminForEvent] = useState<boolean | null>(null);
 
   useEffect(() => {
     if (!eventId) return;
@@ -44,6 +45,9 @@ export default function EventManagement() {
 
       if (error) throw error;
       setEvent(data);
+      // Determine if the current user is the admin for this event
+      const { data: userData } = await supabase.auth.getUser();
+      setIsAdminForEvent(userData?.user?.id ? userData.user.id === data.admin_id : false);
     } catch (error) {
       console.error('Error loading event:', error);
       toast.error('Failed to load event');
@@ -173,7 +177,16 @@ export default function EventManagement() {
           </TabsContent>
 
           <TabsContent value="reports" className="space-y-4">
-            <PledgeReportsView eventId={eventId!} />
+            {isAdminForEvent ? (
+              <PledgeReportsView eventId={eventId!} />
+            ) : (
+              <Card>
+                <CardContent className="p-6">
+                  <p className="text-sm text-muted-foreground">Admin sign-in required to view pledge reports.</p>
+                  <Button className="mt-4" onClick={() => navigate('/admin/auth')}>Sign in as Admin</Button>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
 
           <TabsContent value="manual" className="space-y-4">
