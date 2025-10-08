@@ -5,12 +5,14 @@ import { TrendingUp, DollarSign } from 'lucide-react';
 interface ImprovedThermometerProps {
   currentAmountUSD: number;
   currentAmountKES: number;
+  goalAmountUSD?: number;
   className?: string;
 }
 
 export function ImprovedThermometer({ 
   currentAmountUSD, 
-  currentAmountKES, 
+  currentAmountKES,
+  goalAmountUSD = 50000,
   className 
 }: ImprovedThermometerProps) {
   const [displayUSD, setDisplayUSD] = useState(0);
@@ -39,9 +41,9 @@ export function ImprovedThermometer({
     return () => clearInterval(timer);
   }, [currentAmountUSD, currentAmountKES]);
 
-  // Generate dynamic calibration marks based on current amount
+  // Generate dynamic calibration marks based on goal and current amount
   const generateCalibrationMarks = () => {
-    const maxAmount = Math.max(currentAmountUSD * 1.5, 1000); // Show 50% above current or minimum $1000
+    const maxAmount = Math.max(goalAmountUSD * 1.2, currentAmountUSD * 1.5, 1000);
     
     const formatLabel = (value: number) => {
       if (value >= 1000000) return `$${(value / 1000000).toFixed(1)}M`;
@@ -63,11 +65,16 @@ export function ImprovedThermometer({
       marks.push({ value, label: formatLabel(value) });
     }
     
-    return marks;
+    // Always add the goal if not already present
+    if (!marks.find(m => m.value === goalAmountUSD)) {
+      marks.push({ value: goalAmountUSD, label: `${formatLabel(goalAmountUSD)} (Goal)` });
+    }
+    
+    return marks.sort((a, b) => a.value - b.value);
   };
 
   const calibrationMarks = generateCalibrationMarks();
-  const maxCalibration = Math.max(...calibrationMarks.map(m => m.value), currentAmountUSD * 1.2);
+  const maxCalibration = Math.max(...calibrationMarks.map(m => m.value), goalAmountUSD * 1.2);
 
   // Calculate thermometer height based on current amount relative to max calibration
   const getThermometerHeight = () => {
@@ -89,40 +96,49 @@ export function ImprovedThermometer({
     }).format(amount);
   };
 
+  const goalKES = goalAmountUSD * 128.1;
+
   return (
     <div className={cn("relative", className)}>
       {/* Header */}
-      <div className="mb-6">
+      <div className="mb-8 text-center">
         <h3 className="text-2xl font-bold text-primary mb-2">
-          Live Fundraising Progress
+          Tuendelee Foundation Fundraising Thermometer (Fundometer)
         </h3>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-center gap-2">
           <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
           <span className="text-sm text-muted-foreground">
-            Live updates enabled
+            Live updates enabled - Showing paid pledges only
           </span>
         </div>
       </div>
 
-      <div className="flex items-start gap-12">
+      <div className="flex items-start gap-20">
         {/* Thermometer */}
         <div className="relative flex-shrink-0">
-          <div className="relative w-20 h-[400px]">
+          <div className="relative w-20 h-[500px]">
             {/* Calibration marks - positioned on the left side */}
-            <div className="absolute -left-20 top-0 h-full w-16">
+            <div className="absolute -left-32 top-0 h-full w-28">
               {calibrationMarks.map((mark) => {
                 const position = getMarkPosition(mark.value);
                 if (position > 100) return null;
+                const isGoal = mark.value === goalAmountUSD;
                 return (
                   <div
                     key={mark.value}
                     className="absolute flex items-center justify-end"
                     style={{ bottom: `${position}%`, left: 0, right: 0 }}
                   >
-                    <span className="text-sm font-semibold text-foreground mr-2">
+                    <span className={cn(
+                      "text-sm font-bold mr-2",
+                      isGoal ? "text-primary" : "text-foreground"
+                    )}>
                       {mark.label}
                     </span>
-                    <div className="w-3 h-0.5 bg-foreground/60" />
+                    <div className={cn(
+                      "w-4 h-0.5",
+                      isGoal ? "bg-primary" : "bg-foreground/60"
+                    )} />
                   </div>
                 );
               })}
@@ -149,31 +165,59 @@ export function ImprovedThermometer({
           </div>
         </div>
 
-        {/* Amount displays */}
-        <div className="flex-1 space-y-4">
-          {/* USD Display */}
-          <div className="bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg p-6 border border-primary/20">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground mb-1">US Dollars</p>
-                <p className="text-4xl font-bold text-primary">
+        {/* Amount displays - Two columns side by side */}
+        <div className="flex-1 space-y-6">
+          {/* Paid Pledges Section */}
+          <div>
+            <h4 className="text-lg font-semibold text-foreground mb-3">Paid Pledges</h4>
+            <div className="grid grid-cols-2 gap-4">
+              {/* USD Display */}
+              <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-lg p-6 border-2 border-primary/30">
+                <p className="text-sm font-medium text-muted-foreground mb-2">US Dollars</p>
+                <p className="text-3xl font-bold text-primary">
                   ${formatAmount(displayUSD)}
                 </p>
               </div>
-              <DollarSign className="h-10 w-10 text-primary/50" />
-            </div>
-          </div>
 
-          {/* KES Display */}
-          <div className="bg-gradient-to-r from-success/10 to-success/5 rounded-lg p-6 border border-success/20">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground mb-1">Kenyan Shillings</p>
-                <p className="text-4xl font-bold text-success">
+              {/* KES Display */}
+              <div className="bg-gradient-to-br from-success/10 to-success/5 rounded-lg p-6 border-2 border-success/30">
+                <p className="text-sm font-medium text-muted-foreground mb-2">Kenyan Shillings</p>
+                <p className="text-3xl font-bold text-success">
                   KES {formatAmount(displayKES)}
                 </p>
               </div>
-              <TrendingUp className="h-10 w-10 text-success/50" />
+            </div>
+          </div>
+
+          {/* Goal Section */}
+          <div>
+            <h4 className="text-lg font-semibold text-foreground mb-3">Target Goal</h4>
+            <div className="grid grid-cols-2 gap-4">
+              {/* USD Goal */}
+              <div className="bg-gradient-to-br from-primary/5 to-transparent rounded-lg p-6 border-2 border-dashed border-primary/40">
+                <p className="text-sm font-medium text-muted-foreground mb-2">US Dollars</p>
+                <p className="text-3xl font-bold text-primary/80">
+                  ${formatAmount(goalAmountUSD)}
+                </p>
+              </div>
+
+              {/* KES Goal */}
+              <div className="bg-gradient-to-br from-success/5 to-transparent rounded-lg p-6 border-2 border-dashed border-success/40">
+                <p className="text-sm font-medium text-muted-foreground mb-2">Kenyan Shillings</p>
+                <p className="text-3xl font-bold text-success/80">
+                  KES {formatAmount(goalKES)}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Progress Percentage */}
+          <div className="bg-gradient-to-r from-primary/5 via-success/5 to-primary/5 rounded-lg p-4 border border-primary/20">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-muted-foreground">Progress to Goal</span>
+              <span className="text-2xl font-bold text-primary">
+                {((displayUSD / goalAmountUSD) * 100).toFixed(1)}%
+              </span>
             </div>
           </div>
         </div>

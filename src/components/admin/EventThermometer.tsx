@@ -7,9 +7,10 @@ import { currencyService } from '@/services/currencyService';
 
 interface EventThermometerProps {
   eventId: string;
+  goalAmount?: number;
 }
 
-export function EventThermometer({ eventId }: EventThermometerProps) {
+export function EventThermometer({ eventId, goalAmount = 50000 }: EventThermometerProps) {
   const [totalUSD, setTotalUSD] = useState(0);
   const [totalKES, setTotalKES] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -21,11 +22,15 @@ export function EventThermometer({ eventId }: EventThermometerProps) {
 
       if (error) throw error;
 
-      const usd = data?.reduce((sum: number, p: any) => sum + (p.amount_in_usd || 0), 0) || 0;
-      const kesLive = await currencyService.convertAmount(usd, 'USD', 'KES');
+      // Only count PAID pledges (is_confirmed = true)
+      const paidPledges = data?.filter((p: any) => p.is_confirmed === true) || [];
+      const usd = paidPledges.reduce((sum: number, p: any) => sum + (p.amount_in_usd || 0), 0);
+      
+      // Use fixed exchange rate: 1 USD = 128.1 KES
+      const kes = usd * 128.1;
 
       setTotalUSD(usd);
-      setTotalKES(kesLive);
+      setTotalKES(kes);
     } catch (error) {
       console.error('Error loading pledge data:', error);
       toast.error('Failed to load fundraising data');
@@ -92,6 +97,7 @@ export function EventThermometer({ eventId }: EventThermometerProps) {
         <ImprovedThermometer 
           currentAmountUSD={totalUSD}
           currentAmountKES={totalKES}
+          goalAmountUSD={goalAmount}
         />
       </CardContent>
     </Card>
