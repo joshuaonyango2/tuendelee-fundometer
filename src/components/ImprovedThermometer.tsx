@@ -72,7 +72,7 @@ export function ImprovedThermometer({
     // Limit to maximum 6 calibration marks
     let count = 0;
     for (let value = step; value <= maxAmount && count < 6; value += step) {
-      const kesValue = value * 128.1;
+      const kesValue = value * 128;
       marks.push({ 
         valueUSD: value, 
         valueKES: kesValue,
@@ -86,9 +86,9 @@ export function ImprovedThermometer({
     if (!marks.find(m => m.valueUSD === goalAmountUSD)) {
       marks.push({ 
         valueUSD: goalAmountUSD, 
-        valueKES: goalAmountUSD * 128.1,
+        valueKES: goalAmountUSD * 128,
         labelUSD: formatLabelUSD(goalAmountUSD),
-        labelKES: formatLabelKES(goalAmountUSD * 128.1),
+        labelKES: formatLabelKES(goalAmountUSD * 128),
         isGoal: true
       });
     }
@@ -119,7 +119,7 @@ export function ImprovedThermometer({
     }).format(amount);
   };
 
-  const goalKES = goalAmountUSD * 128.1;
+  const goalKES = goalAmountUSD * 128;
 
   return (
     <div className={cn("relative", className)}>

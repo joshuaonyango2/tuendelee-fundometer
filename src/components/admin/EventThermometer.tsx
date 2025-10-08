@@ -46,8 +46,8 @@ export function EventThermometer({ eventId }: EventThermometerProps) {
       
       const usd = paidPledges.reduce((sum: number, p: any) => sum + (Number(p.amount_in_usd) || 0), 0);
       
-      // Use fixed exchange rate: 1 USD = 128.1 KES
-      const kes = usd * 128.1;
+      // Use fixed exchange rate: 1 USD = 128 KES
+      const kes = usd * 128;
 
       setTotalUSD(usd);
       setTotalKES(kes);
