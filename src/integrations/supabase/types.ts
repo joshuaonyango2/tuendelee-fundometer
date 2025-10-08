@@ -471,6 +471,22 @@ export type Database = {
         }
         Returns: boolean
       }
+      update_pledge_by_admin: {
+        Args: {
+          p_amount: number
+          p_currency: string
+          p_donor_address: string
+          p_donor_phone: string
+          p_email: string
+          p_is_confirmed: boolean
+          p_message: string
+          p_name: string
+          p_payment_method: string
+          p_payment_reference: string
+          p_pledge_id: string
+        }
+        Returns: undefined
+      }
       update_session_activity: {
         Args: { p_session_token: string }
         Returns: undefined

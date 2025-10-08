@@ -76,27 +76,19 @@ export function PledgeEditor({ pledge, onUpdate }: PledgeEditorProps) {
         return;
       }
 
-      const exchangeRate = formData.currency === 'KES' ? 0.0077 : 1;
-      const amountInUSD = formData.currency === 'USD' ? amount : amount * exchangeRate;
-      const amountInKES = formData.currency === 'KES' ? amount : amount / exchangeRate;
-
-      const { error } = await supabase
-        .from('event_pledges')
-        .update({
-          name: formData.name,
-          email: formData.email || null,
-          donor_phone: formData.phone || null,
-          amount: amount,
-          amount_in_usd: amountInUSD,
-          amount_in_kes: amountInKES,
-          currency: formData.currency,
-          payment_method: formData.paymentMethod || null,
-          payment_reference: formData.paymentReference || null,
-          message: formData.message || null,
-          is_confirmed: formData.isPaid,
-          confirmed_at: formData.isPaid ? new Date().toISOString() : null
-        })
-        .eq('id', pledge.id);
+      const { error } = await supabase.rpc('update_pledge_by_admin', {
+        p_pledge_id: pledge.id,
+        p_name: formData.name,
+        p_email: formData.email || null,
+        p_amount: amount,
+        p_currency: formData.currency,
+        p_payment_method: formData.paymentMethod || null,
+        p_payment_reference: formData.paymentReference || null,
+        p_donor_phone: formData.phone || null,
+        p_donor_address: '',
+        p_message: formData.message || null,
+        p_is_confirmed: formData.isPaid
+      });
 
       if (error) throw error;
 
