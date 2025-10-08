@@ -29,15 +29,22 @@ export function EventThermometer({ eventId }: EventThermometerProps) {
         setGoalAmount(eventData.goal_amount);
       }
 
-      // Load pledges
+      // Load pledges - use admin function to get full data including is_confirmed
       const { data, error } = await supabase
-        .rpc('get_public_pledges', { p_event_id: eventId });
+        .rpc('get_admin_pledges', { p_event_id: eventId });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching pledges:', error);
+        throw error;
+      }
+
+      console.log('All pledges:', data);
 
       // Only count PAID pledges (is_confirmed = true)
       const paidPledges = data?.filter((p: any) => p.is_confirmed === true) || [];
-      const usd = paidPledges.reduce((sum: number, p: any) => sum + (p.amount_in_usd || 0), 0);
+      console.log('Paid pledges:', paidPledges);
+      
+      const usd = paidPledges.reduce((sum: number, p: any) => sum + (Number(p.amount_in_usd) || 0), 0);
       
       // Use fixed exchange rate: 1 USD = 128.1 KES
       const kes = usd * 128.1;
