@@ -46,7 +46,7 @@ export function ParticipantsView({ eventId }: ParticipantsViewProps) {
 
     loadParticipants();
 
-    // Subscribe to real-time updates
+    // Subscribe to real-time updates for sessions and pledges
     const channel = supabase
       .channel('admin-participants')
       .on(
@@ -58,6 +58,33 @@ export function ParticipantsView({ eventId }: ParticipantsViewProps) {
           filter: `event_id=eq.${eventId}`
         },
         () => {
+          console.log('Session change detected, reloading participants...');
+          loadParticipants();
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'event_pledges',
+          filter: `event_id=eq.${eventId}`
+        },
+        () => {
+          console.log('New pledge detected, reloading participants...');
+          loadParticipants();
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'event_pledges',
+          filter: `event_id=eq.${eventId}`
+        },
+        () => {
+          console.log('Pledge updated, reloading participants...');
           loadParticipants();
         }
       )
