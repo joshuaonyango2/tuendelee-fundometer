@@ -28,10 +28,12 @@ export function ImprovedPaymentOptions({
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   useEffect(() => {
+    console.log('ImprovedPaymentOptions mounted with:', { pledgeId, amount, currency, email, name });
     loadPaymentMethods();
   }, []);
 
   const loadPaymentMethods = async () => {
+    console.log('Loading payment methods...');
     const { data, error } = await supabase
       .from('payment_methods')
       .select('*')
@@ -39,10 +41,12 @@ export function ImprovedPaymentOptions({
       .order('name');
 
     if (error) {
+      console.error('Error loading payment methods:', error);
       toast.error('Failed to load payment methods');
       return;
     }
 
+    console.log('Payment methods loaded:', data);
     setPaymentMethods(data || []);
   };
 

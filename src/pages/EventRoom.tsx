@@ -157,12 +157,17 @@ const [totalRaisedKES, setTotalRaisedKES] = useState(0);
   };
 
   const handlePledgeSubmit = async (formData: PledgeData) => {
+    console.log('=== PLEDGE SUBMISSION STARTED ===');
+    console.log('Form data:', formData);
+    
     try {
       // Convert currency if needed
       const amountInUSD = await currencyService.convertAmount(formData.amount, formData.currency, 'USD');
       const amountInKES = await currencyService.convertAmount(formData.amount, formData.currency, 'KES');
       
-      const { data: newPledge } = await supabase
+      console.log('Converted amounts - USD:', amountInUSD, 'KES:', amountInKES);
+      
+      const { data: newPledge, error: pledgeError } = await supabase
         .from('event_pledges')
         .insert({
           event_id: eventId!,
@@ -178,10 +183,20 @@ const [totalRaisedKES, setTotalRaisedKES] = useState(0);
         .select()
         .single();
 
+      console.log('Pledge creation result:', { newPledge, pledgeError });
+
+      if (pledgeError) {
+        console.error('Pledge creation error:', pledgeError);
+        toast.error('Failed to create pledge');
+        return;
+      }
+
       if (newPledge) {
+        console.log('Setting payment dialog state...');
         setCurrentPledge(formData);
         setCurrentPledgeId(newPledge.id);
         setShowPaymentDialog(true);
+        console.log('Payment dialog should now be visible');
       }
     } catch (error) {
       console.error('Error processing pledge:', error);
