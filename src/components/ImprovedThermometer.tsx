@@ -45,10 +45,16 @@ export function ImprovedThermometer({
   const generateCalibrationMarks = () => {
     const maxAmount = Math.max(goalAmountUSD * 1.2, currentAmountUSD * 1.5, 1000);
     
-    const formatLabel = (value: number) => {
+    const formatLabelUSD = (value: number) => {
       if (value >= 1000000) return `$${(value / 1000000).toFixed(1)}M`;
       if (value >= 1000) return `$${(value / 1000).toFixed(0)}K`;
       return `$${value}`;
+    };
+    
+    const formatLabelKES = (value: number) => {
+      if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
+      if (value >= 1000) return `${(value / 1000).toFixed(0)}K`;
+      return `${value}`;
     };
     
     // Generate marks at nice round numbers
@@ -62,19 +68,30 @@ export function ImprovedThermometer({
     else if (maxAmount > 1000) step = 500;
     
     for (let value = step; value <= maxAmount; value += step) {
-      marks.push({ value, label: formatLabel(value) });
+      const kesValue = value * 128.1;
+      marks.push({ 
+        valueUSD: value, 
+        valueKES: kesValue,
+        labelUSD: formatLabelUSD(value),
+        labelKES: formatLabelKES(kesValue)
+      });
     }
     
     // Always add the goal if not already present
-    if (!marks.find(m => m.value === goalAmountUSD)) {
-      marks.push({ value: goalAmountUSD, label: `${formatLabel(goalAmountUSD)} (Goal)` });
+    if (!marks.find(m => m.valueUSD === goalAmountUSD)) {
+      marks.push({ 
+        valueUSD: goalAmountUSD, 
+        valueKES: goalAmountUSD * 128.1,
+        labelUSD: `${formatLabelUSD(goalAmountUSD)} (Goal)`,
+        labelKES: `${formatLabelKES(goalAmountUSD * 128.1)} (Goal)`
+      });
     }
     
-    return marks.sort((a, b) => a.value - b.value);
+    return marks.sort((a, b) => a.valueUSD - b.valueUSD);
   };
 
   const calibrationMarks = generateCalibrationMarks();
-  const maxCalibration = Math.max(...calibrationMarks.map(m => m.value), goalAmountUSD * 1.2);
+  const maxCalibration = Math.max(...calibrationMarks.map(m => m.valueUSD), goalAmountUSD * 1.2);
 
   // Calculate thermometer height based on current amount relative to max calibration
   const getThermometerHeight = () => {
@@ -84,8 +101,8 @@ export function ImprovedThermometer({
 
   const thermometerHeight = getThermometerHeight();
 
-  const getMarkPosition = (value: number) => {
-    return (value / maxCalibration) * 100;
+  const getMarkPosition = (valueUSD: number) => {
+    return (valueUSD / maxCalibration) * 100;
   };
 
   const formatAmount = (amount: number) => {
@@ -117,15 +134,15 @@ export function ImprovedThermometer({
         {/* Thermometer */}
         <div className="relative flex-shrink-0">
           <div className="relative w-20 h-[500px]">
-            {/* Calibration marks - positioned on the left side */}
+            {/* Calibration marks - USD on left, KES on right */}
             <div className="absolute -left-32 top-0 h-full w-28">
               {calibrationMarks.map((mark) => {
-                const position = getMarkPosition(mark.value);
+                const position = getMarkPosition(mark.valueUSD);
                 if (position > 100) return null;
-                const isGoal = mark.value === goalAmountUSD;
+                const isGoal = mark.valueUSD === goalAmountUSD;
                 return (
                   <div
-                    key={mark.value}
+                    key={mark.valueUSD}
                     className="absolute flex items-center justify-end"
                     style={{ bottom: `${position}%`, left: 0, right: 0 }}
                   >
@@ -133,12 +150,39 @@ export function ImprovedThermometer({
                       "text-sm font-bold mr-2",
                       isGoal ? "text-primary" : "text-foreground"
                     )}>
-                      {mark.label}
+                      {mark.labelUSD}
                     </span>
                     <div className={cn(
                       "w-4 h-0.5",
                       isGoal ? "bg-primary" : "bg-foreground/60"
                     )} />
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* KES marks on the right */}
+            <div className="absolute -right-32 top-0 h-full w-28">
+              {calibrationMarks.map((mark) => {
+                const position = getMarkPosition(mark.valueUSD);
+                if (position > 100) return null;
+                const isGoal = mark.valueUSD === goalAmountUSD;
+                return (
+                  <div
+                    key={`kes-${mark.valueUSD}`}
+                    className="absolute flex items-center"
+                    style={{ bottom: `${position}%`, left: 0, right: 0 }}
+                  >
+                    <div className={cn(
+                      "w-4 h-0.5",
+                      isGoal ? "bg-success" : "bg-foreground/60"
+                    )} />
+                    <span className={cn(
+                      "text-sm font-bold ml-2",
+                      isGoal ? "text-success" : "text-foreground"
+                    )}>
+                      {mark.labelKES}
+                    </span>
                   </div>
                 );
               })}
