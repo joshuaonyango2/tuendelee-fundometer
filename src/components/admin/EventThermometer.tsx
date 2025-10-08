@@ -7,16 +7,29 @@ import { currencyService } from '@/services/currencyService';
 
 interface EventThermometerProps {
   eventId: string;
-  goalAmount?: number;
 }
 
-export function EventThermometer({ eventId, goalAmount = 50000 }: EventThermometerProps) {
+export function EventThermometer({ eventId }: EventThermometerProps) {
   const [totalUSD, setTotalUSD] = useState(0);
   const [totalKES, setTotalKES] = useState(0);
+  const [goalAmount, setGoalAmount] = useState(50000);
   const [isLoading, setIsLoading] = useState(true);
 
   const loadPledgeData = async () => {
     try {
+      // Load event to get goal amount
+      const { data: eventData, error: eventError } = await supabase
+        .from('fundraising_events')
+        .select('goal_amount')
+        .eq('id', eventId)
+        .single();
+
+      if (eventError) throw eventError;
+      if (eventData) {
+        setGoalAmount(eventData.goal_amount);
+      }
+
+      // Load pledges
       const { data, error } = await supabase
         .rpc('get_public_pledges', { p_event_id: eventId });
 
