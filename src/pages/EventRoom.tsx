@@ -183,8 +183,6 @@ const [totalRaisedKES, setTotalRaisedKES] = useState(0);
         setCurrentPledgeId(newPledge.id);
         setShowPaymentDialog(true);
       }
-      
-      toast.success('Pledge submitted successfully!');
     } catch (error) {
       console.error('Error processing pledge:', error);
       toast.error('Failed to process pledge');

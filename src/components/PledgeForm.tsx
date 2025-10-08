@@ -54,9 +54,8 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
     setIsSubmitting(true);
     try {
       await onSubmit(formData);
-      toast.success("Thank you for your pledge! Redirecting to payment...");
       
-      // Reset form
+      // Reset form after successful submission
       setFormData({
         name: "",
         email: "",
