@@ -1,4 +1,4 @@
-import { GraduationCap, Heart, Users, Target } from "lucide-react";
+import tuendeleeLogo from "@/assets/tuendelee-logo.jpg";
 
 export function HeroSection() {
   return (
@@ -7,65 +7,25 @@ export function HeroSection() {
       
       <div className="container relative mx-auto px-4">
         <div className="text-center">
-          <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2 mb-6">
-            <Heart className="w-4 h-4 text-primary" />
-            <span className="text-sm font-medium text-primary">
-              Supporting Education Since 2019
-            </span>
-          </div>
-          
           <div className="mb-8">
             <img 
-              src="/lovable-uploads/13128b51-d663-4bf6-a206-7156f08cf567.png"
-              alt="Tuendelee Foundation Logo - Empowering students through education"
-              className="w-64 md:w-80 mx-auto h-auto"
+              src={tuendeleeLogo}
+              alt="Tuendelee Foundation Logo"
+              className="w-96 md:w-[500px] mx-auto h-auto"
             />
           </div>
           
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">
+          <h1 className="text-3xl md:text-5xl font-bold mb-4">
             <span className="bg-gradient-primary bg-clip-text text-transparent">
-              Annual Fundraising Campaign
+              Tuendelee Foundation
             </span>
           </h1>
           
-          <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto mb-8">
-            Empowering bright, financially disadvantaged students through scholarships, 
-            mentorship, and career opportunities
-          </p>
-          
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto mt-12">
-            <div className="text-center">
-              <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-primary flex items-center justify-center text-white">
-                <GraduationCap className="w-8 h-8" />
-              </div>
-              <h3 className="font-semibold">Scholarships</h3>
-              <p className="text-sm text-muted-foreground">Full university support</p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-secondary flex items-center justify-center text-white">
-                <Users className="w-8 h-8" />
-              </div>
-              <h3 className="font-semibold">Mentorship</h3>
-              <p className="text-sm text-muted-foreground">Career guidance</p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-success flex items-center justify-center text-white">
-                <Target className="w-8 h-8" />
-              </div>
-              <h3 className="font-semibold">Internships</h3>
-              <p className="text-sm text-muted-foreground">Real experience</p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-hero flex items-center justify-center text-white">
-                <Heart className="w-8 h-8" />
-              </div>
-              <h3 className="font-semibold">Job Placement</h3>
-              <p className="text-sm text-muted-foreground">Career success</p>
-            </div>
-          </div>
+          <h2 className="text-2xl md:text-4xl font-semibold mb-6">
+            <span className="text-foreground">
+              Fundraising Thermometer (Fundometer)
+            </span>
+          </h2>
         </div>
       </div>
     </section>

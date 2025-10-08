@@ -91,32 +91,45 @@ export function ImprovedThermometer({
 
   return (
     <div className={cn("relative", className)}>
-      <div className="flex items-start gap-8">
+      {/* Header */}
+      <div className="mb-6">
+        <h3 className="text-2xl font-bold text-primary mb-2">
+          Live Fundraising Progress
+        </h3>
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+          <span className="text-sm text-muted-foreground">
+            Live updates enabled
+          </span>
+        </div>
+      </div>
+
+      <div className="flex items-start gap-12">
         {/* Thermometer */}
         <div className="relative flex-shrink-0">
           <div className="relative w-20 h-[400px]">
-            {/* Calibration marks */}
-            <div className="absolute left-24 top-0 h-full w-32">
+            {/* Calibration marks - positioned on the left side */}
+            <div className="absolute -left-20 top-0 h-full w-16">
               {calibrationMarks.map((mark) => {
                 const position = getMarkPosition(mark.value);
                 if (position > 100) return null;
                 return (
                   <div
                     key={mark.value}
-                    className="absolute flex items-center"
+                    className="absolute flex items-center justify-end"
                     style={{ bottom: `${position}%`, left: 0, right: 0 }}
                   >
-                    <div className="w-2 h-px bg-muted-foreground/30" />
-                    <span className="ml-2 text-xs text-muted-foreground">
+                    <span className="text-sm font-semibold text-foreground mr-2">
                       {mark.label}
                     </span>
+                    <div className="w-3 h-0.5 bg-foreground/60" />
                   </div>
                 );
               })}
             </div>
 
             {/* Thermometer tube */}
-            <div className="absolute inset-0 bg-gradient-to-t from-muted to-muted/50 rounded-full overflow-hidden shadow-inner">
+            <div className="absolute inset-0 bg-gradient-to-t from-muted to-muted/50 rounded-full overflow-hidden shadow-inner border-2 border-border">
               {/* Animated fill */}
               <div 
                 className="absolute bottom-0 left-0 right-0 transition-all duration-1000 ease-out"
@@ -130,52 +143,38 @@ export function ImprovedThermometer({
             </div>
 
             {/* Bulb at bottom */}
-            <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 w-32 h-32 bg-gradient-radial from-success to-success-light rounded-full shadow-lg animate-pulse">
+            <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 w-32 h-32 bg-gradient-radial from-success to-success-light rounded-full shadow-lg animate-pulse border-2 border-border">
               <div className="absolute inset-2 bg-gradient-to-br from-white/30 to-transparent rounded-full" />
             </div>
           </div>
         </div>
 
         {/* Amount displays */}
-        <div className="flex-1 space-y-6 pt-8">
-          <div>
-            <h3 className="text-2xl font-bold text-primary mb-4">
-              Live Fundraising Progress
-            </h3>
-            
-            {/* USD Display */}
-            <div className="bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg p-6 mb-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground mb-1">US Dollars</p>
-                  <p className="text-3xl font-bold text-primary">
-                    ${formatAmount(displayUSD)}
-                  </p>
-                </div>
-                <DollarSign className="h-8 w-8 text-primary/50" />
+        <div className="flex-1 space-y-4">
+          {/* USD Display */}
+          <div className="bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg p-6 border border-primary/20">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground mb-1">US Dollars</p>
+                <p className="text-4xl font-bold text-primary">
+                  ${formatAmount(displayUSD)}
+                </p>
               </div>
-            </div>
-
-            {/* KES Display */}
-            <div className="bg-gradient-to-r from-success/10 to-success/5 rounded-lg p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground mb-1">Kenyan Shillings</p>
-                  <p className="text-3xl font-bold text-success">
-                    KES {formatAmount(displayKES)}
-                  </p>
-                </div>
-                <TrendingUp className="h-8 w-8 text-success/50" />
-              </div>
+              <DollarSign className="h-10 w-10 text-primary/50" />
             </div>
           </div>
 
-          {/* Live indicator */}
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-            <span className="text-sm text-muted-foreground">
-              Live updates enabled
-            </span>
+          {/* KES Display */}
+          <div className="bg-gradient-to-r from-success/10 to-success/5 rounded-lg p-6 border border-success/20">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground mb-1">Kenyan Shillings</p>
+                <p className="text-4xl font-bold text-success">
+                  KES {formatAmount(displayKES)}
+                </p>
+              </div>
+              <TrendingUp className="h-10 w-10 text-success/50" />
+            </div>
           </div>
         </div>
       </div>
