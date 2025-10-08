@@ -40,11 +40,11 @@ export function EventThermometer({ eventId }: EventThermometerProps) {
 
       console.log('All pledges:', data);
 
-      // Count ALL pledges (both confirmed and pending)
-      const allPledges = data || [];
-      console.log('All pledges for thermometer:', allPledges);
+      // Count only CONFIRMED/PAID pledges
+      const confirmedPledges = (data || []).filter((p: any) => p.is_confirmed === true);
+      console.log('Confirmed pledges for thermometer:', confirmedPledges);
       
-      const usd = allPledges.reduce((sum: number, p: any) => sum + (Number(p.amount_in_usd) || 0), 0);
+      const usd = confirmedPledges.reduce((sum: number, p: any) => sum + (Number(p.amount_in_usd) || 0), 0);
       
       // Use fixed exchange rate: 1 USD = 128 KES
       const kes = usd * 128;
