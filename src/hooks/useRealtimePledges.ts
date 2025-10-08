@@ -82,29 +82,46 @@ export function useRealtimePledges({ eventId, enableOptimistic = true }: UseReal
     }
   }, [eventId, setServerItems]);
 
-  // Subscribe to real-time updates
+  // Subscribe to real-time updates for both INSERT and UPDATE
   useEffect(() => {
     if (!eventId) return;
 
-    const unsubscribe = subscribeToTable<RealtimePledge>(
+    // Subscribe to INSERT events
+    const unsubscribeInsert = subscribeToTable<RealtimePledge>(
       'event_pledges',
       'INSERT',
       (payload) => {
         if (payload.new.event_id === eventId) {
-          // Add new pledge to the list
-          setServerItems((prev: RealtimePledge[]) => [payload.new, ...prev]);
+          // Reload pledges to get proper anonymized display_name from RPC
+          loadPledges();
           
           toast({
             title: "New Donation!",
-            description: `${payload.new.display_name} donated ${payload.new.currency} ${payload.new.amount}`,
+            description: `Someone just donated!`,
           });
         }
       },
       { column: 'event_id', eq: eventId }
     );
 
-    return unsubscribe;
-  }, [eventId, subscribeToTable, setServerItems]);
+    // Subscribe to UPDATE events (for when pledges get confirmed)
+    const unsubscribeUpdate = subscribeToTable<RealtimePledge>(
+      'event_pledges',
+      'UPDATE',
+      (payload) => {
+        if (payload.new.event_id === eventId) {
+          // Reload pledges to reflect confirmation status
+          loadPledges();
+        }
+      },
+      { column: 'event_id', eq: eventId }
+    );
+
+    return () => {
+      unsubscribeInsert();
+      unsubscribeUpdate();
+    };
+  }, [eventId, subscribeToTable, loadPledges]);
 
   // Create pledge with optimistic update
   const createPledge = useCallback(async (pledgeData: Omit<RealtimePledge, 'id' | 'created_at'>) => {
