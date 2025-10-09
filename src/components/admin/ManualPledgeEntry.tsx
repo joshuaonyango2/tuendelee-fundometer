@@ -197,12 +197,20 @@ export function ManualPledgeEntry({ eventId }: ManualPledgeEntryProps) {
 
             <div className="space-y-2">
               <Label htmlFor="paymentMethod">Payment Method</Label>
-              <Input
-                id="paymentMethod"
+              <Select
                 value={formData.paymentMethod}
-                onChange={(e) => setFormData({ ...formData, paymentMethod: e.target.value })}
-                placeholder="M-Pesa, Bank Transfer, etc."
-              />
+                onValueChange={(value) => setFormData({ ...formData, paymentMethod: value })}
+              >
+                <SelectTrigger id="paymentMethod">
+                  <SelectValue placeholder="Select payment method" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="M-Pesa">M-Pesa</SelectItem>
+                  <SelectItem value="Benevity">Benevity</SelectItem>
+                  <SelectItem value="Bank Transfer">Bank Transfer</SelectItem>
+                  <SelectItem value="PayPal">PayPal</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="space-y-2">
