@@ -16,6 +16,7 @@ interface Pledge {
   donor_phone: string;
   amount: number;
   amount_in_usd: number;
+  amount_in_kes: number;
   currency: string;
   payment_type: string;
   payment_method: string;
@@ -136,11 +137,14 @@ export function PledgeReportsView({ eventId }: PledgeReportsViewProps) {
                 </div>
               </TableCell>
               <TableCell>
-                <div>
+                <div className="font-medium">
                   {pledge.currency} {pledge.amount.toLocaleString()}
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  ${pledge.amount_in_usd.toLocaleString()} USD
+                  {pledge.currency === 'USD' 
+                    ? `KES ${pledge.amount_in_kes.toLocaleString()}`
+                    : `$${pledge.amount_in_usd.toLocaleString()} USD`
+                  }
                 </div>
               </TableCell>
               <TableCell>{pledge.payment_method || pledge.payment_type}</TableCell>
