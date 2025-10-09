@@ -69,7 +69,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
     loadEventDetails();
   }, [eventId]);
 
-  // Separate paid and unpaid pledges
+  // Separate paid and unpaid pledges and recalculate in real-time
   useEffect(() => {
     const calculatePledges = async () => {
       if (!eventId) return;
@@ -78,17 +78,28 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
         const { data } = await supabase
           .rpc('get_public_pledges', { p_event_id: eventId });
         
+        console.log('Public pledges data:', data);
+        
         // Separate confirmed/paid and unconfirmed/unpaid
         const confirmed = (data || []).filter((p: any) => p.is_confirmed === true);
         const unconfirmed = (data || []).filter((p: any) => p.is_confirmed === false || p.is_confirmed === null);
         
+        console.log('Confirmed pledges:', confirmed);
+        console.log('Unconfirmed pledges:', unconfirmed);
+        
         const paidUSDAmount = confirmed.reduce((sum: number, p: any) => sum + (Number(p.amount_in_usd) || 0), 0);
         const unpaidUSDAmount = unconfirmed.reduce((sum: number, p: any) => sum + (Number(p.amount_in_usd) || 0), 0);
         
+        // Use fixed exchange rate: 1 USD = 128 KES
+        const paidKESAmount = paidUSDAmount * 128;
+        const unpaidKESAmount = unpaidUSDAmount * 128;
+        
         setPaidUSD(paidUSDAmount);
-        setPaidKES(paidUSDAmount * 128);
+        setPaidKES(paidKESAmount);
         setUnpaidUSD(unpaidUSDAmount);
-        setUnpaidKES(unpaidUSDAmount * 128);
+        setUnpaidKES(unpaidKESAmount);
+        
+        console.log('Thermometer amounts:', { paidUSDAmount, paidKESAmount, unpaidUSDAmount, unpaidKESAmount });
       } catch (error) {
         console.error('Error calculating pledges:', error);
       }
@@ -273,6 +284,22 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
                       isConnected={connectionStatus.isConnected}
                       isReconnecting={connectionStatus.isReconnecting}
                     />
+                    {liveMeeting && event.is_active ? (
+                      <a 
+                        href={liveMeeting.join_url || '#'} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="inline-block"
+                      >
+                        <Badge className="bg-green-500 hover:bg-green-600 text-white cursor-pointer">
+                          Online
+                        </Badge>
+                      </a>
+                    ) : (
+                      <Badge variant="secondary" className="bg-red-500 text-white">
+                        Offline
+                      </Badge>
+                    )}
                     <Badge variant={event.is_active ? "default" : "secondary"}>
                       {event.is_active ? "Live" : "Ended"}
                     </Badge>
