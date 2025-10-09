@@ -86,42 +86,51 @@ export function useRealtimePledges({ eventId, enableOptimistic = true }: UseReal
   useEffect(() => {
     if (!eventId) return;
 
-    // Subscribe to INSERT events
-    const unsubscribeInsert = subscribeToTable<RealtimePledge>(
-      'event_pledges',
-      'INSERT',
-      (payload) => {
-        if (payload.new.event_id === eventId) {
+    // Create a simpler channel for real-time updates that doesn't require SELECT permission
+    const channel = supabase
+      .channel(`pledges:${eventId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'event_pledges',
+          filter: `event_id=eq.${eventId}`
+        },
+        () => {
           // Reload pledges to get proper anonymized display_name from RPC
           loadPledges();
-          
           toast({
             title: "New Donation!",
             description: `Someone just donated!`,
           });
         }
-      },
-      { column: 'event_id', eq: eventId }
-    );
-
-    // Subscribe to UPDATE events (for when pledges get confirmed)
-    const unsubscribeUpdate = subscribeToTable<RealtimePledge>(
-      'event_pledges',
-      'UPDATE',
-      (payload) => {
-        if (payload.new.event_id === eventId) {
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'event_pledges',
+          filter: `event_id=eq.${eventId}`
+        },
+        () => {
           // Reload pledges to reflect confirmation status
           loadPledges();
         }
-      },
-      { column: 'event_id', eq: eventId }
-    );
+      )
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          setError(null);
+        } else if (status === 'CHANNEL_ERROR') {
+          setError('Failed to subscribe to real-time updates');
+        }
+      });
 
     return () => {
-      unsubscribeInsert();
-      unsubscribeUpdate();
+      supabase.removeChannel(channel);
     };
-  }, [eventId, subscribeToTable, loadPledges]);
+  }, [eventId, loadPledges]);
 
   // Create pledge with optimistic update
   const createPledge = useCallback(async (pledgeData: Omit<RealtimePledge, 'id' | 'created_at'>) => {
