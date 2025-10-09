@@ -255,6 +255,20 @@ export function ImprovedThermometer({
               </div>
             )}
 
+            {/* Unpaid meniscus calibration mark */}
+            {unpaidAmountUSD > 0 && totalHeight > 0 && (
+              <div 
+                className="absolute -right-40 w-36 flex items-center transition-all duration-1000 ease-out"
+                style={{ bottom: `${totalHeight}%` }}
+              >
+                <div className="w-8 h-0.5 bg-amber-500 shadow-lg" />
+                <div className="text-left ml-3">
+                  <div className="text-sm font-bold text-amber-600">${formatAmount(displayUnpaidUSD)}</div>
+                  <div className="text-xs text-amber-600/70">KES {formatAmount(displayUnpaidKES)}</div>
+                </div>
+              </div>
+            )}
+
             {/* Bulb at bottom */}
             <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 w-40 h-40 bg-gradient-to-br from-success to-success/80 rounded-full shadow-xl border-4 border-border">
               <div className="absolute inset-3 bg-gradient-to-br from-white/20 to-transparent rounded-full" />
