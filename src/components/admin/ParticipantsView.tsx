@@ -144,7 +144,14 @@ export function ParticipantsView({ eventId }: ParticipantsViewProps) {
                     {participant.last_activity ? format(new Date(participant.last_activity), 'MMM dd, HH:mm') : '-'}
                   </TableCell>
                   <TableCell>{participant.pledge_count || 0}</TableCell>
-                  <TableCell>${(participant.total_pledged || 0).toLocaleString()}</TableCell>
+                  <TableCell>
+                    <div className="text-sm">
+                      <div className="font-medium">${(participant.total_pledged || 0).toLocaleString()}</div>
+                      <div className="text-xs text-muted-foreground">
+                        KES {((participant.total_pledged || 0) * 128).toLocaleString()}
+                      </div>
+                    </div>
+                  </TableCell>
                 </TableRow>
               ))
             )}
