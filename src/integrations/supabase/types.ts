@@ -449,6 +449,7 @@ export type Database = {
           display_name: string
           event_id: string
           id: string
+          is_confirmed: boolean
           message: string
           payment_type: string
         }[]
