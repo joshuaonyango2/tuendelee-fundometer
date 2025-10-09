@@ -161,7 +161,7 @@ export function ImprovedThermometer({
         </div>
       </div>
 
-      <div className="flex flex-col lg:flex-row items-center lg:items-start justify-center gap-8">
+      <div className="flex flex-col lg:flex-row items-center lg:items-start justify-center gap-8 lg:gap-24">
         {/* Paid Pledges Card - Left */}
         <div className="flex-shrink-0 w-full max-w-sm lg:mt-32">
           <div className="bg-gradient-to-br from-success/10 to-success/5 rounded-xl p-6 border-2 border-success/30 shadow-lg">
