@@ -350,58 +350,39 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
                   </div>
                 </div>
                 
-                {/* Live Meeting Information */}
-                {liveMeeting && event.is_active && (
-                  <div className="mt-4 p-6 bg-gradient-secondary rounded-lg border-2 border-white/20">
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between border-b border-white/20 pb-3">
-                        <h3 className="font-semibold text-white text-lg flex items-center gap-2">
-                          <Video className="h-5 w-5" />
-                          Live Virtual Meeting
-                        </h3>
-                        <Badge className="bg-green-500 text-white">Active</Badge>
+                {/* Fundraising Room Section */}
+                <div className="mt-4">
+                  {liveMeeting && event.is_active ? (
+                    <Button
+                      onClick={() => window.open(liveMeeting.join_url || `/meeting/room/${liveMeeting.id}`, '_blank')}
+                      className="w-full p-6 h-auto bg-gradient-secondary hover:bg-gradient-secondary/90 rounded-lg border-2 border-white/20"
+                    >
+                      <div className="flex items-center justify-between w-full">
+                        <div className="flex items-center gap-3">
+                          <Video className="h-6 w-6 text-white" />
+                          <div className="text-left">
+                            <h3 className="font-semibold text-white text-lg">Fundraising Room</h3>
+                            <p className="text-xs text-white/70">Click to join the live meeting</p>
+                          </div>
+                        </div>
+                        <Badge className="bg-green-500 text-white">Live</Badge>
                       </div>
-                      
-                      <div className="space-y-3">
-                        {liveMeeting.meeting_id && (
-                          <div className="bg-white/10 p-3 rounded-lg">
-                            <p className="text-xs text-white/70 mb-1">Meeting ID</p>
-                            <p className="text-white font-mono font-semibold">{liveMeeting.meeting_id}</p>
+                    </Button>
+                  ) : (
+                    <div className="w-full p-6 bg-muted rounded-lg border-2 border-border">
+                      <div className="flex items-center justify-between w-full">
+                        <div className="flex items-center gap-3">
+                          <Video className="h-6 w-6 text-muted-foreground" />
+                          <div className="text-left">
+                            <h3 className="font-semibold text-muted-foreground text-lg">Fundraising Room</h3>
+                            <p className="text-xs text-muted-foreground/70">Waiting for event to start</p>
                           </div>
-                        )}
-                        
-                        {liveMeeting.passcode && (
-                          <div className="bg-white/10 p-3 rounded-lg">
-                            <p className="text-xs text-white/70 mb-1">Passcode</p>
-                            <p className="text-white font-mono font-semibold">{liveMeeting.passcode}</p>
-                          </div>
-                        )}
-                        
-                        {liveMeeting.join_url && (
-                          <div className="bg-white/10 p-3 rounded-lg">
-                            <p className="text-xs text-white/70 mb-1">Join Link</p>
-                            <a 
-                              href={liveMeeting.join_url} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="text-white hover:text-white/80 underline text-sm break-all"
-                            >
-                              {liveMeeting.join_url}
-                            </a>
-                          </div>
-                        )}
+                        </div>
+                        <Badge variant="secondary" className="bg-red-500 text-white">Offline</Badge>
                       </div>
-                      
-                      <Button 
-                        onClick={() => window.open(liveMeeting.join_url || `/meeting/room/${liveMeeting.id}`, '_blank')}
-                        className="w-full bg-white text-secondary hover:bg-white/90 font-semibold"
-                      >
-                        <Video className="mr-2 h-4 w-4" />
-                        Join Meeting Now
-                      </Button>
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
               </CardContent>
             </Card>
 
