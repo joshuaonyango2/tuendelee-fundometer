@@ -268,7 +268,7 @@ export function ImprovedThermometer({
             {/* Paid meniscus calibration mark */}
             {paidHeight > 0 && (
               <div 
-                className="absolute -left-28 w-32 flex items-center justify-end transition-all duration-1000 ease-out -translate-y-1/2"
+                className="absolute -left-28 w-32 flex items-center justify-end transition-all duration-1000 ease-out"
                 style={{ bottom: `${paidHeight}%` }}
               >
                 <div className="text-right mr-3">
@@ -282,7 +282,7 @@ export function ImprovedThermometer({
             {/* Unpaid meniscus calibration mark */}
             {unpaidAmountUSD > 0 && totalHeight > 0 && (
               <div 
-                className="absolute -right-28 w-32 flex items-center transition-all duration-1000 ease-out -translate-y-1/2"
+                className="absolute -right-28 w-32 flex items-center transition-all duration-1000 ease-out"
                 style={{ bottom: `${totalHeight}%` }}
               >
                 <div className="w-8 h-0.5 bg-amber-500 shadow-lg" />
