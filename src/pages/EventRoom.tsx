@@ -323,20 +323,54 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
                   </div>
                 </div>
                 
-                {/* Live Meeting Button */}
+                {/* Live Meeting Information */}
                 {liveMeeting && event.is_active && (
-                  <div className="mt-4 p-4 bg-gradient-secondary rounded-lg">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h3 className="font-semibold text-white">Live Meeting in Progress</h3>
-                        <p className="text-secondary-foreground/80">Join the conversation and see real-time progress</p>
+                  <div className="mt-4 p-6 bg-gradient-secondary rounded-lg border-2 border-white/20">
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between border-b border-white/20 pb-3">
+                        <h3 className="font-semibold text-white text-lg flex items-center gap-2">
+                          <Video className="h-5 w-5" />
+                          Live Virtual Meeting
+                        </h3>
+                        <Badge className="bg-green-500 text-white">Active</Badge>
                       </div>
+                      
+                      <div className="space-y-3">
+                        {liveMeeting.meeting_id && (
+                          <div className="bg-white/10 p-3 rounded-lg">
+                            <p className="text-xs text-white/70 mb-1">Meeting ID</p>
+                            <p className="text-white font-mono font-semibold">{liveMeeting.meeting_id}</p>
+                          </div>
+                        )}
+                        
+                        {liveMeeting.passcode && (
+                          <div className="bg-white/10 p-3 rounded-lg">
+                            <p className="text-xs text-white/70 mb-1">Passcode</p>
+                            <p className="text-white font-mono font-semibold">{liveMeeting.passcode}</p>
+                          </div>
+                        )}
+                        
+                        {liveMeeting.join_url && (
+                          <div className="bg-white/10 p-3 rounded-lg">
+                            <p className="text-xs text-white/70 mb-1">Join Link</p>
+                            <a 
+                              href={liveMeeting.join_url} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-white hover:text-white/80 underline text-sm break-all"
+                            >
+                              {liveMeeting.join_url}
+                            </a>
+                          </div>
+                        )}
+                      </div>
+                      
                       <Button 
-                        onClick={() => window.open(`/meeting/room/${liveMeeting.id}`, '_blank')}
-                        className="bg-white text-secondary hover:bg-white/90"
+                        onClick={() => window.open(liveMeeting.join_url || `/meeting/room/${liveMeeting.id}`, '_blank')}
+                        className="w-full bg-white text-secondary hover:bg-white/90 font-semibold"
                       >
                         <Video className="mr-2 h-4 w-4" />
-                        Join Live Meeting
+                        Join Meeting Now
                       </Button>
                     </div>
                   </div>
