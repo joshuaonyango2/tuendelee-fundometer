@@ -23,6 +23,7 @@ export interface PledgeData {
   email: string;
   amount: number;
   currency: string;
+  paymentMethod: string;
   message?: string;
 }
 
@@ -33,12 +34,20 @@ const currencies = [
   { code: "GBP", symbol: "£", name: "British Pound" },
 ];
 
+const paymentMethods = [
+  { value: "M-Pesa", label: "M-Pesa" },
+  { value: "Benevity", label: "Benevity" },
+  { value: "Bank Transfer", label: "Bank Transfer" },
+  { value: "PayPal", label: "PayPal" },
+];
+
 export function PledgeForm({ onSubmit }: PledgeFormProps) {
   const [formData, setFormData] = useState<PledgeData>({
     name: "",
     email: "",
     amount: 0,
     currency: "USD",
+    paymentMethod: "M-Pesa",
     message: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -61,6 +70,7 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
         email: "",
         amount: 0,
         currency: "USD",
+        paymentMethod: "M-Pesa",
         message: "",
       });
     } catch (error) {
@@ -150,6 +160,25 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
                 </SelectContent>
               </Select>
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="paymentMethod">Payment Method *</Label>
+            <Select
+              value={formData.paymentMethod}
+              onValueChange={(value) => setFormData({ ...formData, paymentMethod: value })}
+            >
+              <SelectTrigger className="border-primary/20 focus:border-primary">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {paymentMethods.map((method) => (
+                  <SelectItem key={method.value} value={method.value}>
+                    {method.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">
