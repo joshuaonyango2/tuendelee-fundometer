@@ -241,6 +241,21 @@ export function ImprovedThermometer({
               <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent rounded-full pointer-events-none" />
             </div>
 
+            {/* Meniscus level indicator - shows current total amount */}
+            {totalHeight > 0 && (
+              <div 
+                className="absolute left-full ml-4 transform -translate-y-1/2 transition-all duration-1000 ease-out"
+                style={{ bottom: `${totalHeight}%` }}
+              >
+                <div className="bg-primary text-primary-foreground px-4 py-2 rounded-lg shadow-lg border-2 border-primary/50 whitespace-nowrap">
+                  <div className="text-xs font-medium opacity-80">Current Total</div>
+                  <div className="text-sm font-bold">${formatAmount(displayPaidUSD + displayUnpaidUSD)}</div>
+                  <div className="text-xs">KES {formatAmount(displayPaidKES + displayUnpaidKES)}</div>
+                </div>
+                <div className="absolute left-0 top-1/2 transform -translate-x-full -translate-y-1/2 w-4 h-0.5 bg-primary" />
+              </div>
+            )}
+
             {/* Bulb at bottom */}
             <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 w-40 h-40 bg-gradient-to-br from-success to-success/80 rounded-full shadow-xl border-4 border-border">
               <div className="absolute inset-3 bg-gradient-to-br from-white/20 to-transparent rounded-full" />
