@@ -182,9 +182,9 @@ export function PledgeReportsView({ eventId }: PledgeReportsViewProps) {
   const totalPendingAmountUSD = pendingPledges.reduce((sum, p) => sum + p.amount_in_usd, 0);
   const totalAmountUSD = pledges.reduce((sum, p) => sum + p.amount_in_usd, 0);
   
-  const totalPaidAmountKES = totalPaidAmountUSD * 128.1;
-  const totalPendingAmountKES = totalPendingAmountUSD * 128.1;
-  const totalAmountKES = totalAmountUSD * 128.1;
+  const totalPaidAmountKES = totalPaidAmountUSD * 128;
+  const totalPendingAmountKES = totalPendingAmountUSD * 128;
+  const totalAmountKES = totalAmountUSD * 128;
 
   return (
     <Card>
