@@ -190,7 +190,7 @@ export function ImprovedThermometer({
         <div className="relative flex-shrink-0">
           <div className="relative w-24 h-[600px]">
             {/* Calibration marks - USD on left, KES on right */}
-            <div className="absolute -left-40 top-0 h-full w-36">
+            <div className="absolute -left-28 top-0 h-full w-32">
               {calibrationMarks.map((mark, index) => {
                 const position = getMarkPosition(mark.valueUSD);
                 if (position > 100) return null;
@@ -217,7 +217,7 @@ export function ImprovedThermometer({
             </div>
 
             {/* KES marks on the right */}
-            <div className="absolute -right-40 top-0 h-full w-36">
+            <div className="absolute -right-28 top-0 h-full w-32">
               {calibrationMarks.map((mark, index) => {
                 const position = getMarkPosition(mark.valueUSD);
                 if (position > 100) return null;
@@ -268,7 +268,7 @@ export function ImprovedThermometer({
             {/* Paid meniscus calibration mark */}
             {paidHeight > 0 && (
               <div 
-                className="absolute -left-40 w-36 flex items-center justify-end transition-all duration-1000 ease-out"
+                className="absolute -left-28 w-32 flex items-center justify-end transition-all duration-1000 ease-out"
                 style={{ bottom: `${paidHeight}%` }}
               >
                 <div className="text-right mr-3">
@@ -282,7 +282,7 @@ export function ImprovedThermometer({
             {/* Unpaid meniscus calibration mark */}
             {unpaidAmountUSD > 0 && totalHeight > 0 && (
               <div 
-                className="absolute -right-40 w-36 flex items-center transition-all duration-1000 ease-out"
+                className="absolute -right-28 w-32 flex items-center transition-all duration-1000 ease-out"
                 style={{ bottom: `${totalHeight}%` }}
               >
                 <div className="w-8 h-0.5 bg-amber-500 shadow-lg" />
