@@ -49,7 +49,10 @@ export default function EventRoom() {
   const [currentPledge, setCurrentPledge] = useState<PledgeData | null>(null);
   const [currentPledgeId, setCurrentPledgeId] = useState<string | null>(null);
 const [liveMeeting, setLiveMeeting] = useState<any>(null);
-const [totalRaisedKES, setTotalRaisedKES] = useState(0);
+  const [paidUSD, setPaidUSD] = useState(0);
+  const [paidKES, setPaidKES] = useState(0);
+  const [unpaidUSD, setUnpaidUSD] = useState(0);
+  const [unpaidKES, setUnpaidKES] = useState(0);
   
   const {
     pledges: realtimePledges,
@@ -66,16 +69,33 @@ const [totalRaisedKES, setTotalRaisedKES] = useState(0);
     loadEventDetails();
   }, [eventId]);
 
-  // Convert total raised (USD) to KES using live exchange rate
+  // Separate paid and unpaid pledges
   useEffect(() => {
-    let isMounted = true;
-    const convert = async () => {
-      const kes = await currencyService.convertAmount(totalRaised, 'USD', 'KES');
-      if (isMounted) setTotalRaisedKES(kes);
+    const calculatePledges = async () => {
+      if (!eventId) return;
+      
+      try {
+        const { data } = await supabase
+          .rpc('get_public_pledges', { p_event_id: eventId });
+        
+        // Separate confirmed/paid and unconfirmed/unpaid
+        const confirmed = (data || []).filter((p: any) => p.is_confirmed === true);
+        const unconfirmed = (data || []).filter((p: any) => p.is_confirmed === false || p.is_confirmed === null);
+        
+        const paidUSDAmount = confirmed.reduce((sum: number, p: any) => sum + (Number(p.amount_in_usd) || 0), 0);
+        const unpaidUSDAmount = unconfirmed.reduce((sum: number, p: any) => sum + (Number(p.amount_in_usd) || 0), 0);
+        
+        setPaidUSD(paidUSDAmount);
+        setPaidKES(paidUSDAmount * 128);
+        setUnpaidUSD(unpaidUSDAmount);
+        setUnpaidKES(unpaidUSDAmount * 128);
+      } catch (error) {
+        console.error('Error calculating pledges:', error);
+      }
     };
-    convert();
-    return () => { isMounted = false; };
-  }, [totalRaised]);
+    
+    calculatePledges();
+  }, [eventId, realtimePledges]);
 
   const checkSession = async () => {
     const session = localStorage.getItem('event_session');
@@ -342,8 +362,11 @@ const [totalRaisedKES, setTotalRaisedKES] = useState(0);
                   />
                 ) : (
                   <ImprovedThermometer
-                    currentAmountUSD={totalRaised}
-                    currentAmountKES={totalRaisedKES}
+                    paidAmountUSD={paidUSD}
+                    paidAmountKES={paidKES}
+                    unpaidAmountUSD={unpaidUSD}
+                    unpaidAmountKES={unpaidKES}
+                    goalAmountUSD={event?.goal_amount || 50000}
                   />
                 )}
               </CardContent>

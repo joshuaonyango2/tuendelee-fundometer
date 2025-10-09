@@ -3,47 +3,62 @@ import { cn } from '@/lib/utils';
 import { TrendingUp, DollarSign } from 'lucide-react';
 
 interface ImprovedThermometerProps {
-  currentAmountUSD: number;
-  currentAmountKES: number;
+  paidAmountUSD: number;
+  paidAmountKES: number;
+  unpaidAmountUSD: number;
+  unpaidAmountKES: number;
   goalAmountUSD?: number;
   className?: string;
 }
 
 export function ImprovedThermometer({ 
-  currentAmountUSD, 
-  currentAmountKES,
+  paidAmountUSD,
+  paidAmountKES,
+  unpaidAmountUSD,
+  unpaidAmountKES,
   goalAmountUSD = 50000,
   className 
 }: ImprovedThermometerProps) {
-  const [displayUSD, setDisplayUSD] = useState(0);
-  const [displayKES, setDisplayKES] = useState(0);
+  const [displayPaidUSD, setDisplayPaidUSD] = useState(0);
+  const [displayPaidKES, setDisplayPaidKES] = useState(0);
+  const [displayUnpaidUSD, setDisplayUnpaidUSD] = useState(0);
+  const [displayUnpaidKES, setDisplayUnpaidKES] = useState(0);
+
+  const totalPledgedUSD = paidAmountUSD + unpaidAmountUSD;
+  const totalPledgedKES = paidAmountKES + unpaidAmountKES;
 
   useEffect(() => {
     // Animate the numbers
     const duration = 2000;
     const steps = 60;
-    const incrementUSD = currentAmountUSD / steps;
-    const incrementKES = currentAmountKES / steps;
+    const incrementPaidUSD = paidAmountUSD / steps;
+    const incrementPaidKES = paidAmountKES / steps;
+    const incrementUnpaidUSD = unpaidAmountUSD / steps;
+    const incrementUnpaidKES = unpaidAmountKES / steps;
     let currentStep = 0;
 
     const timer = setInterval(() => {
       currentStep++;
       if (currentStep <= steps) {
-        setDisplayUSD(prev => Math.min(prev + incrementUSD, currentAmountUSD));
-        setDisplayKES(prev => Math.min(prev + incrementKES, currentAmountKES));
+        setDisplayPaidUSD(prev => Math.min(prev + incrementPaidUSD, paidAmountUSD));
+        setDisplayPaidKES(prev => Math.min(prev + incrementPaidKES, paidAmountKES));
+        setDisplayUnpaidUSD(prev => Math.min(prev + incrementUnpaidUSD, unpaidAmountUSD));
+        setDisplayUnpaidKES(prev => Math.min(prev + incrementUnpaidKES, unpaidAmountKES));
       } else {
         clearInterval(timer);
-        setDisplayUSD(currentAmountUSD);
-        setDisplayKES(currentAmountKES);
+        setDisplayPaidUSD(paidAmountUSD);
+        setDisplayPaidKES(paidAmountKES);
+        setDisplayUnpaidUSD(unpaidAmountUSD);
+        setDisplayUnpaidKES(unpaidAmountKES);
       }
     }, duration / steps);
 
     return () => clearInterval(timer);
-  }, [currentAmountUSD, currentAmountKES]);
+  }, [paidAmountUSD, paidAmountKES, unpaidAmountUSD, unpaidAmountKES]);
 
   // Generate dynamic calibration marks based on goal and current amount
   const generateCalibrationMarks = () => {
-    const maxAmount = Math.max(goalAmountUSD * 1.2, currentAmountUSD * 1.5, 1000);
+    const maxAmount = Math.max(goalAmountUSD * 1.2, totalPledgedUSD * 1.2, 1000);
     
     const formatLabelUSD = (value: number) => {
       if (value >= 1000000) return `$${(value / 1000000).toFixed(1)}M`;
@@ -99,13 +114,19 @@ export function ImprovedThermometer({
   const calibrationMarks = generateCalibrationMarks();
   const maxCalibration = Math.max(...calibrationMarks.map(m => m.valueUSD), goalAmountUSD * 1.2);
 
-  // Calculate thermometer height based on current amount relative to max calibration
-  const getThermometerHeight = () => {
-    if (currentAmountUSD === 0) return 0;
-    return Math.min((currentAmountUSD / maxCalibration) * 100, 100);
+  // Calculate thermometer heights
+  const getPaidHeight = () => {
+    if (paidAmountUSD === 0) return 0;
+    return Math.min((paidAmountUSD / maxCalibration) * 100, 100);
   };
 
-  const thermometerHeight = getThermometerHeight();
+  const getTotalHeight = () => {
+    if (totalPledgedUSD === 0) return 0;
+    return Math.min((totalPledgedUSD / maxCalibration) * 100, 100);
+  };
+
+  const paidHeight = getPaidHeight();
+  const totalHeight = getTotalHeight();
 
   const getMarkPosition = (valueUSD: number) => {
     return (valueUSD / maxCalibration) * 100;
@@ -121,8 +142,12 @@ export function ImprovedThermometer({
 
   const goalKES = goalAmountUSD * 128;
 
+  const paidPercentage = goalAmountUSD > 0 ? (paidAmountUSD / goalAmountUSD) * 100 : 0;
+  const totalPledgedPercentage = goalAmountUSD > 0 ? (totalPledgedUSD / goalAmountUSD) * 100 : 0;
+  const unpaidPercentage = goalAmountUSD > 0 ? (unpaidAmountUSD / goalAmountUSD) * 100 : 0;
+
   return (
-    <div className={cn("relative", className)}>
+    <div className={cn("relative max-w-7xl mx-auto", className)}>
       {/* Header */}
       <div className="mb-8 text-center">
         <h3 className="text-2xl font-bold text-primary mb-2">
@@ -131,13 +156,13 @@ export function ImprovedThermometer({
         <div className="flex items-center justify-center gap-2">
           <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
           <span className="text-sm text-muted-foreground">
-            Live updates enabled - Showing paid pledges only
+            Live updates enabled - Showing paid and unpaid pledges
           </span>
         </div>
       </div>
 
-      <div className="flex items-start gap-32">
-        {/* Thermometer */}
+      <div className="flex items-center justify-center gap-32">
+        {/* Thermometer - centered */}
         <div className="relative flex-shrink-0">
           <div className="relative w-24 h-[600px]">
             {/* Calibration marks - USD on left, KES on right */}
@@ -196,12 +221,20 @@ export function ImprovedThermometer({
 
             {/* Thermometer tube */}
             <div className="absolute inset-0 bg-gradient-to-t from-muted/30 to-muted/10 rounded-full overflow-hidden shadow-lg border-4 border-border">
-              {/* Animated fill */}
+              {/* Total pledged (unpaid) - lighter background */}
               <div 
                 className="absolute bottom-0 left-0 right-0 transition-all duration-1000 ease-out"
-                style={{ height: `${thermometerHeight}%` }}
+                style={{ height: `${totalHeight}%` }}
               >
-                <div className="h-full bg-gradient-to-t from-success/90 via-success/70 to-primary/80 rounded-full shadow-inner" />
+                <div className="h-full bg-gradient-to-t from-amber-400/40 via-amber-300/30 to-amber-200/20 rounded-full shadow-inner" />
+              </div>
+
+              {/* Paid pledges - solid green on top */}
+              <div 
+                className="absolute bottom-0 left-0 right-0 transition-all duration-1000 ease-out"
+                style={{ height: `${paidHeight}%` }}
+              >
+                <div className="h-full bg-gradient-to-t from-success/90 via-success/70 to-success/60 rounded-full shadow-inner" />
               </div>
               
               {/* Glass effect */}
@@ -215,59 +248,90 @@ export function ImprovedThermometer({
           </div>
         </div>
 
-        {/* Amount displays - Two columns side by side */}
-        <div className="flex-1 space-y-8">
-          {/* Paid Pledges Section */}
-          <div>
-            <h4 className="text-xl font-bold text-foreground mb-4">Paid Pledges</h4>
-            <div className="grid grid-cols-2 gap-6">
-              {/* USD Display */}
-              <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl p-8 border-2 border-primary/30 shadow-lg">
-                <p className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wide">US Dollars</p>
-                <p className="text-4xl font-bold text-primary">
-                  ${formatAmount(displayUSD)}
-                </p>
+        {/* Stats display */}
+        <div className="flex-1 max-w-2xl space-y-8">
+          {/* Paid vs Unpaid Summary */}
+          <div className="grid grid-cols-2 gap-6">
+            {/* Paid */}
+            <div className="bg-gradient-to-br from-success/10 to-success/5 rounded-xl p-6 border-2 border-success/30 shadow-lg">
+              <h4 className="text-lg font-bold text-success mb-4 flex items-center gap-2">
+                <div className="w-3 h-3 bg-success rounded-full" />
+                Paid Pledges
+              </h4>
+              <div className="space-y-3">
+                <div>
+                  <p className="text-sm text-muted-foreground">USD</p>
+                  <p className="text-3xl font-bold text-success">${formatAmount(displayPaidUSD)}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">KES</p>
+                  <p className="text-2xl font-bold text-success">KES {formatAmount(displayPaidKES)}</p>
+                </div>
+                <div className="pt-2 border-t border-success/20">
+                  <p className="text-sm text-muted-foreground">Of Goal</p>
+                  <p className="text-2xl font-bold text-success">{paidPercentage.toFixed(1)}%</p>
+                </div>
               </div>
+            </div>
 
-              {/* KES Display */}
-              <div className="bg-gradient-to-br from-success/10 to-success/5 rounded-xl p-8 border-2 border-success/30 shadow-lg">
-                <p className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wide">Kenyan Shillings</p>
-                <p className="text-4xl font-bold text-success">
-                  KES {formatAmount(displayKES)}
-                </p>
+            {/* Unpaid */}
+            <div className="bg-gradient-to-br from-amber-500/10 to-amber-500/5 rounded-xl p-6 border-2 border-amber-500/30 shadow-lg">
+              <h4 className="text-lg font-bold text-amber-600 mb-4 flex items-center gap-2">
+                <div className="w-3 h-3 bg-amber-500 rounded-full" />
+                Unpaid Pledges
+              </h4>
+              <div className="space-y-3">
+                <div>
+                  <p className="text-sm text-muted-foreground">USD</p>
+                  <p className="text-3xl font-bold text-amber-600">${formatAmount(displayUnpaidUSD)}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">KES</p>
+                  <p className="text-2xl font-bold text-amber-600">KES {formatAmount(displayUnpaidKES)}</p>
+                </div>
+                <div className="pt-2 border-t border-amber-500/20">
+                  <p className="text-sm text-muted-foreground">Of Goal</p>
+                  <p className="text-2xl font-bold text-amber-600">{unpaidPercentage.toFixed(1)}%</p>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Goal Section */}
-          <div>
-            <h4 className="text-xl font-bold text-foreground mb-4">Target Goal</h4>
-            <div className="grid grid-cols-2 gap-6">
-              {/* USD Goal */}
-              <div className="bg-gradient-to-br from-primary/5 to-transparent rounded-xl p-8 border-2 border-dashed border-primary/40 shadow-md">
-                <p className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wide">US Dollars</p>
-                <p className="text-4xl font-bold text-primary/80">
-                  ${formatAmount(goalAmountUSD)}
-                </p>
-              </div>
-
-              {/* KES Goal */}
-              <div className="bg-gradient-to-br from-success/5 to-transparent rounded-xl p-8 border-2 border-dashed border-success/40 shadow-md">
-                <p className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wide">Kenyan Shillings</p>
-                <p className="text-4xl font-bold text-success/80">
-                  KES {formatAmount(goalKES)}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Progress Percentage */}
+          {/* Total Pledged */}
           <div className="bg-gradient-to-r from-primary/10 via-success/10 to-primary/10 rounded-xl p-6 border-2 border-primary/30 shadow-lg">
-            <div className="flex items-center justify-between">
-              <span className="text-base font-semibold text-foreground">Progress to Goal</span>
-              <span className="text-3xl font-bold text-primary">
-                {((displayUSD / goalAmountUSD) * 100).toFixed(1)}%
-              </span>
+            <h4 className="text-lg font-bold text-foreground mb-4">Total Pledged (Paid + Unpaid)</h4>
+            <div className="grid grid-cols-2 gap-6">
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">USD</p>
+                <p className="text-3xl font-bold text-primary">${formatAmount(displayPaidUSD + displayUnpaidUSD)}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">KES</p>
+                <p className="text-3xl font-bold text-success">KES {formatAmount(displayPaidKES + displayUnpaidKES)}</p>
+              </div>
+            </div>
+            <div className="mt-4 pt-4 border-t border-primary/20">
+              <div className="flex items-center justify-between">
+                <span className="text-base font-semibold text-foreground">Progress to Goal</span>
+                <span className="text-3xl font-bold text-primary">
+                  {totalPledgedPercentage.toFixed(1)}%
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Goal */}
+          <div className="bg-gradient-to-br from-primary/5 to-transparent rounded-xl p-6 border-2 border-dashed border-primary/40 shadow-md">
+            <h4 className="text-lg font-bold text-foreground mb-4">Target Goal</h4>
+            <div className="grid grid-cols-2 gap-6">
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">USD</p>
+                <p className="text-3xl font-bold text-primary/80">${formatAmount(goalAmountUSD)}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">KES</p>
+                <p className="text-3xl font-bold text-success/80">KES {formatAmount(goalKES)}</p>
+              </div>
             </div>
           </div>
         </div>

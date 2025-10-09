@@ -10,8 +10,10 @@ interface EventThermometerProps {
 }
 
 export function EventThermometer({ eventId }: EventThermometerProps) {
-  const [totalUSD, setTotalUSD] = useState(0);
-  const [totalKES, setTotalKES] = useState(0);
+  const [paidUSD, setPaidUSD] = useState(0);
+  const [paidKES, setPaidKES] = useState(0);
+  const [unpaidUSD, setUnpaidUSD] = useState(0);
+  const [unpaidKES, setUnpaidKES] = useState(0);
   const [goalAmount, setGoalAmount] = useState(50000);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -40,17 +42,24 @@ export function EventThermometer({ eventId }: EventThermometerProps) {
 
       console.log('All pledges:', data);
 
-      // Count only CONFIRMED/PAID pledges
+      // Separate confirmed/paid and unconfirmed/unpaid pledges
       const confirmedPledges = (data || []).filter((p: any) => p.is_confirmed === true);
-      console.log('Confirmed pledges for thermometer:', confirmedPledges);
+      const unconfirmedPledges = (data || []).filter((p: any) => p.is_confirmed === false || p.is_confirmed === null);
       
-      const usd = confirmedPledges.reduce((sum: number, p: any) => sum + (Number(p.amount_in_usd) || 0), 0);
+      console.log('Confirmed pledges:', confirmedPledges);
+      console.log('Unconfirmed pledges:', unconfirmedPledges);
+      
+      const paidUSDAmount = confirmedPledges.reduce((sum: number, p: any) => sum + (Number(p.amount_in_usd) || 0), 0);
+      const unpaidUSDAmount = unconfirmedPledges.reduce((sum: number, p: any) => sum + (Number(p.amount_in_usd) || 0), 0);
       
       // Use fixed exchange rate: 1 USD = 128 KES
-      const kes = usd * 128;
+      const paidKESAmount = paidUSDAmount * 128;
+      const unpaidKESAmount = unpaidUSDAmount * 128;
 
-      setTotalUSD(usd);
-      setTotalKES(kes);
+      setPaidUSD(paidUSDAmount);
+      setPaidKES(paidKESAmount);
+      setUnpaidUSD(unpaidUSDAmount);
+      setUnpaidKES(unpaidKESAmount);
     } catch (error) {
       console.error('Error loading pledge data:', error);
       toast.error('Failed to load fundraising data');
@@ -117,8 +126,10 @@ export function EventThermometer({ eventId }: EventThermometerProps) {
       </CardHeader>
       <CardContent>
         <ImprovedThermometer 
-          currentAmountUSD={totalUSD}
-          currentAmountKES={totalKES}
+          paidAmountUSD={paidUSD}
+          paidAmountKES={paidKES}
+          unpaidAmountUSD={unpaidUSD}
+          unpaidAmountKES={unpaidKES}
           goalAmountUSD={goalAmount}
         />
       </CardContent>
