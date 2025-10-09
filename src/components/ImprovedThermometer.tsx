@@ -161,8 +161,32 @@ export function ImprovedThermometer({
         </div>
       </div>
 
-      <div className="flex flex-col items-center gap-8">
-        {/* Thermometer - centered at top */}
+      <div className="flex flex-col lg:flex-row items-center lg:items-start justify-center gap-8">
+        {/* Paid Pledges Card - Left */}
+        <div className="flex-shrink-0 w-full max-w-sm lg:mt-32">
+          <div className="bg-gradient-to-br from-success/10 to-success/5 rounded-xl p-6 border-2 border-success/30 shadow-lg">
+            <h4 className="text-lg font-bold text-success mb-4 flex items-center gap-2">
+              <div className="w-3 h-3 bg-success rounded-full" />
+              Paid Pledges
+            </h4>
+            <div className="space-y-3">
+              <div>
+                <p className="text-sm text-muted-foreground">USD</p>
+                <p className="text-3xl font-bold text-success">${formatAmount(displayPaidUSD)}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">KES</p>
+                <p className="text-2xl font-bold text-success">KES {formatAmount(displayPaidKES)}</p>
+              </div>
+              <div className="pt-2 border-t border-success/20">
+                <p className="text-sm text-muted-foreground">Of Goal</p>
+                <p className="text-2xl font-bold text-success">{paidPercentage.toFixed(1)}%</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Thermometer - Center */}
         <div className="relative flex-shrink-0">
           <div className="relative w-24 h-[600px]">
             {/* Calibration marks - USD on left, KES on right */}
@@ -276,90 +300,67 @@ export function ImprovedThermometer({
           </div>
         </div>
 
-        {/* Stats display - below thermometer */}
-        <div className="w-full max-w-5xl space-y-6">
-          {/* Paid vs Unpaid Summary */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Paid */}
-            <div className="bg-gradient-to-br from-success/10 to-success/5 rounded-xl p-6 border-2 border-success/30 shadow-lg">
-              <h4 className="text-lg font-bold text-success mb-4 flex items-center gap-2">
-                <div className="w-3 h-3 bg-success rounded-full" />
-                Paid Pledges
-              </h4>
-              <div className="space-y-3">
-                <div>
-                  <p className="text-sm text-muted-foreground">USD</p>
-                  <p className="text-3xl font-bold text-success">${formatAmount(displayPaidUSD)}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">KES</p>
-                  <p className="text-2xl font-bold text-success">KES {formatAmount(displayPaidKES)}</p>
-                </div>
-                <div className="pt-2 border-t border-success/20">
-                  <p className="text-sm text-muted-foreground">Of Goal</p>
-                  <p className="text-2xl font-bold text-success">{paidPercentage.toFixed(1)}%</p>
-                </div>
+        {/* Unpaid Pledges Card - Right */}
+        <div className="flex-shrink-0 w-full max-w-sm lg:mt-32">
+          <div className="bg-gradient-to-br from-amber-500/10 to-amber-500/5 rounded-xl p-6 border-2 border-amber-500/30 shadow-lg">
+            <h4 className="text-lg font-bold text-amber-600 mb-4 flex items-center gap-2">
+              <div className="w-3 h-3 bg-amber-500 rounded-full" />
+              Unpaid Pledges
+            </h4>
+            <div className="space-y-3">
+              <div>
+                <p className="text-sm text-muted-foreground">USD</p>
+                <p className="text-3xl font-bold text-amber-600">${formatAmount(displayUnpaidUSD)}</p>
               </div>
-            </div>
-
-            {/* Unpaid */}
-            <div className="bg-gradient-to-br from-amber-500/10 to-amber-500/5 rounded-xl p-6 border-2 border-amber-500/30 shadow-lg">
-              <h4 className="text-lg font-bold text-amber-600 mb-4 flex items-center gap-2">
-                <div className="w-3 h-3 bg-amber-500 rounded-full" />
-                Unpaid Pledges
-              </h4>
-              <div className="space-y-3">
-                <div>
-                  <p className="text-sm text-muted-foreground">USD</p>
-                  <p className="text-3xl font-bold text-amber-600">${formatAmount(displayUnpaidUSD)}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">KES</p>
-                  <p className="text-2xl font-bold text-amber-600">KES {formatAmount(displayUnpaidKES)}</p>
-                </div>
-                <div className="pt-2 border-t border-amber-500/20">
-                  <p className="text-sm text-muted-foreground">Of Goal</p>
-                  <p className="text-2xl font-bold text-amber-600">{unpaidPercentage.toFixed(1)}%</p>
-                </div>
+              <div>
+                <p className="text-sm text-muted-foreground">KES</p>
+                <p className="text-2xl font-bold text-amber-600">KES {formatAmount(displayUnpaidKES)}</p>
+              </div>
+              <div className="pt-2 border-t border-amber-500/20">
+                <p className="text-sm text-muted-foreground">Of Goal</p>
+                <p className="text-2xl font-bold text-amber-600">{unpaidPercentage.toFixed(1)}%</p>
               </div>
             </div>
           </div>
+        </div>
+      </div>
 
-          {/* Total Pledged */}
-          <div className="bg-gradient-to-r from-primary/10 via-success/10 to-primary/10 rounded-xl p-6 border-2 border-primary/30 shadow-lg">
-            <h4 className="text-lg font-bold text-foreground mb-4">Total Pledged (Paid + Unpaid)</h4>
-            <div className="grid grid-cols-2 gap-6">
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">USD</p>
-                <p className="text-3xl font-bold text-primary">${formatAmount(displayPaidUSD + displayUnpaidUSD)}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">KES</p>
-                <p className="text-3xl font-bold text-success">KES {formatAmount(displayPaidKES + displayUnpaidKES)}</p>
-              </div>
+      {/* Stats display - below thermometer */}
+      <div className="w-full max-w-5xl space-y-6 mt-8">
+        {/* Total Pledged */}
+        <div className="bg-gradient-to-r from-primary/10 via-success/10 to-primary/10 rounded-xl p-6 border-2 border-primary/30 shadow-lg">
+          <h4 className="text-lg font-bold text-foreground mb-4">Total Pledged (Paid + Unpaid)</h4>
+          <div className="grid grid-cols-2 gap-6">
+            <div>
+              <p className="text-sm text-muted-foreground mb-1">USD</p>
+              <p className="text-3xl font-bold text-primary">${formatAmount(displayPaidUSD + displayUnpaidUSD)}</p>
             </div>
-            <div className="mt-4 pt-4 border-t border-primary/20">
-              <div className="flex items-center justify-between">
-                <span className="text-base font-semibold text-foreground">Progress to Goal</span>
-                <span className="text-3xl font-bold text-primary">
-                  {totalPledgedPercentage.toFixed(1)}%
-                </span>
-              </div>
+            <div>
+              <p className="text-sm text-muted-foreground mb-1">KES</p>
+              <p className="text-3xl font-bold text-success">KES {formatAmount(displayPaidKES + displayUnpaidKES)}</p>
             </div>
           </div>
+          <div className="mt-4 pt-4 border-t border-primary/20">
+            <div className="flex items-center justify-between">
+              <span className="text-base font-semibold text-foreground">Progress to Goal</span>
+              <span className="text-3xl font-bold text-primary">
+                {totalPledgedPercentage.toFixed(1)}%
+              </span>
+            </div>
+          </div>
+        </div>
 
-          {/* Goal */}
-          <div className="bg-gradient-to-br from-primary/5 to-transparent rounded-xl p-6 border-2 border-dashed border-primary/40 shadow-md">
-            <h4 className="text-lg font-bold text-foreground mb-4">Target Goal</h4>
-            <div className="grid grid-cols-2 gap-6">
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">USD</p>
-                <p className="text-3xl font-bold text-primary/80">${formatAmount(goalAmountUSD)}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">KES</p>
-                <p className="text-3xl font-bold text-success/80">KES {formatAmount(goalKES)}</p>
-              </div>
+        {/* Goal */}
+        <div className="bg-gradient-to-br from-primary/5 to-transparent rounded-xl p-6 border-2 border-dashed border-primary/40 shadow-md">
+          <h4 className="text-lg font-bold text-foreground mb-4">Target Goal</h4>
+          <div className="grid grid-cols-2 gap-6">
+            <div>
+              <p className="text-sm text-muted-foreground mb-1">USD</p>
+              <p className="text-3xl font-bold text-primary/80">${formatAmount(goalAmountUSD)}</p>
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground mb-1">KES</p>
+              <p className="text-3xl font-bold text-success/80">KES {formatAmount(goalKES)}</p>
             </div>
           </div>
         </div>
