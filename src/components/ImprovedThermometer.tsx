@@ -161,10 +161,10 @@ export function ImprovedThermometer({
         </div>
       </div>
 
-      <div className="flex flex-col lg:flex-row items-center lg:items-center justify-center gap-8 lg:gap-12">
+      <div className="flex flex-col lg:flex-row items-center lg:items-start justify-center gap-8">
         {/* Paid Pledges Card - Left */}
-        <div className="flex-shrink-0 w-full max-w-xs">
-          <div className="bg-gradient-to-br from-success/10 to-success/5 rounded-xl p-6 border-2 border-success/30 shadow-lg h-full">
+        <div className="flex-shrink-0 w-full max-w-sm lg:mt-32">
+          <div className="bg-gradient-to-br from-success/10 to-success/5 rounded-xl p-6 border-2 border-success/30 shadow-lg">
             <h4 className="text-lg font-bold text-success mb-4 flex items-center gap-2">
               <div className="w-3 h-3 bg-success rounded-full" />
               Paid Pledges
@@ -301,8 +301,8 @@ export function ImprovedThermometer({
         </div>
 
         {/* Unpaid Pledges Card - Right */}
-        <div className="flex-shrink-0 w-full max-w-xs">
-          <div className="bg-gradient-to-br from-amber-500/10 to-amber-500/5 rounded-xl p-6 border-2 border-amber-500/30 shadow-lg h-full">
+        <div className="flex-shrink-0 w-full max-w-sm lg:mt-32">
+          <div className="bg-gradient-to-br from-amber-500/10 to-amber-500/5 rounded-xl p-6 border-2 border-amber-500/30 shadow-lg">
             <h4 className="text-lg font-bold text-amber-600 mb-4 flex items-center gap-2">
               <div className="w-3 h-3 bg-amber-500 rounded-full" />
               Unpaid Pledges
