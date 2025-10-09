@@ -161,8 +161,8 @@ export function ImprovedThermometer({
         </div>
       </div>
 
-      <div className="flex items-center justify-center gap-32">
-        {/* Thermometer - centered */}
+      <div className="flex flex-col items-center gap-8">
+        {/* Thermometer - centered at top */}
         <div className="relative flex-shrink-0">
           <div className="relative w-24 h-[600px]">
             {/* Calibration marks - USD on left, KES on right */}
@@ -248,10 +248,10 @@ export function ImprovedThermometer({
           </div>
         </div>
 
-        {/* Stats display */}
-        <div className="flex-1 max-w-2xl space-y-8">
+        {/* Stats display - below thermometer */}
+        <div className="w-full max-w-5xl space-y-6">
           {/* Paid vs Unpaid Summary */}
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Paid */}
             <div className="bg-gradient-to-br from-success/10 to-success/5 rounded-xl p-6 border-2 border-success/30 shadow-lg">
               <h4 className="text-lg font-bold text-success mb-4 flex items-center gap-2">
