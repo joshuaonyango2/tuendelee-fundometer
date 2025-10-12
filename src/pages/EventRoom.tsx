@@ -212,8 +212,8 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
             amount_in_kes: amountInKES,
             currency: formData.currency,
             message: formData.message,
-            payment_type: 'online',
-            payment_method: formData.paymentMethod
+          payment_type: 'pledge',
+          payment_method: formData.paymentMethod
           } as any
         );
 

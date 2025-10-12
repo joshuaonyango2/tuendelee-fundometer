@@ -59,9 +59,29 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
         console.error('Failed to load payment methods', error);
         return;
       }
-      const mapped = (data || []).map((m: any) => ({ value: m.type, label: m.name }));
+      // Deduplicate by type and show friendly labels
+      const byType = new Map<string, { value: string; label: string }>();
+      const labelForType = (t: string) => {
+        switch (t) {
+          case 'mpesa':
+            return 'M-Pesa';
+          case 'paypal':
+            return 'PayPal';
+          case 'bank_transfer':
+            return 'Bank';
+          case 'benevity':
+            return 'Benevity';
+          default:
+            return t;
+        }
+      };
+      (data || []).forEach((m: any) => {
+        if (!byType.has(m.type)) {
+          byType.set(m.type, { value: m.type, label: labelForType(m.type) });
+        }
+      });
+      const mapped = Array.from(byType.values());
       setAvailableMethods(mapped);
-      // set default if empty
       if (!formData.paymentMethod && mapped[0]) {
         setFormData((prev) => ({ ...prev, paymentMethod: mapped[0].value }));
       }
@@ -86,7 +106,7 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
         email: "",
         amount: 0,
         currency: "USD",
-        paymentMethod: "M-Pesa",
+        paymentMethod: "",
         message: "",
       });
     } catch (error) {
