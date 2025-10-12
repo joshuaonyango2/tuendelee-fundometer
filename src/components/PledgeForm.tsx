@@ -59,28 +59,25 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
         console.error('Failed to load payment methods', error);
         return;
       }
-      // Deduplicate by type and show friendly labels
-      const byType = new Map<string, { value: string; label: string }>();
-      const labelForType = (t: string) => {
-        switch (t) {
+      // Map each active method; show friendly labels, but keep bank transfer entries distinct
+      const labelFor = (m: any) => {
+        switch (m.type) {
           case 'mpesa':
             return 'M-Pesa';
           case 'paypal':
             return 'PayPal';
-          case 'bank_transfer':
-            return 'Bank';
           case 'benevity':
             return 'Benevity';
+          case 'bank_transfer':
+            return m.name || 'Bank Transfer';
           default:
-            return t;
+            return m.name || m.type;
         }
       };
-      (data || []).forEach((m: any) => {
-        if (!byType.has(m.type)) {
-          byType.set(m.type, { value: m.type, label: labelForType(m.type) });
-        }
-      });
-      const mapped = Array.from(byType.values());
+      const mapped = (data || []).map((m: any) => ({
+        value: m.type === 'bank_transfer' ? `bank_transfer:${m.name || 'Bank'}` : m.type,
+        label: labelFor(m)
+      }));
       setAvailableMethods(mapped);
       if (!formData.paymentMethod && mapped[0]) {
         setFormData((prev) => ({ ...prev, paymentMethod: mapped[0].value }));
@@ -187,7 +184,7 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
                 <SelectTrigger className="border-primary/20 focus:border-primary">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="z-50 bg-background">
                   {currencies.map((curr) => (
                     <SelectItem key={curr.code} value={curr.code}>
                       {curr.symbol} {curr.code}
@@ -207,13 +204,13 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
               <SelectTrigger className="border-primary/20 focus:border-primary">
                 <SelectValue placeholder="Select payment method" />
               </SelectTrigger>
-              <SelectContent>
-                {availableMethods.map((method) => (
-                  <SelectItem key={method.value} value={method.value}>
-                    {method.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
+                <SelectContent className="z-50 bg-background">
+                  {availableMethods.map((method) => (
+                    <SelectItem key={method.value} value={method.value}>
+                      {method.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
             </Select>
           </div>
 
