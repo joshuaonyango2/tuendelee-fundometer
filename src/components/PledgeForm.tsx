@@ -185,10 +185,10 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
               onValueChange={(value) => setFormData({ ...formData, paymentMethod: value })}
             >
               <SelectTrigger className="border-primary/20 focus:border-primary">
-                <SelectValue />
+                <SelectValue placeholder="Select payment method" />
               </SelectTrigger>
               <SelectContent>
-                {paymentMethods.map((method) => (
+                {availableMethods.map((method) => (
                   <SelectItem key={method.value} value={method.value}>
                     {method.label}
                   </SelectItem>
