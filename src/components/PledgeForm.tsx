@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,7 +13,7 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Heart, DollarSign, User, Mail, MessageSquare } from "lucide-react";
-
+import { supabase } from "@/integrations/supabase/client";
 interface PledgeFormProps {
   onSubmit: (pledge: PledgeData) => void;
 }
@@ -34,12 +34,7 @@ const currencies = [
   { code: "GBP", symbol: "£", name: "British Pound" },
 ];
 
-const paymentMethods = [
-  { value: "M-Pesa", label: "M-Pesa" },
-  { value: "Benevity", label: "Benevity" },
-  { value: "Bank Transfer", label: "Bank Transfer" },
-  { value: "PayPal", label: "PayPal" },
-];
+// Payment methods will be loaded dynamically from Supabase
 
 export function PledgeForm({ onSubmit }: PledgeFormProps) {
   const [formData, setFormData] = useState<PledgeData>({
@@ -47,11 +42,32 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
     email: "",
     amount: 0,
     currency: "USD",
-    paymentMethod: "M-Pesa",
+    paymentMethod: "",
     message: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [availableMethods, setAvailableMethods] = useState<{ value: string; label: string }[]>([]);
 
+  useEffect(() => {
+    const loadMethods = async () => {
+      const { data, error } = await supabase
+        .from('payment_methods')
+        .select('name,type')
+        .eq('is_active', true)
+        .order('name');
+      if (error) {
+        console.error('Failed to load payment methods', error);
+        return;
+      }
+      const mapped = (data || []).map((m: any) => ({ value: m.type, label: m.name }));
+      setAvailableMethods(mapped);
+      // set default if empty
+      if (!formData.paymentMethod && mapped[0]) {
+        setFormData((prev) => ({ ...prev, paymentMethod: mapped[0].value }));
+      }
+    };
+    loadMethods();
+  }, []);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     

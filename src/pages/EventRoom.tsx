@@ -198,24 +198,26 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
       
       console.log('Converted amounts - USD:', amountInUSD, 'KES:', amountInKES);
       
-      const { data: newPledge, error: pledgeError } = await supabase
+      const generatedId = crypto.randomUUID();
+      const { error: pledgeError } = await supabase
         .from('event_pledges')
-        .insert({
-          event_id: eventId!,
-          name: formData.name,
-          email: formData.email,
-          amount: formData.amount,
-          amount_in_usd: amountInUSD,
-          amount_in_kes: amountInKES,
-          currency: formData.currency,
-          message: formData.message,
-          payment_type: 'online',
-          payment_method: formData.paymentMethod
-        })
-        .select()
-        .single();
+        .insert(
+          {
+            id: generatedId,
+            event_id: eventId!,
+            name: formData.name,
+            email: formData.email,
+            amount: formData.amount,
+            amount_in_usd: amountInUSD,
+            amount_in_kes: amountInKES,
+            currency: formData.currency,
+            message: formData.message,
+            payment_type: 'online',
+            payment_method: formData.paymentMethod
+          } as any
+        );
 
-      console.log('Pledge creation result:', { newPledge, pledgeError });
+      console.log('Pledge creation result:', { pledgeError });
 
       if (pledgeError) {
         console.error('Pledge creation error:', pledgeError);
@@ -223,13 +225,11 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
         return;
       }
 
-      if (newPledge) {
-        console.log('Setting payment dialog state...');
-        setCurrentPledge(formData);
-        setCurrentPledgeId(newPledge.id);
-        setShowPaymentDialog(true);
-        console.log('Payment dialog should now be visible');
-      }
+      console.log('Setting payment dialog state...');
+      setCurrentPledge(formData);
+      setCurrentPledgeId(generatedId);
+      setShowPaymentDialog(true);
+      console.log('Payment dialog should now be visible');
     } catch (error) {
       console.error('Error processing pledge:', error);
       toast.error('Failed to process pledge');
