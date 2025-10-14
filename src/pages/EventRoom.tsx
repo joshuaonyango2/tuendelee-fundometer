@@ -447,11 +447,17 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
                             <p className="text-sm text-muted-foreground mb-2">{pledge.message}</p>
                           )}
                           <div className="flex items-center justify-between">
-                            <span className="font-semibold text-primary">
-                              {pledge.currency} {pledge.amount.toLocaleString()}
+                            <span className="font-semibold text-primary text-lg">
+                              {pledge.currency === 'USD' 
+                                ? `USD ${pledge.amount_in_usd.toLocaleString()}`
+                                : `KES ${pledge.amount_in_kes.toLocaleString()}`
+                              }
                             </span>
-                            <span className="text-xs text-muted-foreground">
-                              ≈ ${pledge.amount_in_usd.toLocaleString()}
+                            <span className="text-sm text-muted-foreground">
+                              ≈ {pledge.currency === 'USD'
+                                ? `KES ${pledge.amount_in_kes.toLocaleString()}`
+                                : `USD ${pledge.amount_in_usd.toLocaleString()}`
+                              }
                             </span>
                           </div>
                         </div>
