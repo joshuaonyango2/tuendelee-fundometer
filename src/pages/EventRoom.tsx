@@ -462,7 +462,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
 
           {/* Sidebar */}
           <div className="space-y-6">
-            <Accordion type="multiple" defaultValue={["donations", "pledge"]} className="space-y-4">
+            <Accordion type="multiple" defaultValue={[]} className="space-y-4">
               {/* Recent Pledges - Collapsible */}
               <AccordionItem value="donations" className="border rounded-lg">
                 <Card className="border-0">
