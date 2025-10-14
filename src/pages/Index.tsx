@@ -61,12 +61,12 @@ const Index = () => {
             <Card className="border-success/30 bg-success/5">
               <CardHeader>
                 <Lock className="w-8 h-8 text-success mb-2" />
-                <CardTitle>Bank-Level Encryption</CardTitle>
+                <CardTitle>Encrypted Data Transfer</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription>
-                  All your personal data is encrypted using industry-standard SSL/TLS protocols, 
-                  ensuring maximum security during transmission
+                  Your personal information is protected using SSL/TLS encryption during transmission, 
+                  the same technology used by secure websites worldwide
                 </CardDescription>
               </CardContent>
             </Card>
