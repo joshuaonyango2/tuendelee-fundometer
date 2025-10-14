@@ -129,7 +129,11 @@ export function ImprovedPaymentOptions({
               <Button
                 key={method.id}
                 onClick={() => {
-                  if (onMethodSelected) {
+                  if (method.type === 'bank_transfer') {
+                    // Show confirmation inline for bank transfers (e.g., Standard Chartered)
+                    setSelectedMethod(method);
+                    setShowConfirmation(true);
+                  } else if (onMethodSelected) {
                     onMethodSelected(method);
                   } else {
                     setSelectedMethod(method);
