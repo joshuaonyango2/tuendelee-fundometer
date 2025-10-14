@@ -8,6 +8,7 @@ import { ArrowLeft, CheckCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from 'sonner';
 import { z } from 'zod';
+import standardCharteredLogo from "@/assets/standard-chartered-logo.jpg";
 
 interface PaymentConfirmationProps {
   pledgeId: string;
@@ -141,6 +142,9 @@ export function PaymentConfirmation({
       case 'bank_transfer':
         return (
           <div className="bg-accent p-4 rounded-lg mb-4">
+            <div className="flex items-center gap-3 mb-3">
+              <img src={standardCharteredLogo} alt="Standard Chartered" className="h-12 object-contain bg-white p-1 rounded" />
+            </div>
             <h4 className="font-semibold mb-2">Bank Transfer Details:</h4>
             <div className="space-y-2 text-sm">
               <div className="border-b border-border pb-2">
