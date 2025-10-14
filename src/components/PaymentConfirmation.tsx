@@ -142,17 +142,25 @@ export function PaymentConfirmation({
         return (
           <div className="bg-accent p-4 rounded-lg mb-4">
             <h4 className="font-semibold mb-2">Bank Transfer Details:</h4>
-            <div className="space-y-1 text-sm">
-              <p><strong>Bank:</strong> {details.bank_name}</p>
-              <p><strong>Account Name:</strong> {details.account_name}</p>
-              <p><strong>Account Number:</strong> {details.account_number}</p>
-              {details.branch && <p><strong>Branch:</strong> {details.branch}</p>}
-              {details.swift_code && <p><strong>SWIFT Code:</strong> {details.swift_code}</p>}
-              <p className="mt-2"><strong>Amount:</strong> {currency} {amount}</p>
+            <div className="space-y-2 text-sm">
+              <div className="border-b border-border pb-2">
+                <p><strong>Bank:</strong> Standard Chartered</p>
+                <p><strong>Account Name:</strong> TUENDELEE FOUNDATION</p>
+              </div>
+              <div>
+                <p className="font-semibold text-primary">Account Number (KES):</p>
+                <p className="font-mono text-base">0102853403700</p>
+              </div>
+              <div>
+                <p className="font-semibold text-primary">Account Number (USD):</p>
+                <p className="font-mono text-base">8702853403700</p>
+              </div>
+              <div className="border-t border-border pt-2 space-y-1">
+                <p><strong>Branch:</strong> KENYATTA AVENUE</p>
+                <p><strong>SWIFT Code:</strong> SCBLKENXXXX</p>
+              </div>
+              <p className="mt-2 pt-2 border-t border-border"><strong>Amount:</strong> {currency} {amount}</p>
             </div>
-            {details.instructions && (
-              <p className="mt-2 text-sm text-muted-foreground">{details.instructions}</p>
-            )}
           </div>
         );
 
