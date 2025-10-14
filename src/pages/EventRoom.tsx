@@ -561,6 +561,11 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
               email={currentPledge.email}
               name={currentPledge.name}
               onClose={() => setShowPaymentDialog(false)}
+              onMethodSelected={(method) => {
+                setSelectedPaymentMethod(method);
+                setShowPaymentDialog(false);
+                setShowPaymentConfirmation(true);
+              }}
             />
           )}
         </DialogContent>

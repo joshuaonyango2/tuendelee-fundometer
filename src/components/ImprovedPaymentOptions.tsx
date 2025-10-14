@@ -13,6 +13,7 @@ interface ImprovedPaymentOptionsProps {
   email: string;
   name: string;
   onClose: () => void;
+  onMethodSelected?: (method: any) => void;
 }
 
 export function ImprovedPaymentOptions({ 
@@ -21,7 +22,8 @@ export function ImprovedPaymentOptions({
   currency, 
   email, 
   name, 
-  onClose 
+  onClose,
+  onMethodSelected
 }: ImprovedPaymentOptionsProps) {
   const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
   const [selectedMethod, setSelectedMethod] = useState<any>(null);
@@ -127,8 +129,12 @@ export function ImprovedPaymentOptions({
               <Button
                 key={method.id}
                 onClick={() => {
-                  setSelectedMethod(method);
-                  setShowConfirmation(true);
+                  if (onMethodSelected) {
+                    onMethodSelected(method);
+                  } else {
+                    setSelectedMethod(method);
+                    setShowConfirmation(true);
+                  }
                 }}
                 className="w-full justify-between"
                 variant="outline"
