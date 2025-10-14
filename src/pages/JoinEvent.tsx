@@ -16,16 +16,15 @@ interface Event {
   title: string;
   description: string;
   scheduled_at: string;
-  goal_amount: number;
 }
 
 export default function JoinEvent() {
   const navigate = useNavigate();
-  const [events, setEvents] = useState<Event[]>([]);
-  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [activeEvent, setActiveEvent] = useState<Event | null>(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
 
   // Input validation schema
@@ -42,33 +41,33 @@ export default function JoinEvent() {
 
 
   useEffect(() => {
-    loadActiveEvents();
+    loadActiveEvent();
   }, []);
 
-  const loadActiveEvents = async () => {
+  const loadActiveEvent = async () => {
+    setIsLoading(true);
     try {
       const { data, error } = await supabase
         .from("fundraising_events")
-        .select("id, title, description, scheduled_at, goal_amount")
+        .select("id, title, description, scheduled_at")
         .eq("is_active", true)
-        .order("scheduled_at", { ascending: true });
+        .maybeSingle();
 
       if (error) throw error;
-      setEvents(data || []);
+      setActiveEvent(data);
     } catch (err: any) {
-      console.error("Error loading events:", err);
-      toast.error("Failed to load events");
+      console.error("Error loading event:", err);
+      toast.error("Failed to load active event");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleJoin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedEvent) {
-      setError("Please select an event to join");
-      return;
-    }
+    if (!activeEvent) return;
 
-    setIsLoading(true);
+    setIsSubmitting(true);
     setError("");
 
     try {
@@ -90,7 +89,7 @@ export default function JoinEvent() {
       const { error: sessionError } = await supabase
         .from("event_sessions")
         .insert({
-          event_id: selectedEvent.id,
+          event_id: activeEvent.id,
           session_token: sessionToken,
           attendee_name: result.data.name,
         });
@@ -99,131 +98,117 @@ export default function JoinEvent() {
 
       // Store session info in localStorage for access control
       localStorage.setItem("event_session", JSON.stringify({
-        eventId: selectedEvent.id,
+        eventId: activeEvent.id,
         sessionToken,
         attendeeName: result.data.name,
         attendeeEmail: result.data.email,
       }));
 
       toast.success("Welcome to the fundraising event!");
-      navigate(`/event/${selectedEvent.id}`);
+      navigate(`/event/${activeEvent.id}`);
     } catch (err: any) {
       setError(err.message || "Failed to join event");
       toast.error(err.message);
     } finally {
-      setIsLoading(false);
+      setIsSubmitting(false);
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-background flex items-center justify-center p-4">
+        <Card className="w-full max-w-md">
+          <CardContent className="p-8 text-center">
+            <p>Loading event...</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!activeEvent) {
+    return (
+      <div className="min-h-screen bg-gradient-background flex items-center justify-center p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <div className="flex justify-center mb-4">
+              <div className="p-3 bg-muted rounded-full">
+                <AlertCircle className="w-8 h-8 text-muted-foreground" />
+              </div>
+            </div>
+            <CardTitle className="text-2xl">No Active Event</CardTitle>
+            <CardDescription>
+              There are no active fundraising events at the moment. Please check back later.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button className="w-full" onClick={() => navigate("/")}>
+              Go Home
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-2xl">
+      <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
             <div className="p-3 bg-primary/10 rounded-full">
               <Shield className="w-8 h-8 text-primary" />
             </div>
           </div>
-          <CardTitle className="text-2xl">Join Fundraising Event</CardTitle>
+          <CardTitle className="text-2xl">Join {activeEvent.title}</CardTitle>
           <CardDescription>
-            Select an event and provide your details to join
+            {activeEvent.description || "Enter your details to join the event"}
           </CardDescription>
         </CardHeader>
         
         <CardContent>
-          {!selectedEvent ? (
-            <div className="space-y-4">
-              <h3 className="font-semibold text-lg">Active Events</h3>
-              {events.length === 0 ? (
-                <Alert>
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>No active events available at the moment.</AlertDescription>
-                </Alert>
-              ) : (
-                <div className="space-y-3">
-                  {events.map((event) => (
-                    <Card 
-                      key={event.id} 
-                      className="cursor-pointer hover:border-primary transition-colors"
-                      onClick={() => setSelectedEvent(event)}
-                    >
-                      <CardContent className="p-4">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <h4 className="font-semibold text-lg">{event.title}</h4>
-                            {event.description && (
-                              <p className="text-sm text-muted-foreground mt-1">{event.description}</p>
-                            )}
-                            <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
-                              <Calendar className="w-4 h-4" />
-                              {format(new Date(event.scheduled_at), "PPP 'at' p")}
-                            </div>
-                          </div>
-                          <Button variant="outline" size="sm">Join</Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              )}
+          <form onSubmit={handleJoin} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Your Name *</Label>
+              <Input
+                id="name"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Enter your full name"
+                required
+                disabled={isSubmitting}
+                autoFocus
+              />
             </div>
-          ) : (
-            <form onSubmit={handleJoin} className="space-y-4">
-              <div className="bg-muted p-4 rounded-lg">
-                <h3 className="font-semibold">Selected Event:</h3>
-                <p className="text-sm text-muted-foreground">{selectedEvent.title}</p>
-                <Button 
-                  type="button" 
-                  variant="link" 
-                  className="p-0 h-auto text-sm"
-                  onClick={() => setSelectedEvent(null)}
-                >
-                  Change event
-                </Button>
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="name">Your Name *</Label>
-                <Input
-                  id="name"
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Enter your full name"
-                  required
-                  disabled={isLoading}
-                  autoFocus
-                />
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email Address *</Label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="your.email@example.com"
+                required
+                disabled={isSubmitting}
+              />
+              <p className="text-xs text-muted-foreground">
+                We'll use this to follow up with you about the event
+              </p>
+            </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="email">Email Address *</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="your.email@example.com"
-                  required
-                  disabled={isLoading}
-                />
-                <p className="text-xs text-muted-foreground">
-                  We'll use this to follow up with you about the event
-                </p>
-              </div>
+            {error && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
 
-              {error && (
-                <Alert variant="destructive">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
-              )}
-
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Joining..." : "Join Event"}
-              </Button>
-            </form>
-          )}
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? "Joining..." : "Join Event"}
+            </Button>
+          </form>
         </CardContent>
       </Card>
     </div>
