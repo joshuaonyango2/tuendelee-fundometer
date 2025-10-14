@@ -163,7 +163,7 @@ export function ImprovedThermometer({
 
       <div className="flex flex-col lg:flex-row items-center lg:items-start justify-center gap-8 lg:gap-24">
         {/* Paid Pledges Card - Left */}
-        <div className="flex-shrink-0 w-full max-w-[280px] lg:mt-32">
+        <div className="flex-shrink-0 w-full max-w-[220px] lg:mt-32">
           <div className="bg-gradient-to-br from-success/10 to-success/5 rounded-lg p-3 border-2 border-success/30 shadow-lg">
             <h4 className="text-sm font-bold text-success mb-2 flex items-center gap-1.5">
               <div className="w-2 h-2 bg-success rounded-full" />
@@ -301,7 +301,7 @@ export function ImprovedThermometer({
         </div>
 
         {/* Unpaid Pledges Card - Right */}
-        <div className="flex-shrink-0 w-full max-w-[280px] lg:mt-32">
+        <div className="flex-shrink-0 w-full max-w-[220px] lg:mt-32">
           <div className="bg-gradient-to-br from-amber-500/10 to-amber-500/5 rounded-lg p-3 border-2 border-amber-500/30 shadow-lg">
             <h4 className="text-sm font-bold text-amber-600 mb-2 flex items-center gap-1.5">
               <div className="w-2 h-2 bg-amber-500 rounded-full" />
