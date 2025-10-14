@@ -192,15 +192,20 @@ export function PaymentConfirmation({
               <img src={benevityLogo} alt="Benevity" className="h-10 object-contain" />
             </div>
             <h4 className="font-semibold mb-2">Benevity Donation Instructions:</h4>
-            <p className="text-sm mb-2">Organization Name:</p>
-            <p className="font-semibold">{details.account_name}</p>
-            <p className="text-sm mt-2">Amount: <strong>{currency} {amount}</strong></p>
-            <p className="text-sm mt-2 text-muted-foreground">
-              Please complete your donation through your company's Benevity portal
-            </p>
-            {details.instructions && (
-              <p className="mt-2 text-sm text-muted-foreground">{details.instructions}</p>
-            )}
+            <div className="space-y-2 text-sm">
+              <div>
+                <p className="font-semibold">Charity Name:</p>
+                <p>Tuendelee Foundation</p>
+              </div>
+              <div>
+                <p className="font-semibold">Charity ID:</p>
+                <p className="font-mono">404-5660043209913_a8af</p>
+              </div>
+              <p className="mt-3 pt-3 border-t border-border"><strong>Amount:</strong> {currency} {amount}</p>
+              <p className="text-muted-foreground">
+                Please complete your donation through your company's Benevity portal
+              </p>
+            </div>
           </div>
         );
 
