@@ -28,8 +28,8 @@ const Index = () => {
         <div className="flex justify-center mb-16">
           <div className="bg-gradient-primary text-white rounded-2xl p-8 max-w-2xl w-full shadow-2xl">
             <h3 className="text-2xl font-bold mb-4 text-center">Ready to Make a Difference?</h3>
-            <p className="text-center mb-6 text-primary-foreground/90">
-              Join our live fundraising event and contribute to changing students' lives today
+            <p className="text-center mb-6 text-primary-foreground/90 text-lg">
+              One click and you're in. Join our live fundraising event and start changing lives today.
             </p>
             <div className="flex justify-center">
               <Button 
@@ -113,12 +113,12 @@ const Index = () => {
             <Card className="border-success/30 bg-success/5">
               <CardHeader>
                 <CheckCircle className="w-8 h-8 text-success mb-2" />
-                <CardTitle>Passcode Protection</CardTitle>
+                <CardTitle>Verified & Trusted</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription>
-                  Each fundraising event is protected by a unique passcode, ensuring only 
-                  authorized participants can access and contribute
+                  Our platform is built with security best practices and regularly audited 
+                  to ensure the highest standards of data protection and reliability
                 </CardDescription>
               </CardContent>
             </Card>
@@ -143,32 +143,23 @@ const Index = () => {
           <h3 className="text-2xl md:text-3xl font-bold text-center mb-8">
             How It Works
           </h3>
-          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto">
             <div className="text-center">
               <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl font-bold text-primary">1</span>
               </div>
-              <h4 className="font-bold mb-2">Join the Event</h4>
+              <h4 className="font-bold mb-2">Join Instantly</h4>
               <p className="text-sm text-muted-foreground">
-                Click "Join Event Now" and enter the event passcode provided by the organizer
+                Click "Join Event Now" and you're in. Simple as that. No complicated forms or long sign-ups.
               </p>
             </div>
             <div className="text-center">
               <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl font-bold text-primary">2</span>
               </div>
-              <h4 className="font-bold mb-2">Make Your Pledge</h4>
+              <h4 className="font-bold mb-2">Make Your Contribution</h4>
               <p className="text-sm text-muted-foreground">
-                Choose to pay now or pledge to pay later. Select your preferred payment method
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl font-bold text-primary">3</span>
-              </div>
-              <h4 className="font-bold mb-2">Track Impact</h4>
-              <p className="text-sm text-muted-foreground">
-                Watch the fundraising thermometer grow in real-time as we work together toward our goal
+                Choose to pay now for immediate impact or pledge to pay later. Pick your preferred payment method - it's flexible and secure.
               </p>
             </div>
           </div>
@@ -176,17 +167,20 @@ const Index = () => {
 
         {/* Final CTA */}
         <div className="text-center">
-          <p className="text-lg mb-4 text-muted-foreground">
-            Have your event passcode ready?
+          <p className="text-xl mb-6 font-medium">
+            It takes just moments to make a lasting impact
           </p>
           <Button 
             size="lg" 
             onClick={() => navigate("/join")}
-            className="bg-gradient-primary hover:opacity-90 text-white font-bold"
+            className="bg-gradient-primary hover:opacity-90 text-white font-bold text-lg py-6 px-10"
           >
             <Users className="w-5 h-5 mr-2" />
-            Join Event Now
+            Start Making a Difference
           </Button>
+          <p className="text-sm text-muted-foreground mt-4">
+            Join hundreds of donors supporting education in Kenya
+          </p>
         </div>
       </div>
     </div>
