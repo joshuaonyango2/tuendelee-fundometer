@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Calendar, Clock, Users, Target, AlertCircle, Video } from "lucide-react";
 import { ImprovedThermometer } from "@/components/ImprovedThermometer";
 import { PledgeForm, PledgeData } from "@/components/PledgeForm";
@@ -461,73 +462,90 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Recent Pledges */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Recent Donations</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {pledgesLoading ? (
-                  <PledgeSkeleton count={3} />
-                ) : pledgesError ? (
-                  <ErrorFallback error={pledgesError} onRetry={reloadPledges} />
-                ) : realtimePledges.length === 0 ? (
-                  <p className="text-center text-muted-foreground py-8">
-                    No donations yet. Be the first to contribute!
-                  </p>
-                ) : (
-                  <>
-                    <ScrollArea className="h-[400px]">
-                      <div className="space-y-3 pr-4">
-                        {realtimePledges.map((pledge) => (
-                          <div key={pledge.id} className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors">
-                            <div className="flex-1">
-                              <div className="flex items-center justify-between mb-1">
-                                <span className="font-medium text-sm">{pledge.display_name}</span>
-                                <span className="text-xs text-muted-foreground">
-                                  {formatDistanceToNow(new Date(pledge.created_at), { addSuffix: true })}
-                                </span>
-                              </div>
-                              {pledge.message && (
-                                <p className="text-sm text-muted-foreground mb-2 italic">"{pledge.message}"</p>
-                              )}
-                              <div className="flex items-center justify-between">
-                                <span className="font-semibold text-primary text-lg">
-                                  {formatAmountWithKES(pledge.amount, pledge.currency, pledge.amount_in_kes).primary}
-                                </span>
-                                <span className="text-sm text-muted-foreground">
-                                  {formatAmountWithKES(pledge.amount, pledge.currency, pledge.amount_in_kes).kes}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </ScrollArea>
-                    {realtimePledges.length > 5 && (
-                      <div className="text-center mt-2 pt-2 border-t">
-                        <p className="text-xs text-muted-foreground">
-                          Scroll to see all {realtimePledges.length} donations
+            <Accordion type="multiple" defaultValue={["donations", "pledge"]} className="space-y-4">
+              {/* Recent Pledges - Collapsible */}
+              <AccordionItem value="donations" className="border rounded-lg">
+                <Card className="border-0">
+                  <AccordionTrigger className="px-6 py-4 hover:no-underline">
+                    <CardTitle className="text-lg">Recent Donations</CardTitle>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <CardContent className="pt-0">
+                      {pledgesLoading ? (
+                        <PledgeSkeleton count={3} />
+                      ) : pledgesError ? (
+                        <ErrorFallback error={pledgesError} onRetry={reloadPledges} />
+                      ) : realtimePledges.length === 0 ? (
+                        <p className="text-center text-muted-foreground py-8">
+                          No donations yet. Be the first to contribute!
                         </p>
+                      ) : (
+                        <>
+                          <ScrollArea className="h-[400px]">
+                            <div className="space-y-3 pr-4">
+                              {realtimePledges.map((pledge) => (
+                                <div key={pledge.id} className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors">
+                                  <div className="flex-1">
+                                    <div className="flex items-center justify-between mb-1">
+                                      <span className="font-medium text-sm">{pledge.display_name}</span>
+                                      <span className="text-xs text-muted-foreground">
+                                        {formatDistanceToNow(new Date(pledge.created_at), { addSuffix: true })}
+                                      </span>
+                                    </div>
+                                    {pledge.message && (
+                                      <p className="text-sm text-muted-foreground mb-2 italic">"{pledge.message}"</p>
+                                    )}
+                                    <div className="flex items-center justify-between">
+                                      <span className="font-semibold text-primary text-lg">
+                                        {formatAmountWithKES(pledge.amount, pledge.currency, pledge.amount_in_kes).primary}
+                                      </span>
+                                      <span className="text-sm text-muted-foreground">
+                                        {formatAmountWithKES(pledge.amount, pledge.currency, pledge.amount_in_kes).kes}
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </ScrollArea>
+                          {realtimePledges.length > 5 && (
+                            <div className="text-center mt-2 pt-2 border-t">
+                              <p className="text-xs text-muted-foreground">
+                                Scroll to see all {realtimePledges.length} donations
+                              </p>
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </CardContent>
+                  </AccordionContent>
+                </Card>
+              </AccordionItem>
+
+              {/* Pledge Form - Collapsible */}
+              <AccordionItem value="pledge" className="border rounded-lg">
+                {event.is_active ? (
+                  <Card className="border-0">
+                    <AccordionTrigger className="px-6 py-4 hover:no-underline">
+                      <CardTitle className="text-lg">Make Your Pledge</CardTitle>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <div className="px-6 pb-6">
+                        <PledgeForm onSubmit={handlePledgeSubmit} />
                       </div>
-                    )}
-                  </>
+                    </AccordionContent>
+                  </Card>
+                ) : (
+                  <Card className="border-0">
+                    <CardContent className="text-center py-8">
+                      <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                      <h3 className="font-semibold text-lg mb-2">Event Has Ended</h3>
+                      <p className="text-muted-foreground">This fundraising event is no longer accepting pledges.</p>
+                    </CardContent>
+                  </Card>
                 )}
-              </CardContent>
-            </Card>
-            
-            {/* Action Button */}
-            {event.is_active ? (
-              <PledgeForm onSubmit={handlePledgeSubmit} />
-            ) : (
-              <Card>
-                <CardContent className="text-center py-8">
-                  <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="font-semibold text-lg mb-2">Event Has Ended</h3>
-                  <p className="text-muted-foreground">This fundraising event is no longer accepting pledges.</p>
-                </CardContent>
-              </Card>
-            )}
+              </AccordionItem>
+            </Accordion>
           </div>
         </div>
 
