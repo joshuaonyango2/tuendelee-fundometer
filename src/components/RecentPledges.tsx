@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Heart, TrendingUp } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { formatAmountWithKES } from "@/lib/currencyUtils";
 
 export interface Pledge {
   id: string;
@@ -20,14 +21,6 @@ interface RecentPledgesProps {
 }
 
 export function RecentPledges({ pledges }: RecentPledgesProps) {
-  const formatAmount = (amount: number, currency: string) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency,
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
 
   return (
     <Card className="shadow-xl border-primary/10">
@@ -70,12 +63,12 @@ export function RecentPledges({ pledges }: RecentPledgesProps) {
                       <div className="flex items-center justify-between gap-4">
                         <div>
                           <p className="font-bold text-lg text-primary">
-                            {formatAmount(pledge.amount, pledge.currency)}
+                            {formatAmountWithKES(pledge.amount, pledge.currency, pledge.amountInKES).primary}
                           </p>
                         </div>
                         <div className="text-right">
                           <p className="text-sm text-muted-foreground">
-                            ≈ {formatAmount(pledge.amountInKES, 'KES')}
+                            {formatAmountWithKES(pledge.amount, pledge.currency, pledge.amountInKES).kes}
                           </p>
                         </div>
                       </div>
