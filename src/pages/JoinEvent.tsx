@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,7 +11,6 @@ import { toast } from "sonner";
 import { z } from 'zod';
 
 export default function JoinEvent() {
-  const { shareLink } = useParams();
   const navigate = useNavigate();
   const [passcode, setPasscode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -38,26 +37,19 @@ export default function JoinEvent() {
       if (!result.success) {
         throw new Error(result.error.errors[0].message);
       }
-      // First, find the event by share link
+      
+      // Find the active event by passcode
       const { data: event, error: eventError } = await supabase
         .from("fundraising_events")
         .select("*")
-        .eq("share_link", shareLink)
+        .eq("passcode", passcode.toUpperCase())
+        .eq("is_active", true)
         .single();
 
       if (eventError || !event) {
-        throw new Error("Event not found. Please check your link.");
+        throw new Error("Invalid passcode or event not active.");
       }
 
-      // Check if event is active
-      if (!event.is_active) {
-        throw new Error("This event is not currently active.");
-      }
-
-      // Verify passcode
-      if (event.passcode !== passcode.toUpperCase()) {
-        throw new Error("Invalid passcode. Please try again.");
-      }
 
       // Create a secure session token (longer, more random)
       const sessionToken = Array.from(crypto.getRandomValues(new Uint8Array(32)))
