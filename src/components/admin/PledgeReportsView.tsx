@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { format, formatDistanceToNow } from 'date-fns';
 import { Download, CheckCircle, XCircle } from 'lucide-react';
 import { PledgeEditor } from './PledgeEditor';
+import { formatAmountWithKES } from '@/lib/currencyUtils';
 
 interface Pledge {
   id: string;
@@ -141,10 +142,10 @@ export function PledgeReportsView({ eventId }: PledgeReportsViewProps) {
               </TableCell>
               <TableCell>
                 <div className="font-medium">
-                  {pledge.currency} {pledge.amount.toLocaleString()}
+                  {formatAmountWithKES(pledge.amount, pledge.currency, pledge.amount_in_kes).primary}
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  ≈ KES {pledge.amount_in_kes.toLocaleString()}
+                  {formatAmountWithKES(pledge.amount, pledge.currency, pledge.amount_in_kes).kes}
                 </div>
               </TableCell>
               <TableCell>{pledge.payment_method || pledge.payment_type}</TableCell>

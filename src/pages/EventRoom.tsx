@@ -16,6 +16,7 @@ import { useRealtimePledges } from "@/hooks/useRealtimePledges";
 import { formatDistanceToNow } from "date-fns";
 import { currencyService } from "@/services/currencyService";
 import { toast } from 'sonner';
+import { formatAmountWithKES } from '@/lib/currencyUtils';
 
 interface EventDetails {
   id: string;
@@ -492,16 +493,10 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
                               )}
                               <div className="flex items-center justify-between">
                                 <span className="font-semibold text-primary text-lg">
-                                  {pledge.currency === 'USD' 
-                                    ? `USD ${pledge.amount_in_usd.toLocaleString()}`
-                                    : `KES ${pledge.amount_in_kes.toLocaleString()}`
-                                  }
+                                  {formatAmountWithKES(pledge.amount, pledge.currency, pledge.amount_in_kes).primary}
                                 </span>
                                 <span className="text-sm text-muted-foreground">
-                                  ≈ {pledge.currency === 'USD'
-                                    ? `KES ${pledge.amount_in_kes.toLocaleString()}`
-                                    : `USD ${pledge.amount_in_usd.toLocaleString()}`
-                                  }
+                                  {formatAmountWithKES(pledge.amount, pledge.currency, pledge.amount_in_kes).kes}
                                 </span>
                               </div>
                             </div>
