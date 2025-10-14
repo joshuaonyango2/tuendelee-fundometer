@@ -56,6 +56,7 @@ export default function AdminDashboard() {
     scheduled_at: "",
     duration_minutes: 60,
     goal_amount: 50000,
+    currency: "USD" as "USD" | "KES",
   });
 
   useEffect(() => {
@@ -137,6 +138,7 @@ export default function AdminDashboard() {
         scheduled_at: "",
         duration_minutes: 60,
         goal_amount: 50000,
+        currency: "USD",
       });
       loadEvents();
     } catch (error: any) {
@@ -491,17 +493,32 @@ export default function AdminDashboard() {
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="goal">Goal Amount (KES / USD)</Label>
-                    <Input
-                      id="goal"
-                      type="number"
-                      value={newEvent.goal_amount}
-                      onChange={(e) => setNewEvent({ ...newEvent, goal_amount: parseFloat(e.target.value) })}
-                      min="100"
-                      step="100"
-                      required
-                    />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="currency">Currency</Label>
+                      <select
+                        id="currency"
+                        value={newEvent.currency}
+                        onChange={(e) => setNewEvent({ ...newEvent, currency: e.target.value as "USD" | "KES" })}
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                        required
+                      >
+                        <option value="USD">USD</option>
+                        <option value="KES">KES</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="goal">Goal Amount</Label>
+                      <Input
+                        id="goal"
+                        type="number"
+                        value={newEvent.goal_amount}
+                        onChange={(e) => setNewEvent({ ...newEvent, goal_amount: parseFloat(e.target.value) })}
+                        min="100"
+                        step="100"
+                        required
+                      />
+                    </div>
                   </div>
 
                   <Button type="submit" className="w-full" disabled={isCreating}>
