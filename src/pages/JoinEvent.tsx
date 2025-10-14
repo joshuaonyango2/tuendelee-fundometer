@@ -14,17 +14,11 @@ export default function JoinEvent() {
   const { shareLink } = useParams();
   const navigate = useNavigate();
   const [passcode, setPasscode] = useState("");
-  const [attendeeName, setAttendeeName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
   // Input validation schema
   const joinSchema = z.object({
-    attendeeName: z.string()
-      .trim()
-      .min(1, 'Name required')
-      .max(100, 'Name too long')
-      .regex(/^[a-zA-Z\s\-']+$/, 'Invalid name format'),
     passcode: z.string()
       .length(6, 'Passcode must be 6 characters')
       .regex(/^[A-Z0-9]+$/, 'Invalid passcode format')
@@ -38,7 +32,6 @@ export default function JoinEvent() {
     try {
       // Validate inputs
       const result = joinSchema.safeParse({
-        attendeeName,
         passcode: passcode.toUpperCase()
       });
 
@@ -76,7 +69,7 @@ export default function JoinEvent() {
         .insert({
           event_id: event.id,
           session_token: sessionToken,
-          attendee_name: result.data.attendeeName,
+          attendee_name: "Guest",
         });
 
       if (sessionError) throw sessionError;
@@ -85,7 +78,7 @@ export default function JoinEvent() {
       localStorage.setItem("event_session", JSON.stringify({
         eventId: event.id,
         sessionToken,
-        attendeeName: result.data.attendeeName,
+        attendeeName: "Guest",
       }));
 
       toast.success("Welcome to the fundraising event!");
@@ -109,40 +102,28 @@ export default function JoinEvent() {
           </div>
           <CardTitle className="text-2xl">Join Fundraising Event</CardTitle>
           <CardDescription>
-            Enter the passcode provided by your event organizer
+            Enter the event passcode to join
           </CardDescription>
         </CardHeader>
         
         <CardContent>
           <form onSubmit={handleJoin} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Your Name</Label>
-              <Input
-                id="name"
-                type="text"
-                value={attendeeName}
-                onChange={(e) => setAttendeeName(e.target.value)}
-                placeholder="Enter your full name"
-                required
-                disabled={isLoading}
-              />
-            </div>
-            
-            <div className="space-y-2">
               <Label htmlFor="passcode">Event Passcode</Label>
               <Input
                 id="passcode"
                 type="text"
                 value={passcode}
-                onChange={(e) => setPasscode(e.target.value)}
+                onChange={(e) => setPasscode(e.target.value.toUpperCase())}
                 placeholder="Enter 6-character passcode"
                 maxLength={6}
-                className="font-mono text-lg text-center tracking-wider"
+                className="font-mono text-2xl text-center tracking-widest uppercase"
                 required
                 disabled={isLoading}
+                autoFocus
               />
-              <p className="text-xs text-muted-foreground">
-                The passcode should be provided by your event organizer
+              <p className="text-xs text-muted-foreground text-center">
+                Get the passcode from your event organizer
               </p>
             </div>
 
