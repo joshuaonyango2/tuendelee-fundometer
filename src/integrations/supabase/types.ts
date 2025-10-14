@@ -161,9 +161,11 @@ export type Database = {
           is_confirmed: boolean | null
           message: string | null
           name: string
+          payment_deadline: string | null
           payment_method: string | null
           payment_reference: string | null
           payment_type: string
+          pledge_duration_days: number | null
         }
         Insert: {
           amount: number
@@ -180,9 +182,11 @@ export type Database = {
           is_confirmed?: boolean | null
           message?: string | null
           name: string
+          payment_deadline?: string | null
           payment_method?: string | null
           payment_reference?: string | null
           payment_type: string
+          pledge_duration_days?: number | null
         }
         Update: {
           amount?: number
@@ -199,9 +203,11 @@ export type Database = {
           is_confirmed?: boolean | null
           message?: string | null
           name?: string
+          payment_deadline?: string | null
           payment_method?: string | null
           payment_reference?: string | null
           payment_type?: string
+          pledge_duration_days?: number | null
         }
         Relationships: [
           {

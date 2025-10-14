@@ -199,6 +199,14 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
       
       console.log('Converted amounts - USD:', amountInUSD, 'KES:', amountInKES);
       
+      // Calculate payment deadline if it's a pledge
+      let paymentDeadline = null;
+      if (formData.paymentType === 'pledge' && formData.pledgeDurationDays) {
+        const deadline = new Date();
+        deadline.setDate(deadline.getDate() + formData.pledgeDurationDays);
+        paymentDeadline = deadline.toISOString();
+      }
+      
       const generatedId = crypto.randomUUID();
       const { error: pledgeError } = await supabase
         .from('event_pledges')
@@ -213,8 +221,10 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
             amount_in_kes: amountInKES,
             currency: formData.currency,
             message: formData.message,
-          payment_type: 'pledge',
-          payment_method: formData.paymentMethod
+            payment_type: formData.paymentType,
+            payment_method: formData.paymentMethod,
+            pledge_duration_days: formData.paymentType === 'pledge' ? formData.pledgeDurationDays : null,
+            payment_deadline: paymentDeadline
           } as any
         );
 
@@ -226,11 +236,16 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
         return;
       }
 
-      console.log('Setting payment dialog state...');
-      setCurrentPledge(formData);
-      setCurrentPledgeId(generatedId);
-      setShowPaymentDialog(true);
-      console.log('Payment dialog should now be visible');
+      // Only show payment dialog for immediate payments
+      if (formData.paymentType === 'immediate') {
+        console.log('Setting payment dialog state...');
+        setCurrentPledge(formData);
+        setCurrentPledgeId(generatedId);
+        setShowPaymentDialog(true);
+        console.log('Payment dialog should now be visible');
+      } else {
+        toast.success(`Pledge created! Payment due in ${formData.pledgeDurationDays} days`);
+      }
     } catch (error) {
       console.error('Error processing pledge:', error);
       toast.error('Failed to process pledge');

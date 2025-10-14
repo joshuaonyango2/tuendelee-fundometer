@@ -25,6 +25,8 @@ export interface PledgeData {
   currency: string;
   paymentMethod: string;
   message?: string;
+  paymentType: 'immediate' | 'pledge';
+  pledgeDurationDays?: number;
 }
 
 const currencies = [
@@ -44,6 +46,8 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
     currency: "KES",
     paymentMethod: "",
     message: "",
+    paymentType: 'immediate',
+    pledgeDurationDays: 7,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [availableMethods, setAvailableMethods] = useState<{ value: string; label: string }[]>([]);
@@ -85,29 +89,34 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
     };
     loadMethods();
   }, []);
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const handleSubmit = async (paymentType: 'immediate' | 'pledge') => {
     if (!formData.name || !formData.email || formData.amount <= 0) {
       toast.error("Please fill in all required fields");
       return;
     }
 
+    if (paymentType === 'pledge' && (!formData.pledgeDurationDays || formData.pledgeDurationDays < 1 || formData.pledgeDurationDays > 30)) {
+      toast.error("Please select a valid payment duration (1-30 days)");
+      return;
+    }
+
     setIsSubmitting(true);
     try {
-      await onSubmit(formData);
+      await onSubmit({ ...formData, paymentType });
       
       // Reset form after successful submission
       setFormData({
         name: "",
         email: "",
         amount: 0,
-        currency: "USD",
+        currency: "KES",
         paymentMethod: "",
         message: "",
+        paymentType: 'immediate',
+        pledgeDurationDays: 7,
       });
     } catch (error) {
-      toast.error("Failed to submit pledge. Please try again.");
+      toast.error("Failed to submit. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -125,7 +134,7 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
         </CardDescription>
       </CardHeader>
       <CardContent className="pt-6">
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="name" className="flex items-center gap-2">
               <User className="w-4 h-4" />
@@ -214,6 +223,24 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
           </div>
 
           <div className="space-y-2">
+            <Label htmlFor="duration">Payment Duration (For Pledges)</Label>
+            <Select
+              value={formData.pledgeDurationDays?.toString() || "7"}
+              onValueChange={(value) => setFormData({ ...formData, pledgeDurationDays: parseInt(value) })}
+            >
+              <SelectTrigger className="border-primary/20 focus:border-primary">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="z-50 bg-background">
+                <SelectItem value="7">7 days</SelectItem>
+                <SelectItem value="14">14 days</SelectItem>
+                <SelectItem value="21">21 days</SelectItem>
+                <SelectItem value="30">30 days (1 month)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="message" className="flex items-center gap-2">
               <MessageSquare className="w-4 h-4" />
               Message (Optional)
@@ -228,24 +255,46 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
             />
           </div>
 
-          <Button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full bg-gradient-secondary hover:opacity-90 text-white font-semibold py-6 text-lg shadow-lg"
-          >
-            {isSubmitting ? (
-              <span className="flex items-center gap-2">
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Processing...
-              </span>
-            ) : (
-              <span className="flex items-center gap-2">
-                <Heart className="w-5 h-5" />
-                Pledge Now
-              </span>
-            )}
-          </Button>
-        </form>
+          <div className="grid grid-cols-2 gap-3">
+            <Button
+              type="button"
+              onClick={() => handleSubmit('immediate')}
+              disabled={isSubmitting}
+              className="w-full bg-success hover:bg-success/90 text-white font-semibold py-6 text-lg shadow-lg"
+            >
+              {isSubmitting ? (
+                <span className="flex items-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Processing...
+                </span>
+              ) : (
+                <span className="flex items-center gap-2">
+                  <DollarSign className="w-5 h-5" />
+                  Pay Now
+                </span>
+              )}
+            </Button>
+
+            <Button
+              type="button"
+              onClick={() => handleSubmit('pledge')}
+              disabled={isSubmitting}
+              className="w-full bg-gradient-secondary hover:opacity-90 text-white font-semibold py-6 text-lg shadow-lg"
+            >
+              {isSubmitting ? (
+                <span className="flex items-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Processing...
+                </span>
+              ) : (
+                <span className="flex items-center gap-2">
+                  <Heart className="w-5 h-5" />
+                  Pledge Now
+                </span>
+              )}
+            </Button>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );
