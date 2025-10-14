@@ -13,7 +13,9 @@ export const formatAmountWithKES = (
   amountInKES?: number
 ): { primary: string; kes: string } => {
   const formatCurrency = (value: number, currencyCode: string) => {
-    return new Intl.NumberFormat('en-US', {
+    // Use en-KE locale for proper KSh symbol display
+    const locale = currencyCode === 'KES' ? 'en-KE' : 'en-US';
+    return new Intl.NumberFormat(locale, {
       style: 'currency',
       currency: currencyCode,
       minimumFractionDigits: 0,
@@ -63,7 +65,7 @@ export const getKESConversion = async (
   
   const kesValue = amountInKES || await currencyService.convertAmount(amount, currency, 'KES');
   
-  return new Intl.NumberFormat('en-US', {
+  return new Intl.NumberFormat('en-KE', {
     style: 'currency',
     currency: 'KES',
     minimumFractionDigits: 0,

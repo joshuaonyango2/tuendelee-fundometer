@@ -67,9 +67,9 @@ export function ImprovedThermometer({
     };
     
     const formatLabelKES = (value: number) => {
-      if (value >= 1000000) return `KES ${(value / 1000000).toFixed(1)}M`;
-      if (value >= 1000) return `KES ${(value / 1000).toFixed(0)}K`;
-      return `KES ${value}`;
+      if (value >= 1000000) return `KSh ${(value / 1000000).toFixed(1)}M`;
+      if (value >= 1000) return `KSh ${(value / 1000).toFixed(0)}K`;
+      return `KSh ${value}`;
     };
     
     // Generate fewer marks for cleaner look - maximum 6 marks
@@ -175,8 +175,8 @@ export function ImprovedThermometer({
                 <p className="text-3xl font-bold text-success">${formatAmount(displayPaidUSD)}</p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">KES</p>
-                <p className="text-2xl font-bold text-success">KES {formatAmount(displayPaidKES)}</p>
+                <p className="text-sm text-muted-foreground">KSh</p>
+                <p className="text-2xl font-bold text-success">KSh {formatAmount(displayPaidKES)}</p>
               </div>
               <div className="pt-2 border-t border-success/20">
                 <p className="text-sm text-muted-foreground">Of Goal</p>
@@ -273,7 +273,7 @@ export function ImprovedThermometer({
               >
                 <div className="text-right mr-3">
                   <div className="text-sm font-bold text-success">${formatAmount(displayPaidUSD)}</div>
-                  <div className="text-xs text-success/70">KES {formatAmount(displayPaidKES)}</div>
+                  <div className="text-xs text-success/70">KSh {formatAmount(displayPaidKES)}</div>
                 </div>
                 <div className="w-8 h-0.5 bg-success shadow-lg" />
               </div>
@@ -288,7 +288,7 @@ export function ImprovedThermometer({
                 <div className="w-8 h-0.5 bg-amber-500 shadow-lg" />
                 <div className="text-left ml-3">
                   <div className="text-sm font-bold text-amber-600">${formatAmount(displayUnpaidUSD)}</div>
-                  <div className="text-xs text-amber-600/70">KES {formatAmount(displayUnpaidKES)}</div>
+                  <div className="text-xs text-amber-600/70">KSh {formatAmount(displayUnpaidKES)}</div>
                 </div>
               </div>
             )}
@@ -313,8 +313,8 @@ export function ImprovedThermometer({
                 <p className="text-3xl font-bold text-amber-600">${formatAmount(displayUnpaidUSD)}</p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">KES</p>
-                <p className="text-2xl font-bold text-amber-600">KES {formatAmount(displayUnpaidKES)}</p>
+                <p className="text-sm text-muted-foreground">KSh</p>
+                <p className="text-2xl font-bold text-amber-600">KSh {formatAmount(displayUnpaidKES)}</p>
               </div>
               <div className="pt-2 border-t border-amber-500/20">
                 <p className="text-sm text-muted-foreground">Of Goal</p>
@@ -336,8 +336,8 @@ export function ImprovedThermometer({
               <p className="text-3xl font-bold text-primary">${formatAmount(displayPaidUSD + displayUnpaidUSD)}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground mb-1">KES</p>
-              <p className="text-3xl font-bold text-success">KES {formatAmount(displayPaidKES + displayUnpaidKES)}</p>
+              <p className="text-sm text-muted-foreground mb-1">KSh</p>
+              <p className="text-3xl font-bold text-success">KSh {formatAmount(displayPaidKES + displayUnpaidKES)}</p>
             </div>
           </div>
           <div className="mt-4 pt-4 border-t border-primary/20">
@@ -355,8 +355,8 @@ export function ImprovedThermometer({
           <h4 className="text-lg font-bold text-foreground mb-4">Target Goal</h4>
           <div className="grid grid-cols-2 gap-6">
             <div>
-              <p className="text-sm text-muted-foreground mb-1">KES</p>
-              <p className="text-3xl font-bold text-success/80">KES {formatAmount(goalKES)}</p>
+              <p className="text-sm text-muted-foreground mb-1">KSh</p>
+              <p className="text-3xl font-bold text-success/80">KSh {formatAmount(goalKES)}</p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground mb-1">USD</p>
