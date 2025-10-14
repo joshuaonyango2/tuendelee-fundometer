@@ -163,24 +163,24 @@ export function ImprovedThermometer({
 
       <div className="flex flex-col lg:flex-row items-center lg:items-start justify-center gap-8 lg:gap-24">
         {/* Paid Pledges Card - Left */}
-        <div className="flex-shrink-0 w-full max-w-sm lg:mt-32">
-          <div className="bg-gradient-to-br from-success/10 to-success/5 rounded-xl p-6 border-2 border-success/30 shadow-lg">
-            <h4 className="text-lg font-bold text-success mb-4 flex items-center gap-2">
-              <div className="w-3 h-3 bg-success rounded-full" />
+        <div className="flex-shrink-0 w-full max-w-xs lg:mt-32">
+          <div className="bg-gradient-to-br from-success/10 to-success/5 rounded-xl p-4 border-2 border-success/30 shadow-lg">
+            <h4 className="text-base font-bold text-success mb-3 flex items-center gap-2">
+              <div className="w-2.5 h-2.5 bg-success rounded-full" />
               Paid Pledges
             </h4>
-            <div className="space-y-3">
+            <div className="space-y-2">
               <div>
-                <p className="text-sm text-muted-foreground">USD</p>
-                <p className="text-3xl font-bold text-success">${formatAmount(displayPaidUSD)}</p>
+                <p className="text-xs text-muted-foreground">USD</p>
+                <p className="text-2xl font-bold text-success">${formatAmount(displayPaidUSD)}</p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">KSh</p>
-                <p className="text-2xl font-bold text-success">KSh {formatAmount(displayPaidKES)}</p>
+                <p className="text-xs text-muted-foreground">KSh</p>
+                <p className="text-xl font-bold text-success">KSh {formatAmount(displayPaidKES)}</p>
               </div>
-              <div className="pt-2 border-t border-success/20">
-                <p className="text-sm text-muted-foreground">Of Goal</p>
-                <p className="text-2xl font-bold text-success">{paidPercentage.toFixed(1)}%</p>
+              <div className="pt-1.5 border-t border-success/20">
+                <p className="text-xs text-muted-foreground">Of Goal</p>
+                <p className="text-xl font-bold text-success">{paidPercentage.toFixed(1)}%</p>
               </div>
             </div>
           </div>
@@ -301,24 +301,24 @@ export function ImprovedThermometer({
         </div>
 
         {/* Unpaid Pledges Card - Right */}
-        <div className="flex-shrink-0 w-full max-w-sm lg:mt-32">
-          <div className="bg-gradient-to-br from-amber-500/10 to-amber-500/5 rounded-xl p-6 border-2 border-amber-500/30 shadow-lg">
-            <h4 className="text-lg font-bold text-amber-600 mb-4 flex items-center gap-2">
-              <div className="w-3 h-3 bg-amber-500 rounded-full" />
+        <div className="flex-shrink-0 w-full max-w-xs lg:mt-32">
+          <div className="bg-gradient-to-br from-amber-500/10 to-amber-500/5 rounded-xl p-4 border-2 border-amber-500/30 shadow-lg">
+            <h4 className="text-base font-bold text-amber-600 mb-3 flex items-center gap-2">
+              <div className="w-2.5 h-2.5 bg-amber-500 rounded-full" />
               Unpaid Pledges
             </h4>
-            <div className="space-y-3">
+            <div className="space-y-2">
               <div>
-                <p className="text-sm text-muted-foreground">USD</p>
-                <p className="text-3xl font-bold text-amber-600">${formatAmount(displayUnpaidUSD)}</p>
+                <p className="text-xs text-muted-foreground">USD</p>
+                <p className="text-2xl font-bold text-amber-600">${formatAmount(displayUnpaidUSD)}</p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">KSh</p>
-                <p className="text-2xl font-bold text-amber-600">KSh {formatAmount(displayUnpaidKES)}</p>
+                <p className="text-xs text-muted-foreground">KSh</p>
+                <p className="text-xl font-bold text-amber-600">KSh {formatAmount(displayUnpaidKES)}</p>
               </div>
-              <div className="pt-2 border-t border-amber-500/20">
-                <p className="text-sm text-muted-foreground">Of Goal</p>
-                <p className="text-2xl font-bold text-amber-600">{unpaidPercentage.toFixed(1)}%</p>
+              <div className="pt-1.5 border-t border-amber-500/20">
+                <p className="text-xs text-muted-foreground">Of Goal</p>
+                <p className="text-xl font-bold text-amber-600">{unpaidPercentage.toFixed(1)}%</p>
               </div>
             </div>
           </div>
