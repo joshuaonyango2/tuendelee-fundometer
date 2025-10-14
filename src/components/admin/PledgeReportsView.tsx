@@ -24,7 +24,7 @@ interface Pledge {
   is_confirmed: boolean;
   created_at: string;
   message: string;
-  payment_deadline: string | null;
+  payment_deadline?: string | null;
 }
 
 interface PledgeReportsViewProps {

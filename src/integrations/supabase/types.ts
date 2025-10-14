@@ -439,6 +439,7 @@ export type Database = {
           is_confirmed: boolean
           message: string
           name: string
+          payment_deadline: string
           payment_method: string
           payment_reference: string
           payment_type: string
