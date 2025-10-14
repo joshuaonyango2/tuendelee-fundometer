@@ -144,10 +144,7 @@ export function PledgeReportsView({ eventId }: PledgeReportsViewProps) {
                   {pledge.currency} {pledge.amount.toLocaleString()}
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  {pledge.currency === 'USD' 
-                    ? `KES ${pledge.amount_in_kes.toLocaleString()}`
-                    : `$${pledge.amount_in_usd.toLocaleString()} USD`
-                  }
+                  ≈ KES {pledge.amount_in_kes.toLocaleString()}
                 </div>
               </TableCell>
               <TableCell>{pledge.payment_method || pledge.payment_type}</TableCell>

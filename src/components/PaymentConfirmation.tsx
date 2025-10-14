@@ -12,6 +12,7 @@ import standardCharteredLogo from "@/assets/standard-chartered-logo.jpg";
 import mpesaLogo from "@/assets/mpesa-logo.png";
 import paypalLogo from "@/assets/paypal-logo.png";
 import benevityLogo from "@/assets/benevity-logo.png";
+import { formatAmountWithKES } from "@/lib/currencyUtils";
 
 interface PaymentConfirmationProps {
   pledgeId: string;
@@ -37,6 +38,8 @@ export function PaymentConfirmation({
     mpesaCode: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const { primary: displayAmount, kes: kesConversion } = formatAmountWithKES(amount, currency);
 
   // Input validation schema
   const paymentSchema = z.object({
@@ -122,7 +125,7 @@ export function PaymentConfirmation({
               <li>Select "Pay Bill"</li>
               <li>Enter Business Number: <strong>{details.paybill}</strong></li>
               <li>Enter Account Number: <strong>{details.account_name}</strong></li>
-              <li>Enter Amount: <strong>{currency} {amount}</strong></li>
+              <li>Enter Amount: <strong>{displayAmount}</strong> {kesConversion && `(${kesConversion})`}</li>
               <li>Enter your M-Pesa PIN and confirm</li>
               <li>Enter the transaction code below</li>
             </ol>
@@ -147,7 +150,7 @@ export function PaymentConfirmation({
             >
               Donate via PayPal
             </Button>
-            <p className="text-sm mt-2">Amount: <strong>{currency} {amount}</strong></p>
+            <p className="text-sm mt-2">Amount: <strong>{displayAmount}</strong> {kesConversion && <span className="text-muted-foreground">({kesConversion})</span>}</p>
             <p className="text-sm text-muted-foreground mt-2">
               After completing your donation, please return here and confirm your payment below.
             </p>
@@ -179,7 +182,8 @@ export function PaymentConfirmation({
                 <p><strong>SWIFT Code:</strong> SCBLKENXXXX</p>
               </div>
               <div className="mt-2 pt-2 border-t border-border">
-                <p><strong>Amount:</strong> {currency} {amount}</p>
+                <p><strong>Amount:</strong> {displayAmount}</p>
+                {kesConversion && <p className="text-sm text-muted-foreground">{kesConversion}</p>}
               </div>
             </div>
           </div>
@@ -201,7 +205,10 @@ export function PaymentConfirmation({
                 <p className="font-semibold">Charity ID:</p>
                 <p className="font-mono">404-5660043209913_a8af</p>
               </div>
-              <p className="mt-3 pt-3 border-t border-border"><strong>Amount:</strong> {currency} {amount}</p>
+              <p className="mt-3 pt-3 border-t border-border">
+                <strong>Amount:</strong> {displayAmount}
+                {kesConversion && <span className="text-sm text-muted-foreground ml-2">({kesConversion})</span>}
+              </p>
               <p className="text-muted-foreground">
                 Please complete your donation through your company's Benevity portal
               </p>

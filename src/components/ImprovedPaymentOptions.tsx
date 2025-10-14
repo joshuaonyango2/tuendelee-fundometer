@@ -5,6 +5,7 @@ import { CreditCard, Smartphone, Building, Heart, ChevronRight } from "lucide-re
 import { supabase } from "@/integrations/supabase/client";
 import { PaymentConfirmation } from './PaymentConfirmation';
 import { toast } from 'sonner';
+import { formatAmountWithKES } from "@/lib/currencyUtils";
 
 interface ImprovedPaymentOptionsProps {
   pledgeId: string;
@@ -28,6 +29,8 @@ export function ImprovedPaymentOptions({
   const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
   const [selectedMethod, setSelectedMethod] = useState<any>(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  
+  const { primary: displayAmount, kes: kesConversion } = formatAmountWithKES(amount, currency);
 
   useEffect(() => {
     console.log('ImprovedPaymentOptions mounted with:', { pledgeId, amount, currency, email, name });
@@ -103,7 +106,7 @@ export function ImprovedPaymentOptions({
       <CardHeader className="bg-gradient-success text-white rounded-t-lg">
         <CardTitle>Choose Payment Method</CardTitle>
         <CardDescription className="text-success-foreground/90">
-          Select how you'd like to complete your donation of {currency} {amount}
+          Select how you'd like to complete your donation of {displayAmount} {kesConversion && `(${kesConversion})`}
         </CardDescription>
       </CardHeader>
       <CardContent className="pt-6 space-y-4">
@@ -115,7 +118,7 @@ export function ImprovedPaymentOptions({
             <strong>Email:</strong> {email}
           </p>
           <p className="text-sm text-accent-foreground">
-            <strong>Amount:</strong> {currency} {amount}
+            <strong>Amount:</strong> {displayAmount} {kesConversion && <span className="text-muted-foreground">({kesConversion})</span>}
           </p>
         </div>
 
