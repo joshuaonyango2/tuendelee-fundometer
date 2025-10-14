@@ -39,9 +39,23 @@ const currencies = [
 // Payment methods will be loaded dynamically from Supabase
 
 export function PledgeForm({ onSubmit }: PledgeFormProps) {
+  // Load saved donor info from localStorage
+  const getSavedDonorInfo = () => {
+    const saved = localStorage.getItem('donor_info');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch {
+        return { name: "", email: "" };
+      }
+    }
+    return { name: "", email: "" };
+  };
+
+  const savedInfo = getSavedDonorInfo();
   const [formData, setFormData] = useState<PledgeData>({
-    name: "",
-    email: "",
+    name: savedInfo.name || "",
+    email: savedInfo.email || "",
     amount: 0,
     currency: "KES",
     paymentMethod: "",
@@ -102,12 +116,18 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
 
     setIsSubmitting(true);
     try {
+      // Save donor info to localStorage for future use
+      localStorage.setItem('donor_info', JSON.stringify({
+        name: formData.name,
+        email: formData.email
+      }));
+
       await onSubmit({ ...formData, paymentType });
       
-      // Reset form after successful submission
+      // Reset form after successful submission but keep donor info
       setFormData({
-        name: "",
-        email: "",
+        name: formData.name,
+        email: formData.email,
         amount: 0,
         currency: "KES",
         paymentMethod: "",

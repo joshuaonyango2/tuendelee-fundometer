@@ -8,6 +8,7 @@ import { Calendar, Clock, Users, Target, AlertCircle, Video } from "lucide-react
 import { ImprovedThermometer } from "@/components/ImprovedThermometer";
 import { PledgeForm, PledgeData } from "@/components/PledgeForm";
 import { ImprovedPaymentOptions } from "@/components/ImprovedPaymentOptions";
+import { PaymentConfirmation } from "@/components/PaymentConfirmation";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { LoadingSpinner, ConnectionStatus, ErrorFallback, ThermometerSkeleton, PledgeSkeleton } from "@/components/ui/loading-states";
 import { supabase } from "@/integrations/supabase/client";
@@ -47,6 +48,8 @@ export default function EventRoom() {
   const [activeUsers, setActiveUsers] = useState(0);
   const [isEventLoading, setIsEventLoading] = useState(true);
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
+  const [showPaymentConfirmation, setShowPaymentConfirmation] = useState(false);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<any>(null);
   const [currentPledge, setCurrentPledge] = useState<PledgeData | null>(null);
   const [currentPledgeId, setCurrentPledgeId] = useState<string | null>(null);
 const [liveMeeting, setLiveMeeting] = useState<any>(null);
@@ -208,6 +211,22 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
       }
       
       const generatedId = crypto.randomUUID();
+      
+      // For immediate payments, fetch the selected payment method details first
+      let selectedPaymentMethod = null;
+      if (formData.paymentType === 'immediate' && formData.paymentMethod) {
+        const { data: methodData } = await supabase
+          .from('payment_methods')
+          .select('*')
+          .eq('type', formData.paymentMethod)
+          .eq('is_active', true)
+          .single();
+        
+        if (methodData) {
+          selectedPaymentMethod = methodData;
+        }
+      }
+      
       const { error: pledgeError } = await supabase
         .from('event_pledges')
         .insert(
@@ -236,13 +255,20 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
         return;
       }
 
-      // Only show payment dialog for immediate payments
+      // For immediate payments, go directly to payment confirmation if method is selected
       if (formData.paymentType === 'immediate') {
-        console.log('Setting payment dialog state...');
-        setCurrentPledge(formData);
-        setCurrentPledgeId(generatedId);
-        setShowPaymentDialog(true);
-        console.log('Payment dialog should now be visible');
+        if (selectedPaymentMethod) {
+          // Skip payment options and go directly to confirmation
+          setCurrentPledge(formData);
+          setCurrentPledgeId(generatedId);
+          setSelectedPaymentMethod(selectedPaymentMethod);
+          setShowPaymentConfirmation(true);
+        } else {
+          // Show payment options dialog
+          setCurrentPledge(formData);
+          setCurrentPledgeId(generatedId);
+          setShowPaymentDialog(true);
+        }
       } else {
         toast.success(`Pledge created! Payment due in ${formData.pledgeDurationDays} days`);
       }
@@ -518,7 +544,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
         </div>
       </div>
 
-      {/* Payment Dialog */}
+      {/* Payment Options Dialog */}
       <Dialog open={showPaymentDialog} onOpenChange={setShowPaymentDialog}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
@@ -535,6 +561,30 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
               email={currentPledge.email}
               name={currentPledge.name}
               onClose={() => setShowPaymentDialog(false)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Direct Payment Confirmation Dialog */}
+      <Dialog open={showPaymentConfirmation} onOpenChange={setShowPaymentConfirmation}>
+        <DialogContent className="max-w-lg">
+          {currentPledge && currentPledgeId && selectedPaymentMethod && (
+            <PaymentConfirmation
+              pledgeId={currentPledgeId}
+              amount={currentPledge.amount}
+              currency={currentPledge.currency}
+              paymentMethod={selectedPaymentMethod}
+              onBack={() => {
+                setShowPaymentConfirmation(false);
+                setShowPaymentDialog(true);
+              }}
+              onComplete={() => {
+                setShowPaymentConfirmation(false);
+                setCurrentPledge(null);
+                setCurrentPledgeId(null);
+                setSelectedPaymentMethod(null);
+              }}
             />
           )}
         </DialogContent>

@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { format } from 'date-fns';
+import { format, formatDistanceToNow } from 'date-fns';
 import { Download, CheckCircle, XCircle } from 'lucide-react';
 import { PledgeEditor } from './PledgeEditor';
 
@@ -24,6 +24,7 @@ interface Pledge {
   is_confirmed: boolean;
   created_at: string;
   message: string;
+  payment_deadline: string | null;
 }
 
 interface PledgeReportsViewProps {
@@ -40,7 +41,7 @@ export function PledgeReportsView({ eventId }: PledgeReportsViewProps) {
 
       if (error) throw error;
 
-      setPledges((data as Pledge[]) || []);
+      setPledges(data || []);
     } catch (error) {
       console.error('Error loading pledges:', error);
       toast.error('Failed to load pledges');
@@ -76,7 +77,7 @@ export function PledgeReportsView({ eventId }: PledgeReportsViewProps) {
   }, [eventId]);
 
   const exportToCSV = (data: Pledge[], filename: string) => {
-    const headers = ['Date', 'Name', 'Email', 'Phone', 'Amount', 'Currency', 'USD Value', 'Payment Method', 'Reference', 'Status', 'Message'];
+    const headers = ['Date', 'Name', 'Email', 'Phone', 'Amount', 'Currency', 'USD Value', 'Payment Method', 'Reference', 'Status', 'Due Date', 'Message'];
     const rows = data.map(p => [
       format(new Date(p.created_at), 'yyyy-MM-dd HH:mm'),
       p.name || '',
@@ -88,6 +89,7 @@ export function PledgeReportsView({ eventId }: PledgeReportsViewProps) {
       p.payment_method || p.payment_type,
       p.payment_reference || '',
       p.is_confirmed ? 'Paid' : 'Pending',
+      p.payment_deadline ? format(new Date(p.payment_deadline), 'yyyy-MM-dd') : 'N/A',
       p.message || ''
     ]);
 
@@ -115,13 +117,14 @@ export function PledgeReportsView({ eventId }: PledgeReportsViewProps) {
           <TableHead>Payment</TableHead>
           <TableHead>Reference</TableHead>
           <TableHead>Status</TableHead>
+          <TableHead>Due Date</TableHead>
           <TableHead>Actions</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {data.length === 0 ? (
           <TableRow>
-            <TableCell colSpan={8} className="text-center text-muted-foreground">
+            <TableCell colSpan={9} className="text-center text-muted-foreground">
               No pledges found
             </TableCell>
           </TableRow>
@@ -160,6 +163,18 @@ export function PledgeReportsView({ eventId }: PledgeReportsViewProps) {
                     <XCircle className="w-4 h-4" />
                     Pending
                   </div>
+                )}
+              </TableCell>
+              <TableCell>
+                {pledge.payment_deadline ? (
+                  <div className="text-sm">
+                    <div className="font-medium">{format(new Date(pledge.payment_deadline), 'MMM dd, yyyy')}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {formatDistanceToNow(new Date(pledge.payment_deadline), { addSuffix: true })}
+                    </div>
+                  </div>
+                ) : (
+                  <span className="text-muted-foreground">-</span>
                 )}
               </TableCell>
               <TableCell>
