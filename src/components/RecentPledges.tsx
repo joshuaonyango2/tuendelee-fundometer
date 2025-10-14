@@ -34,56 +34,62 @@ export function RecentPledges({ pledges }: RecentPledgesProps) {
       <CardHeader className="bg-gradient-primary text-white">
         <CardTitle className="flex items-center gap-2">
           <TrendingUp className="w-5 h-5" />
-          Recent Pledges
+          Recent Donations
         </CardTitle>
       </CardHeader>
       <CardContent className="p-0">
-        <ScrollArea className="h-[400px]">
-          <div className="p-4 space-y-3">{pledges.length === 0 ? (
+        <ScrollArea className="h-[500px]">
+          <div className="divide-y divide-border">
+            {pledges.length === 0 ? (
               <p className="text-center text-muted-foreground py-8">
                 Be the first to make a pledge!
               </p>
             ) : (
-              pledges.slice(0, 5).map((pledge, index) => (
-                <div
-                  key={pledge.id}
-                  className="p-4 rounded-lg bg-accent/50 border border-primary/10 animate-in slide-in-from-left duration-500"
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start gap-3">
-                      <div className="w-10 h-10 rounded-full bg-gradient-secondary flex items-center justify-center text-white font-bold">
-                        {(pledge.display_name || pledge.name || 'A').charAt(0).toUpperCase()}
-                      </div>
-                      <div>
-                        <p className="font-semibold text-foreground">{pledge.display_name || pledge.name || 'Anonymous'}</p>
-                        <p className="text-sm text-muted-foreground">
+              <>
+                {pledges.map((pledge, index) => (
+                  <div
+                    key={pledge.id}
+                    className="p-4 hover:bg-accent/50 transition-colors"
+                  >
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <p className="font-semibold text-foreground">
+                          {pledge.display_name || pledge.name || 'Anonymous'}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
                           {formatDistanceToNow(pledge.timestamp, { addSuffix: true })}
                         </p>
-                        {pledge.message && (
-                          <p className="mt-2 text-sm italic text-muted-foreground">
-                            "{pledge.message}"
-                          </p>
-                        )}
+                      </div>
+                      
+                      {pledge.message && (
+                        <p className="text-sm text-muted-foreground italic">
+                          {pledge.message}
+                        </p>
+                      )}
+                      
+                      <div className="flex items-baseline justify-between">
+                        <p className="font-bold text-lg text-primary">
+                          {formatAmount(pledge.amount, pledge.currency)}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          ≈ {pledge.currency === 'USD' 
+                            ? formatAmount(pledge.amountInKES, 'KES')
+                            : formatAmount(pledge.amountInUSD, 'USD')
+                          }
+                        </p>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="font-bold text-lg text-primary">
-                        {formatAmount(pledge.amount, pledge.currency)}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        ≈ {formatAmount(pledge.amountInUSD, 'USD')}
-                      </p>
-                    </div>
                   </div>
-                </div>
-              ))
-            )}
-            {pledges.length > 5 && (
-              <div className="text-center py-2">
-                <p className="text-xs text-muted-foreground">
-                  Scroll to see {pledges.length - 5} more donations
-                </p>
-              </div>
+                ))}
+                
+                {pledges.length > 5 && (
+                  <div className="p-4 text-center bg-muted/30">
+                    <p className="text-sm text-muted-foreground">
+                      Scroll to see all {pledges.length} donations
+                    </p>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </ScrollArea>
