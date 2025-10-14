@@ -9,6 +9,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from 'sonner';
 import { z } from 'zod';
 import standardCharteredLogo from "@/assets/standard-chartered-logo.jpg";
+import mpesaLogo from "@/assets/mpesa-logo.png";
+import paypalLogo from "@/assets/paypal-logo.png";
+import benevityLogo from "@/assets/benevity-logo.png";
 
 interface PaymentConfirmationProps {
   pledgeId: string;
@@ -109,6 +112,9 @@ export function PaymentConfirmation({
       case 'mpesa':
         return (
           <div className="bg-accent p-4 rounded-lg mb-4">
+            <div className="flex items-center gap-3 mb-3">
+              <img src={mpesaLogo} alt="M-Pesa" className="h-10 object-contain" />
+            </div>
             <h4 className="font-semibold mb-2">M-Pesa Payment Instructions:</h4>
             <ol className="list-decimal list-inside space-y-1 text-sm">
               <li>Go to M-Pesa on your phone</li>
@@ -129,6 +135,9 @@ export function PaymentConfirmation({
       case 'paypal':
         return (
           <div className="bg-accent p-4 rounded-lg mb-4">
+            <div className="flex items-center gap-3 mb-3">
+              <img src={paypalLogo} alt="PayPal" className="h-10 object-contain" />
+            </div>
             <h4 className="font-semibold mb-2">PayPal Payment Instructions:</h4>
             <p className="text-sm mb-3">Click the button below to donate via PayPal:</p>
             <Button
@@ -179,6 +188,9 @@ export function PaymentConfirmation({
       case 'benevity':
         return (
           <div className="bg-accent p-4 rounded-lg mb-4">
+            <div className="flex items-center gap-3 mb-3">
+              <img src={benevityLogo} alt="Benevity" className="h-10 object-contain" />
+            </div>
             <h4 className="font-semibold mb-2">Benevity Donation Instructions:</h4>
             <p className="text-sm mb-2">Organization Name:</p>
             <p className="font-semibold">{details.account_name}</p>
