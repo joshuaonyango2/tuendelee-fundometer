@@ -355,12 +355,12 @@ export function ImprovedThermometer({
           <h4 className="text-lg font-bold text-foreground mb-4">Target Goal</h4>
           <div className="grid grid-cols-2 gap-6">
             <div>
-              <p className="text-sm text-muted-foreground mb-1">USD</p>
-              <p className="text-3xl font-bold text-primary/80">${formatAmount(goalAmountUSD)}</p>
-            </div>
-            <div>
               <p className="text-sm text-muted-foreground mb-1">KES</p>
               <p className="text-3xl font-bold text-success/80">KES {formatAmount(goalKES)}</p>
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground mb-1">USD</p>
+              <p className="text-3xl font-bold text-primary/80">${formatAmount(goalAmountUSD)}</p>
             </div>
           </div>
         </div>
