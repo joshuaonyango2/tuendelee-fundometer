@@ -68,17 +68,7 @@ const Index = () => {
             <Shield className="w-5 h-5 mr-2" />
             Admin Portal
           </Button>
-          <Button size="lg" variant="outline" onClick={() => {
-            const link = prompt("Enter your event link:");
-            if (link) {
-              const match = link.match(/\/join\/([^\/]+)/);
-              if (match) {
-                navigate(`/join/${match[1]}`);
-              } else {
-                alert("Invalid event link format");
-              }
-            }
-          }}>
+          <Button size="lg" variant="outline" onClick={() => navigate("/join")}>
             <Users className="w-5 h-5 mr-2" />
             Join Event
           </Button>
