@@ -179,7 +179,7 @@ const Index = () => {
             Start Making a Difference
           </Button>
           <p className="text-sm text-muted-foreground mt-4">
-            Join hundreds of donors supporting education in Kenya
+            Together, we empower deserving students to achieve their educational dreams
           </p>
         </div>
       </div>
