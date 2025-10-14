@@ -33,7 +33,6 @@ export function PaymentConfirmation({
 }: PaymentConfirmationProps) {
   const [formData, setFormData] = useState({
     phone: '',
-    address: '',
     reference: '',
     mpesaCode: ''
   });
@@ -47,7 +46,6 @@ export function PaymentConfirmation({
       .min(10, 'Phone must be at least 10 digits')
       .max(20, 'Phone too long')
       .regex(/^[\+]?[0-9\s\-]+$/, 'Invalid phone format'),
-    address: z.string().max(500, 'Address too long').optional(),
     mpesaCode: z.string()
       .regex(/^[A-Z0-9]{10}$/, 'Invalid M-Pesa code format (10 alphanumeric characters)')
       .optional(),
@@ -58,7 +56,6 @@ export function PaymentConfirmation({
     // Validate inputs
     const validationData = {
       phone: formData.phone,
-      address: formData.address || undefined,
       mpesaCode: paymentMethod.type === 'mpesa' ? formData.mpesaCode : undefined,
       reference: paymentMethod.type !== 'mpesa' ? formData.reference : undefined
     };
@@ -92,7 +89,7 @@ export function PaymentConfirmation({
         p_payment_method: paymentMethod.type,
         p_payment_reference: paymentMethod.type === 'mpesa' ? formData.mpesaCode : formData.reference || null,
         p_donor_phone: formData.phone,
-        p_donor_address: formData.address || null,
+        p_donor_address: null,
         p_session_token: sessionToken
       });
 
@@ -251,16 +248,6 @@ export function PaymentConfirmation({
               onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
               placeholder="+254 XXX XXX XXX"
               required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="address">Address (Optional)</Label>
-            <Textarea
-              id="address"
-              value={formData.address}
-              onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-              placeholder="Enter your address"
             />
           </div>
 
