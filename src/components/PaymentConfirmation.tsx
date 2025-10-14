@@ -130,12 +130,18 @@ export function PaymentConfirmation({
         return (
           <div className="bg-accent p-4 rounded-lg mb-4">
             <h4 className="font-semibold mb-2">PayPal Payment Instructions:</h4>
-            <p className="text-sm mb-2">Send payment to:</p>
-            <p className="font-mono font-semibold">{details.email}</p>
+            <p className="text-sm mb-3">Click the button below to donate via PayPal:</p>
+            <Button
+              onClick={() => window.open('https://www.paypal.com/donate/?hosted_button_id=ZWJ9K8JBR7GZC', '_blank')}
+              className="w-full mb-2"
+              variant="default"
+            >
+              Donate via PayPal
+            </Button>
             <p className="text-sm mt-2">Amount: <strong>{currency} {amount}</strong></p>
-            {details.instructions && (
-              <p className="mt-2 text-sm text-muted-foreground">{details.instructions}</p>
-            )}
+            <p className="text-sm text-muted-foreground mt-2">
+              After completing your donation, please return here and confirm your payment below.
+            </p>
           </div>
         );
 
