@@ -268,10 +268,7 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
                   Processing...
                 </span>
               ) : (
-                <span className="flex items-center gap-2">
-                  <DollarSign className="w-5 h-5" />
-                  Pay Now
-                </span>
+                "Pay Now"
               )}
             </Button>
 
