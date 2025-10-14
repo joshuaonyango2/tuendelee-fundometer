@@ -31,8 +31,9 @@ export const formatAmountWithKES = (
     secondaryCurrency = `≈ ${formatCurrency(usdAmount, 'USD')}`;
   } else {
     // For other currencies, show KES conversion
+    // Use the provided amountInKES if available, otherwise calculate
     let kesAmount = amountInKES;
-    if (!kesAmount) {
+    if (kesAmount === undefined || kesAmount === null) {
       // Use fixed exchange rates: 1 USD = 127 KES, 1 EUR = 147 KES, 1 GBP = 170 KES
       const rates: Record<string, number> = {
         USD: 127,
@@ -41,7 +42,7 @@ export const formatAmountWithKES = (
       };
       kesAmount = amount * (rates[currency] || 127);
     }
-    secondaryCurrency = `≈ ${formatCurrency(kesAmount || 0, 'KES')}`;
+    secondaryCurrency = `≈ ${formatCurrency(kesAmount, 'KES')}`;
   }
 
   return { primary, kes: secondaryCurrency };
