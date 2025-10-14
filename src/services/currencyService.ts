@@ -83,30 +83,33 @@ class CurrencyService {
   }
 
   private getFallbackRates(baseCurrency: string): ExchangeRates {
-    // Fixed exchange rates: 1 USD = 128 KES
+    // Fixed exchange rates as specified:
+    // 1 USD = 127 KES
+    // 1 EUR = 147 KES
+    // 1 GBP = 170 KES
     const fallbackRates: Record<string, Record<string, number>> = {
       USD: {
         USD: 1,
-        KES: 128,
-        EUR: 0.92,
-        GBP: 0.79,
+        KES: 127,
+        EUR: 127 / 147, // ~0.864
+        GBP: 127 / 170, // ~0.747
       },
       KES: {
-        USD: 1 / 128,
+        USD: 1 / 127,
         KES: 1,
-        EUR: 0.92 / 128,
-        GBP: 0.79 / 128,
+        EUR: 1 / 147,
+        GBP: 1 / 170,
       },
       EUR: {
-        USD: 1.09,
-        KES: 1.09 * 128,
+        USD: 147 / 127, // ~1.157
+        KES: 147,
         EUR: 1,
-        GBP: 0.86,
+        GBP: 147 / 170, // ~0.865
       },
       GBP: {
-        USD: 1.27,
-        KES: 1.27 * 128,
-        EUR: 1.16,
+        USD: 170 / 127, // ~1.339
+        KES: 170,
+        EUR: 170 / 147, // ~1.156
         GBP: 1,
       },
     };
