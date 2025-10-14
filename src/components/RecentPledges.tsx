@@ -38,14 +38,13 @@ export function RecentPledges({ pledges }: RecentPledgesProps) {
         </CardTitle>
       </CardHeader>
       <CardContent className="p-0">
-        <ScrollArea className="h-96">
-          <div className="p-4 space-y-3">
-            {pledges.length === 0 ? (
+        <ScrollArea className="h-[400px]">
+          <div className="p-4 space-y-3">{pledges.length === 0 ? (
               <p className="text-center text-muted-foreground py-8">
                 Be the first to make a pledge!
               </p>
             ) : (
-              pledges.map((pledge) => (
+              pledges.slice(0, 5).map((pledge, index) => (
                 <div
                   key={pledge.id}
                   className="p-4 rounded-lg bg-accent/50 border border-primary/10 animate-in slide-in-from-left duration-500"
@@ -78,6 +77,13 @@ export function RecentPledges({ pledges }: RecentPledgesProps) {
                   </div>
                 </div>
               ))
+            )}
+            {pledges.length > 5 && (
+              <div className="text-center py-2">
+                <p className="text-xs text-muted-foreground">
+                  Scroll to see {pledges.length - 5} more donations
+                </p>
+              </div>
             )}
           </div>
         </ScrollArea>
