@@ -492,7 +492,7 @@ export default function AdminDashboard() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="goal">Goal Amount (USD)</Label>
+                    <Label htmlFor="goal">Goal Amount (KES / USD)</Label>
                     <Input
                       id="goal"
                       type="number"
