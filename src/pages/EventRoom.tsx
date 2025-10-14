@@ -522,29 +522,25 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
                 </Card>
               </AccordionItem>
 
-              {/* Pledge Form - Collapsible */}
-              <AccordionItem value="pledge" className="border rounded-lg">
-                {event.is_active ? (
-                  <Card className="border-0">
-                    <AccordionTrigger className="px-6 py-4 hover:no-underline">
-                      <CardTitle className="text-lg">Make Your Pledge</CardTitle>
-                    </AccordionTrigger>
-                    <AccordionContent>
-                      <div className="px-6 pb-6">
-                        <PledgeForm onSubmit={handlePledgeSubmit} />
-                      </div>
-                    </AccordionContent>
-                  </Card>
-                ) : (
-                  <Card className="border-0">
-                    <CardContent className="text-center py-8">
-                      <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                      <h3 className="font-semibold text-lg mb-2">Event Has Ended</h3>
-                      <p className="text-muted-foreground">This fundraising event is no longer accepting pledges.</p>
-                    </CardContent>
-                  </Card>
-                )}
-              </AccordionItem>
+              {/* Pledge Form - Always Visible */}
+              {event.is_active ? (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Make Your Pledge</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <PledgeForm onSubmit={handlePledgeSubmit} />
+                  </CardContent>
+                </Card>
+              ) : (
+                <Card>
+                  <CardContent className="text-center py-8">
+                    <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <h3 className="font-semibold text-lg mb-2">Event Has Ended</h3>
+                    <p className="text-muted-foreground">This fundraising event is no longer accepting pledges.</p>
+                  </CardContent>
+                </Card>
+              )}
             </Accordion>
           </div>
         </div>
