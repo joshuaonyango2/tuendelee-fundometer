@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Calendar, Clock, Users, Target, AlertCircle, Video } from "lucide-react";
 import { ImprovedThermometer } from "@/components/ImprovedThermometer";
 import { PledgeForm, PledgeData } from "@/components/PledgeForm";
@@ -433,37 +434,48 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
                     No donations yet. Be the first to contribute!
                   </p>
                 ) : (
-                  <div className="space-y-4">
-                    {realtimePledges.slice(0, 10).map((pledge) => (
-                      <div key={pledge.id} className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg">
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="font-medium text-sm">{pledge.display_name}</span>
-                            <span className="text-xs text-muted-foreground">
-                              {formatDistanceToNow(new Date(pledge.created_at), { addSuffix: true })}
-                            </span>
+                  <>
+                    <ScrollArea className="h-[400px]">
+                      <div className="space-y-3 pr-4">
+                        {realtimePledges.map((pledge) => (
+                          <div key={pledge.id} className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors">
+                            <div className="flex-1">
+                              <div className="flex items-center justify-between mb-1">
+                                <span className="font-medium text-sm">{pledge.display_name}</span>
+                                <span className="text-xs text-muted-foreground">
+                                  {formatDistanceToNow(new Date(pledge.created_at), { addSuffix: true })}
+                                </span>
+                              </div>
+                              {pledge.message && (
+                                <p className="text-sm text-muted-foreground mb-2 italic">"{pledge.message}"</p>
+                              )}
+                              <div className="flex items-center justify-between">
+                                <span className="font-semibold text-primary text-lg">
+                                  {pledge.currency === 'USD' 
+                                    ? `USD ${pledge.amount_in_usd.toLocaleString()}`
+                                    : `KES ${pledge.amount_in_kes.toLocaleString()}`
+                                  }
+                                </span>
+                                <span className="text-sm text-muted-foreground">
+                                  ≈ {pledge.currency === 'USD'
+                                    ? `KES ${pledge.amount_in_kes.toLocaleString()}`
+                                    : `USD ${pledge.amount_in_usd.toLocaleString()}`
+                                  }
+                                </span>
+                              </div>
+                            </div>
                           </div>
-                          {pledge.message && (
-                            <p className="text-sm text-muted-foreground mb-2">{pledge.message}</p>
-                          )}
-                          <div className="flex items-center justify-between">
-                            <span className="font-semibold text-primary text-lg">
-                              {pledge.currency === 'USD' 
-                                ? `USD ${pledge.amount_in_usd.toLocaleString()}`
-                                : `KES ${pledge.amount_in_kes.toLocaleString()}`
-                              }
-                            </span>
-                            <span className="text-sm text-muted-foreground">
-                              ≈ {pledge.currency === 'USD'
-                                ? `KES ${pledge.amount_in_kes.toLocaleString()}`
-                                : `USD ${pledge.amount_in_usd.toLocaleString()}`
-                              }
-                            </span>
-                          </div>
-                        </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
+                    </ScrollArea>
+                    {realtimePledges.length > 5 && (
+                      <div className="text-center mt-2 pt-2 border-t">
+                        <p className="text-xs text-muted-foreground">
+                          Scroll to see all {realtimePledges.length} donations
+                        </p>
+                      </div>
+                    )}
+                  </>
                 )}
               </CardContent>
             </Card>
