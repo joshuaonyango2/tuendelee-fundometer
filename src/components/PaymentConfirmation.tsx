@@ -148,7 +148,7 @@ export function PaymentConfirmation({
             <h4 className="font-semibold mb-2">Bank Transfer Details:</h4>
             <div className="space-y-2 text-sm">
               <div className="border-b border-border pb-2">
-                <p><strong>Bank:</strong> Standard Chartered</p>
+                <p><strong>Bank:</strong> Standard Chartered Bank</p>
                 <p><strong>Account Name:</strong> TUENDELEE FOUNDATION</p>
               </div>
               <div>
@@ -163,7 +163,9 @@ export function PaymentConfirmation({
                 <p><strong>Branch:</strong> KENYATTA AVENUE</p>
                 <p><strong>SWIFT Code:</strong> SCBLKENXXXX</p>
               </div>
-              <p className="mt-2 pt-2 border-t border-border"><strong>Amount:</strong> {currency} {amount}</p>
+              <div className="mt-2 pt-2 border-t border-border">
+                <p><strong>Amount:</strong> {currency} {amount}</p>
+              </div>
             </div>
           </div>
         );
