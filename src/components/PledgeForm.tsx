@@ -159,9 +159,8 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="amount" className="flex items-center gap-2">
-                <DollarSign className="w-4 h-4" />
-                Amount (in {currencies.find(c => c.code === formData.currency)?.code || 'USD'}) *
+              <Label htmlFor="amount">
+                Amount (in {currencies.find(c => c.code === formData.currency)?.code || 'KES'}) *
               </Label>
               <Input
                 id="amount"
