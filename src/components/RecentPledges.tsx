@@ -67,16 +67,23 @@ export function RecentPledges({ pledges }: RecentPledgesProps) {
                         </p>
                       )}
                       
-                      <div className="flex items-baseline justify-between">
-                        <p className="font-bold text-lg text-primary">
-                          {formatAmount(pledge.amount, pledge.currency)}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          ≈ {pledge.currency === 'USD' 
-                            ? formatAmount(pledge.amountInKES, 'KES')
-                            : formatAmount(pledge.amountInUSD, 'USD')
-                          }
-                        </p>
+                      <div className="flex items-center justify-between gap-4">
+                        <div>
+                          <p className="font-bold text-lg text-primary">
+                            {pledge.currency === 'USD' 
+                              ? formatAmount(pledge.amountInUSD, 'USD')
+                              : formatAmount(pledge.amountInKES, 'KES')
+                            }
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm text-muted-foreground">
+                            ≈ {pledge.currency === 'USD' 
+                              ? formatAmount(pledge.amountInKES, 'KES')
+                              : formatAmount(pledge.amountInUSD, 'USD')
+                            }
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
