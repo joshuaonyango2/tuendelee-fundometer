@@ -41,7 +41,7 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
     name: "",
     email: "",
     amount: 0,
-    currency: "USD",
+    currency: "KES",
     paymentMethod: "",
     message: "",
   });
@@ -161,7 +161,7 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
             <div className="space-y-2">
               <Label htmlFor="amount" className="flex items-center gap-2">
                 <DollarSign className="w-4 h-4" />
-                Amount *
+                Amount (in {currencies.find(c => c.code === formData.currency)?.code || 'USD'}) *
               </Label>
               <Input
                 id="amount"
@@ -176,7 +176,7 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="currency">Currency</Label>
+              <Label htmlFor="currency">Input Currency</Label>
               <Select
                 value={formData.currency}
                 onValueChange={(value) => setFormData({ ...formData, currency: value })}
