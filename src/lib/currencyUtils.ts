@@ -23,23 +23,28 @@ export const formatAmountWithKES = (
 
   const primary = formatCurrency(amount, currency);
   
-  // If KES amount is provided, use it; otherwise calculate it
-  let kesAmount = amountInKES;
-  if (!kesAmount && currency !== 'KES') {
-    // Use fixed exchange rates: 1 USD = 127 KES, 1 EUR = 147 KES, 1 GBP = 170 KES
-    const rates: Record<string, number> = {
-      USD: 127,
-      EUR: 147,
-      GBP: 170,
-    };
-    kesAmount = amount * (rates[currency] || 127);
+  let secondaryCurrency = '';
+  
+  if (currency === 'KES') {
+    // For KES, show USD conversion
+    const usdAmount = amount / 127;
+    secondaryCurrency = `≈ ${formatCurrency(usdAmount, 'USD')}`;
+  } else {
+    // For other currencies, show KES conversion
+    let kesAmount = amountInKES;
+    if (!kesAmount) {
+      // Use fixed exchange rates: 1 USD = 127 KES, 1 EUR = 147 KES, 1 GBP = 170 KES
+      const rates: Record<string, number> = {
+        USD: 127,
+        EUR: 147,
+        GBP: 170,
+      };
+      kesAmount = amount * (rates[currency] || 127);
+    }
+    secondaryCurrency = `≈ ${formatCurrency(kesAmount || 0, 'KES')}`;
   }
 
-  const kes = currency === 'KES' 
-    ? '' 
-    : `≈ ${formatCurrency(kesAmount || 0, 'KES')}`;
-
-  return { primary, kes };
+  return { primary, kes: secondaryCurrency };
 };
 
 /**
