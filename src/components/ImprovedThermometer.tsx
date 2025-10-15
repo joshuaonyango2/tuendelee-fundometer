@@ -147,53 +147,167 @@ export function ImprovedThermometer({
   const unpaidPercentage = goalAmountUSD > 0 ? (unpaidAmountUSD / goalAmountUSD) * 100 : 0;
 
   return (
-    <div className={cn("w-full", className)}>
-      {/* Compact cards grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {/* Paid Pledges */}
-        <div className="bg-gradient-to-br from-success/10 to-success/5 rounded-lg p-3 border border-success/30">
-          <div className="flex items-center gap-1.5 mb-2">
-            <div className="w-2 h-2 bg-success rounded-full" />
-            <h4 className="text-xs font-semibold text-success">Paid</h4>
+    <div className={cn("flex flex-col lg:flex-row gap-6 items-center lg:items-start justify-center", className)}>
+      {/* Left side cards */}
+      <div className="flex flex-col gap-4 w-full lg:w-64">
+        {/* Paid Card */}
+        <div className="bg-gradient-to-br from-success/10 to-success/5 rounded-xl p-6 border border-success/30 shadow-lg">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-3 h-3 bg-success rounded-full animate-pulse" />
+            <h3 className="text-sm font-semibold text-success uppercase tracking-wide">Paid Pledges</h3>
           </div>
-          <p className="text-lg font-bold text-success">${formatAmount(displayPaidUSD)}</p>
-          <p className="text-xs text-muted-foreground">KSh {formatAmount(displayPaidKES)}</p>
-          <p className="text-xs text-success/70 mt-1">{paidPercentage.toFixed(1)}% of goal</p>
+          <div className="space-y-2">
+            <div>
+              <p className="text-3xl font-bold text-success">${formatAmount(displayPaidUSD)}</p>
+              <p className="text-sm text-muted-foreground">KSh {formatAmount(displayPaidKES)}</p>
+            </div>
+            <div className="pt-2 border-t border-success/20">
+              <p className="text-xs text-success/70">
+                {paidPercentage.toFixed(1)}% of goal achieved
+              </p>
+            </div>
+          </div>
         </div>
 
-        {/* Unpaid Pledges */}
-        <div className="bg-gradient-to-br from-amber-500/10 to-amber-500/5 rounded-lg p-3 border border-amber-500/30">
-          <div className="flex items-center gap-1.5 mb-2">
-            <div className="w-2 h-2 bg-amber-500 rounded-full" />
-            <h4 className="text-xs font-semibold text-amber-600">Unpaid</h4>
+        {/* Unpaid Card */}
+        <div className="bg-gradient-to-br from-amber-500/10 to-amber-500/5 rounded-xl p-6 border border-amber-500/30 shadow-lg">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-3 h-3 bg-amber-500 rounded-full animate-pulse" />
+            <h3 className="text-sm font-semibold text-amber-600 uppercase tracking-wide">Unpaid Pledges</h3>
           </div>
-          <p className="text-lg font-bold text-amber-600">${formatAmount(displayUnpaidUSD)}</p>
-          <p className="text-xs text-muted-foreground">KSh {formatAmount(displayUnpaidKES)}</p>
-          <p className="text-xs text-amber-600/70 mt-1">{unpaidPercentage.toFixed(1)}% of goal</p>
+          <div className="space-y-2">
+            <div>
+              <p className="text-3xl font-bold text-amber-600">${formatAmount(displayUnpaidUSD)}</p>
+              <p className="text-sm text-muted-foreground">KSh {formatAmount(displayUnpaidKES)}</p>
+            </div>
+            <div className="pt-2 border-t border-amber-500/20">
+              <p className="text-xs text-amber-600/70">
+                {unpaidPercentage.toFixed(1)}% of goal pending
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Thermometer */}
+      <div className="flex-1 flex items-center justify-center min-h-[600px] w-full max-w-2xl">
+        <div className="relative h-full w-full flex items-end justify-center px-12">
+          {/* Calibration marks on the left */}
+          <div className="absolute left-0 h-full flex flex-col justify-between py-4">
+            {calibrationMarks.map((mark, index) => (
+              <div 
+                key={index} 
+                className="absolute flex items-center gap-2"
+                style={{ bottom: `${getMarkPosition(mark.valueUSD)}%` }}
+              >
+                <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">
+                  {mark.labelUSD}
+                </span>
+                <div className={cn(
+                  "h-px bg-border",
+                  mark.isGoal ? "w-3" : "w-2"
+                )} />
+              </div>
+            ))}
+          </div>
+
+          {/* Thermometer bulb and tube */}
+          <div className="relative flex flex-col items-center h-full pb-2">
+            {/* Thermometer tube container */}
+            <div className="relative w-24 flex-1 bg-muted/30 rounded-full border-4 border-border shadow-inner overflow-hidden">
+              {/* Goal line */}
+              <div 
+                className="absolute w-full border-t-2 border-dashed border-primary/60 z-10"
+                style={{ bottom: `${getMarkPosition(goalAmountUSD)}%` }}
+              >
+                <span className="absolute -right-16 -top-3 text-xs font-semibold text-primary whitespace-nowrap">
+                  Goal
+                </span>
+              </div>
+
+              {/* Total pledged fill (background layer - lighter) */}
+              <div 
+                className="absolute bottom-0 w-full bg-gradient-to-t from-primary/30 to-primary/20 transition-all duration-1000 ease-out rounded-b-full"
+                style={{ height: `${totalHeight}%` }}
+              />
+
+              {/* Paid amount fill (foreground layer - solid) */}
+              <div 
+                className="absolute bottom-0 w-full bg-gradient-to-t from-success via-success/90 to-success/70 transition-all duration-1000 ease-out rounded-b-full shadow-lg"
+                style={{ height: `${paidHeight}%` }}
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent" />
+              </div>
+            </div>
+
+            {/* Thermometer bulb */}
+            <div className="w-32 h-32 rounded-full bg-gradient-to-br from-success via-success to-success/80 shadow-xl border-4 border-border mt-2 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-tr from-white/30 to-transparent" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <TrendingUp className="w-12 h-12 text-white" />
+              </div>
+            </div>
+          </div>
+
+          {/* Calibration marks on the right (KES) */}
+          <div className="absolute right-0 h-full flex flex-col justify-between py-4">
+            {calibrationMarks.map((mark, index) => (
+              <div 
+                key={index} 
+                className="absolute flex items-center gap-2"
+                style={{ bottom: `${getMarkPosition(mark.valueUSD)}%` }}
+              >
+                <div className={cn(
+                  "h-px bg-border",
+                  mark.isGoal ? "w-3" : "w-2"
+                )} />
+                <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">
+                  {mark.labelKES}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Right side cards */}
+      <div className="flex flex-col gap-4 w-full lg:w-64">
+        {/* Total Pledged Card */}
+        <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl p-6 border border-primary/30 shadow-lg">
+          <div className="flex items-center gap-2 mb-4">
+            <TrendingUp className="w-4 h-4 text-primary" />
+            <h3 className="text-sm font-semibold text-primary uppercase tracking-wide">Total Pledged</h3>
+          </div>
+          <div className="space-y-2">
+            <div>
+              <p className="text-3xl font-bold text-primary">${formatAmount(displayPaidUSD + displayUnpaidUSD)}</p>
+              <p className="text-sm text-muted-foreground">KSh {formatAmount(displayPaidKES + displayUnpaidKES)}</p>
+            </div>
+            <div className="pt-2 border-t border-primary/20">
+              <p className="text-xs text-primary/70">
+                {totalPledgedPercentage.toFixed(1)}% of goal
+              </p>
+            </div>
+          </div>
         </div>
 
-        {/* Total Pledged */}
-        <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-lg p-3 border border-primary/30">
-          <div className="flex items-center gap-1.5 mb-2">
-            <TrendingUp className="w-3 h-3 text-primary" />
-            <h4 className="text-xs font-semibold text-primary">Total</h4>
+        {/* Goal Card */}
+        <div className="bg-gradient-to-br from-primary/5 to-transparent rounded-xl p-6 border-2 border-dashed border-primary/40 shadow-lg">
+          <div className="flex items-center gap-2 mb-4">
+            <DollarSign className="w-4 h-4 text-foreground" />
+            <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">Campaign Goal</h3>
           </div>
-          <p className="text-lg font-bold text-primary">${formatAmount(displayPaidUSD + displayUnpaidUSD)}</p>
-          <p className="text-xs text-muted-foreground">KSh {formatAmount(displayPaidKES + displayUnpaidKES)}</p>
-          <p className="text-xs text-primary/70 mt-1">{totalPledgedPercentage.toFixed(1)}% of goal</p>
-        </div>
-
-        {/* Goal */}
-        <div className="bg-gradient-to-br from-primary/5 to-transparent rounded-lg p-3 border border-dashed border-primary/40">
-          <div className="flex items-center gap-1.5 mb-2">
-            <DollarSign className="w-3 h-3 text-foreground" />
-            <h4 className="text-xs font-semibold text-foreground">Goal</h4>
-          </div>
-          <p className="text-lg font-bold text-foreground">${formatAmount(goalAmountUSD)}</p>
-          <p className="text-xs text-muted-foreground">KSh {formatAmount(goalKES)}</p>
-          <div className="flex items-center gap-1 mt-1">
-            <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-            <span className="text-xs text-muted-foreground">Live</span>
+          <div className="space-y-2">
+            <div>
+              <p className="text-3xl font-bold text-foreground">${formatAmount(goalAmountUSD)}</p>
+              <p className="text-sm text-muted-foreground">KSh {formatAmount(goalKES)}</p>
+            </div>
+            <div className="pt-2 border-t border-border">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                <span className="text-xs text-muted-foreground font-medium">Live Updates</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
