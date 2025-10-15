@@ -147,220 +147,56 @@ export function ImprovedThermometer({
   const unpaidPercentage = goalAmountUSD > 0 ? (unpaidAmountUSD / goalAmountUSD) * 100 : 0;
 
   return (
-    <div className={cn("relative max-w-7xl mx-auto px-4", className)}>
-      {/* Header */}
-      <div className="mb-8 text-center">
-        <h3 className="text-2xl font-bold text-primary mb-2">
-          Tuendelee Foundation Fundraising Thermometer (Fundometer)
-        </h3>
-        <div className="flex items-center justify-center gap-2">
-          <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-          <span className="text-sm text-muted-foreground">
-            Live updates enabled - Showing paid and unpaid pledges
-          </span>
-        </div>
-      </div>
-
-      <div className="flex flex-col lg:flex-row items-center lg:items-start justify-center gap-8 lg:gap-24">
-        {/* Left side cards */}
-        <div className="flex-shrink-0 w-full max-w-[240px] space-y-6">
-          {/* Paid Pledges Card */}
-          <div className="bg-gradient-to-br from-success/10 to-success/5 rounded-lg p-3 border-2 border-success/30 shadow-lg lg:mt-32">
-            <h4 className="text-sm font-bold text-success mb-2 flex items-center gap-1.5">
-              <div className="w-2 h-2 bg-success rounded-full" />
-              Paid Pledges
-            </h4>
-            <div className="space-y-1.5">
-              <div>
-                <p className="text-xs text-muted-foreground">USD</p>
-                <p className="text-xl font-bold text-success">${formatAmount(displayPaidUSD)}</p>
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground">KSh</p>
-                <p className="text-lg font-bold text-success">KSh {formatAmount(displayPaidKES)}</p>
-              </div>
-              <div className="pt-1 border-t border-success/20">
-                <p className="text-xs text-muted-foreground">Of Goal</p>
-                <p className="text-lg font-bold text-success">{paidPercentage.toFixed(1)}%</p>
-              </div>
-            </div>
+    <div className={cn("w-full", className)}>
+      {/* Compact cards grid */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {/* Paid Pledges */}
+        <div className="bg-gradient-to-br from-success/10 to-success/5 rounded-lg p-3 border border-success/30">
+          <div className="flex items-center gap-1.5 mb-2">
+            <div className="w-2 h-2 bg-success rounded-full" />
+            <h4 className="text-xs font-semibold text-success">Paid</h4>
           </div>
-
-          {/* Total Pledged Card */}
-          <div className="bg-gradient-to-r from-primary/10 via-success/10 to-primary/10 rounded-xl p-4 border-2 border-primary/30 shadow-lg">
-            <h4 className="text-base font-bold text-foreground mb-3">Total Pledged</h4>
-            <div className="space-y-2">
-              <div>
-                <p className="text-xs text-muted-foreground">USD</p>
-                <p className="text-xl font-bold text-primary">${formatAmount(displayPaidUSD + displayUnpaidUSD)}</p>
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground">KSh</p>
-                <p className="text-lg font-bold text-success">KSh {formatAmount(displayPaidKES + displayUnpaidKES)}</p>
-              </div>
-              <div className="pt-2 border-t border-primary/20">
-                <p className="text-xs text-muted-foreground">Progress</p>
-                <p className="text-2xl font-bold text-primary">{totalPledgedPercentage.toFixed(1)}%</p>
-              </div>
-            </div>
-          </div>
+          <p className="text-lg font-bold text-success">${formatAmount(displayPaidUSD)}</p>
+          <p className="text-xs text-muted-foreground">KSh {formatAmount(displayPaidKES)}</p>
+          <p className="text-xs text-success/70 mt-1">{paidPercentage.toFixed(1)}% of goal</p>
         </div>
 
-        {/* Thermometer - Center */}
-        <div className="relative flex-shrink-0">
-          <div className="relative w-24 h-[600px]">
-            {/* Calibration marks - USD on left, KES on right */}
-            <div className="absolute -left-28 top-0 h-full w-32">
-              {calibrationMarks.map((mark, index) => {
-                const position = getMarkPosition(mark.valueUSD);
-                if (position > 100) return null;
-                const isGoal = mark.isGoal || mark.valueUSD === goalAmountUSD;
-                return (
-                  <div
-                    key={`usd-${mark.valueUSD}-${index}`}
-                    className="absolute flex items-center justify-end"
-                    style={{ bottom: `${position}%`, left: 0, right: 0 }}
-                  >
-                    <span className={cn(
-                      "text-sm font-semibold mr-3",
-                      isGoal ? "text-primary" : "text-muted-foreground"
-                    )}>
-                      {mark.labelUSD}
-                    </span>
-                    <div className={cn(
-                      "w-6 h-0.5 rounded",
-                      isGoal ? "bg-primary" : "bg-border"
-                    )} />
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* KES marks on the right */}
-            <div className="absolute -right-28 top-0 h-full w-32">
-              {calibrationMarks.map((mark, index) => {
-                const position = getMarkPosition(mark.valueUSD);
-                if (position > 100) return null;
-                const isGoal = mark.isGoal || mark.valueUSD === goalAmountUSD;
-                return (
-                  <div
-                    key={`kes-${mark.valueUSD}-${index}`}
-                    className="absolute flex items-center"
-                    style={{ bottom: `${position}%`, left: 0, right: 0 }}
-                  >
-                    <div className={cn(
-                      "w-6 h-0.5 rounded",
-                      isGoal ? "bg-success" : "bg-border"
-                    )} />
-                    <span className={cn(
-                      "text-sm font-semibold ml-3",
-                      isGoal ? "text-success" : "text-muted-foreground"
-                    )}>
-                      {mark.labelKES}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Thermometer tube */}
-            <div className="absolute inset-0 bg-gradient-to-t from-muted/30 to-muted/10 rounded-full overflow-hidden shadow-lg border-4 border-border">
-              {/* Total pledged (unpaid) - lighter background */}
-              <div 
-                className="absolute bottom-0 left-0 right-0 transition-all duration-1000 ease-out"
-                style={{ height: `${totalHeight}%` }}
-              >
-                <div className="h-full bg-gradient-to-t from-amber-400/40 via-amber-300/30 to-amber-200/20 rounded-full shadow-inner" />
-              </div>
-
-              {/* Paid pledges - solid green on top */}
-              <div 
-                className="absolute bottom-0 left-0 right-0 transition-all duration-1000 ease-out"
-                style={{ height: `${paidHeight}%` }}
-              >
-                <div className="h-full bg-gradient-to-t from-success/90 via-success/70 to-success/60 rounded-full shadow-inner" />
-              </div>
-              
-              {/* Glass effect */}
-              <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent rounded-full pointer-events-none" />
-            </div>
-
-            {/* Paid meniscus calibration mark */}
-            {paidHeight > 0 && (
-              <div 
-                className="absolute -left-28 w-32 flex items-center justify-end transition-all duration-1000 ease-out translate-y-4"
-                style={{ bottom: `${paidHeight}%` }}
-              >
-                <div className="text-right mr-3">
-                  <div className="text-sm font-bold text-success">${formatAmount(displayPaidUSD)}</div>
-                  <div className="text-xs text-success/70">KSh {formatAmount(displayPaidKES)}</div>
-                </div>
-                <div className="w-8 h-0.5 bg-success shadow-lg" />
-              </div>
-            )}
-
-            {/* Unpaid meniscus calibration mark */}
-            {unpaidAmountUSD > 0 && totalHeight > 0 && (
-              <div 
-                className="absolute -right-28 w-32 flex items-center transition-all duration-1000 ease-out translate-y-4"
-                style={{ bottom: `${totalHeight}%` }}
-              >
-                <div className="w-8 h-0.5 bg-amber-500 shadow-lg" />
-                <div className="text-left ml-3">
-                  <div className="text-sm font-bold text-amber-600">${formatAmount(displayUnpaidUSD)}</div>
-                  <div className="text-xs text-amber-600/70">KSh {formatAmount(displayUnpaidKES)}</div>
-                </div>
-              </div>
-            )}
-
-            {/* Bulb at bottom */}
-            <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 w-40 h-40 bg-gradient-to-br from-success to-success/80 rounded-full shadow-xl border-4 border-border">
-              <div className="absolute inset-3 bg-gradient-to-br from-white/20 to-transparent rounded-full" />
-            </div>
+        {/* Unpaid Pledges */}
+        <div className="bg-gradient-to-br from-amber-500/10 to-amber-500/5 rounded-lg p-3 border border-amber-500/30">
+          <div className="flex items-center gap-1.5 mb-2">
+            <div className="w-2 h-2 bg-amber-500 rounded-full" />
+            <h4 className="text-xs font-semibold text-amber-600">Unpaid</h4>
           </div>
+          <p className="text-lg font-bold text-amber-600">${formatAmount(displayUnpaidUSD)}</p>
+          <p className="text-xs text-muted-foreground">KSh {formatAmount(displayUnpaidKES)}</p>
+          <p className="text-xs text-amber-600/70 mt-1">{unpaidPercentage.toFixed(1)}% of goal</p>
         </div>
 
-        {/* Right side cards */}
-        <div className="flex-shrink-0 w-full max-w-[240px] space-y-6">
-          {/* Unpaid Pledges Card */}
-          <div className="bg-gradient-to-br from-amber-500/10 to-amber-500/5 rounded-lg p-3 border-2 border-amber-500/30 shadow-lg lg:mt-32">
-            <h4 className="text-sm font-bold text-amber-600 mb-2 flex items-center gap-1.5">
-              <div className="w-2 h-2 bg-amber-500 rounded-full" />
-              Unpaid Pledges
-            </h4>
-            <div className="space-y-1.5">
-              <div>
-                <p className="text-xs text-muted-foreground">USD</p>
-                <p className="text-xl font-bold text-amber-600">${formatAmount(displayUnpaidUSD)}</p>
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground">KSh</p>
-                <p className="text-lg font-bold text-amber-600">KSh {formatAmount(displayUnpaidKES)}</p>
-              </div>
-              <div className="pt-1 border-t border-amber-500/20">
-                <p className="text-xs text-muted-foreground">Of Goal</p>
-                <p className="text-lg font-bold text-amber-600">{unpaidPercentage.toFixed(1)}%</p>
-              </div>
-            </div>
+        {/* Total Pledged */}
+        <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-lg p-3 border border-primary/30">
+          <div className="flex items-center gap-1.5 mb-2">
+            <TrendingUp className="w-3 h-3 text-primary" />
+            <h4 className="text-xs font-semibold text-primary">Total</h4>
           </div>
+          <p className="text-lg font-bold text-primary">${formatAmount(displayPaidUSD + displayUnpaidUSD)}</p>
+          <p className="text-xs text-muted-foreground">KSh {formatAmount(displayPaidKES + displayUnpaidKES)}</p>
+          <p className="text-xs text-primary/70 mt-1">{totalPledgedPercentage.toFixed(1)}% of goal</p>
+        </div>
 
-          {/* Target Goal Card */}
-          <div className="bg-gradient-to-br from-primary/5 to-transparent rounded-xl p-4 border-2 border-dashed border-primary/40 shadow-md">
-            <h4 className="text-base font-bold text-foreground mb-3">Target Goal</h4>
-            <div className="space-y-2">
-              <div>
-                <p className="text-xs text-muted-foreground">KSh</p>
-                <p className="text-xl font-bold text-success/80">KSh {formatAmount(goalKES)}</p>
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground">USD</p>
-                <p className="text-lg font-bold text-primary/80">${formatAmount(goalAmountUSD)}</p>
-              </div>
-            </div>
+        {/* Goal */}
+        <div className="bg-gradient-to-br from-primary/5 to-transparent rounded-lg p-3 border border-dashed border-primary/40">
+          <div className="flex items-center gap-1.5 mb-2">
+            <DollarSign className="w-3 h-3 text-foreground" />
+            <h4 className="text-xs font-semibold text-foreground">Goal</h4>
+          </div>
+          <p className="text-lg font-bold text-foreground">${formatAmount(goalAmountUSD)}</p>
+          <p className="text-xs text-muted-foreground">KSh {formatAmount(goalKES)}</p>
+          <div className="flex items-center gap-1 mt-1">
+            <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+            <span className="text-xs text-muted-foreground">Live</span>
           </div>
         </div>
       </div>
-
     </div>
   );
 }
