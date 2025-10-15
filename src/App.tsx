@@ -4,13 +4,13 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
-import AdminDashboard from "./pages/AdminDashboard"
 import AdminAuth from "./pages/AdminAuth";
 import AdminDashboard from "./pages/AdminDashboard";
 import JoinEvent from "./pages/JoinEvent";
 import EventRoom from "./pages/EventRoom";
 import MeetingRoom from "./pages/MeetingRoom";
 import EventManagement from "./pages/EventManagement";
+import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
