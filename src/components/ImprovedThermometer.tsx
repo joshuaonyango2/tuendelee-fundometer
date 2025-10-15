@@ -325,42 +325,44 @@ export function ImprovedThermometer({
         </div>
       </div>
 
-      {/* Stats display - below thermometer */}
-      <div className="w-full max-w-4xl mx-auto space-y-6 mt-12">
-        {/* Total Pledged */}
-        <div className="bg-gradient-to-r from-primary/10 via-success/10 to-primary/10 rounded-xl p-4 sm:p-6 border-2 border-primary/30 shadow-lg">
-          <h4 className="text-base sm:text-lg font-bold text-foreground mb-3 sm:mb-4">Total Pledged (Paid + Unpaid)</h4>
-          <div className="grid grid-cols-2 gap-3 sm:gap-6">
-            <div>
-              <p className="text-xs sm:text-sm text-muted-foreground mb-1">USD</p>
-              <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary break-all">${formatAmount(displayPaidUSD + displayUnpaidUSD)}</p>
+      {/* Stats display - side by side below thermometer */}
+      <div className="w-full max-w-4xl mx-auto mt-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Total Pledged - Left */}
+          <div className="bg-gradient-to-r from-primary/10 via-success/10 to-primary/10 rounded-xl p-4 sm:p-6 border-2 border-primary/30 shadow-lg">
+            <h4 className="text-base sm:text-lg font-bold text-foreground mb-3 sm:mb-4">Total Pledged (Paid + Unpaid)</h4>
+            <div className="grid grid-cols-2 gap-3 sm:gap-6">
+              <div>
+                <p className="text-xs sm:text-sm text-muted-foreground mb-1">USD</p>
+                <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary break-all">${formatAmount(displayPaidUSD + displayUnpaidUSD)}</p>
+              </div>
+              <div>
+                <p className="text-xs sm:text-sm text-muted-foreground mb-1">KSh</p>
+                <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-success break-all">KSh {formatAmount(displayPaidKES + displayUnpaidKES)}</p>
+              </div>
             </div>
-            <div>
-              <p className="text-xs sm:text-sm text-muted-foreground mb-1">KSh</p>
-              <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-success break-all">KSh {formatAmount(displayPaidKES + displayUnpaidKES)}</p>
+            <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-primary/20">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-sm sm:text-base font-semibold text-foreground">Progress to Goal</span>
+                <span className="text-2xl sm:text-3xl font-bold text-primary">
+                  {totalPledgedPercentage.toFixed(1)}%
+                </span>
+              </div>
             </div>
           </div>
-          <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-primary/20">
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-sm sm:text-base font-semibold text-foreground">Progress to Goal</span>
-              <span className="text-2xl sm:text-3xl font-bold text-primary">
-                {totalPledgedPercentage.toFixed(1)}%
-              </span>
-            </div>
-          </div>
-        </div>
 
-        {/* Goal */}
-        <div className="bg-gradient-to-br from-primary/5 to-transparent rounded-xl p-4 sm:p-6 border-2 border-dashed border-primary/40 shadow-md">
-          <h4 className="text-base sm:text-lg font-bold text-foreground mb-3 sm:mb-4">Target Goal</h4>
-          <div className="grid grid-cols-2 gap-3 sm:gap-6">
-            <div>
-              <p className="text-xs sm:text-sm text-muted-foreground mb-1">KSh</p>
-              <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-success/80 break-all">KSh {formatAmount(goalKES)}</p>
-            </div>
-            <div>
-              <p className="text-xs sm:text-sm text-muted-foreground mb-1">USD</p>
-              <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary/80 break-all">${formatAmount(goalAmountUSD)}</p>
+          {/* Goal - Right */}
+          <div className="bg-gradient-to-br from-primary/5 to-transparent rounded-xl p-4 sm:p-6 border-2 border-dashed border-primary/40 shadow-md">
+            <h4 className="text-base sm:text-lg font-bold text-foreground mb-3 sm:mb-4">Target Goal</h4>
+            <div className="grid grid-cols-2 gap-3 sm:gap-6">
+              <div>
+                <p className="text-xs sm:text-sm text-muted-foreground mb-1">KSh</p>
+                <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-success/80 break-all">KSh {formatAmount(goalKES)}</p>
+              </div>
+              <div>
+                <p className="text-xs sm:text-sm text-muted-foreground mb-1">USD</p>
+                <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary/80 break-all">${formatAmount(goalAmountUSD)}</p>
+              </div>
             </div>
           </div>
         </div>
