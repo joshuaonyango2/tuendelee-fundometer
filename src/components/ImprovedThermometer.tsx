@@ -162,9 +162,10 @@ export function ImprovedThermometer({
       </div>
 
       <div className="flex flex-col lg:flex-row items-center lg:items-start justify-center gap-8 lg:gap-24">
-        {/* Paid Pledges Card - Left */}
-        <div className="flex-shrink-0 w-full max-w-[190px] lg:mt-32">
-          <div className="bg-gradient-to-br from-success/10 to-success/5 rounded-lg p-3 border-2 border-success/30 shadow-lg">
+        {/* Left side cards */}
+        <div className="flex-shrink-0 w-full max-w-[240px] space-y-6">
+          {/* Paid Pledges Card */}
+          <div className="bg-gradient-to-br from-success/10 to-success/5 rounded-lg p-3 border-2 border-success/30 shadow-lg lg:mt-32">
             <h4 className="text-sm font-bold text-success mb-2 flex items-center gap-1.5">
               <div className="w-2 h-2 bg-success rounded-full" />
               Paid Pledges
@@ -181,6 +182,25 @@ export function ImprovedThermometer({
               <div className="pt-1 border-t border-success/20">
                 <p className="text-xs text-muted-foreground">Of Goal</p>
                 <p className="text-lg font-bold text-success">{paidPercentage.toFixed(1)}%</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Total Pledged Card */}
+          <div className="bg-gradient-to-r from-primary/10 via-success/10 to-primary/10 rounded-xl p-4 border-2 border-primary/30 shadow-lg">
+            <h4 className="text-base font-bold text-foreground mb-3">Total Pledged</h4>
+            <div className="space-y-2">
+              <div>
+                <p className="text-xs text-muted-foreground">USD</p>
+                <p className="text-xl font-bold text-primary">${formatAmount(displayPaidUSD + displayUnpaidUSD)}</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">KSh</p>
+                <p className="text-lg font-bold text-success">KSh {formatAmount(displayPaidKES + displayUnpaidKES)}</p>
+              </div>
+              <div className="pt-2 border-t border-primary/20">
+                <p className="text-xs text-muted-foreground">Progress</p>
+                <p className="text-2xl font-bold text-primary">{totalPledgedPercentage.toFixed(1)}%</p>
               </div>
             </div>
           </div>
@@ -300,9 +320,10 @@ export function ImprovedThermometer({
           </div>
         </div>
 
-        {/* Unpaid Pledges Card - Right */}
-        <div className="flex-shrink-0 w-full max-w-[190px] lg:mt-32">
-          <div className="bg-gradient-to-br from-amber-500/10 to-amber-500/5 rounded-lg p-3 border-2 border-amber-500/30 shadow-lg">
+        {/* Right side cards */}
+        <div className="flex-shrink-0 w-full max-w-[240px] space-y-6">
+          {/* Unpaid Pledges Card */}
+          <div className="bg-gradient-to-br from-amber-500/10 to-amber-500/5 rounded-lg p-3 border-2 border-amber-500/30 shadow-lg lg:mt-32">
             <h4 className="text-sm font-bold text-amber-600 mb-2 flex items-center gap-1.5">
               <div className="w-2 h-2 bg-amber-500 rounded-full" />
               Unpaid Pledges
@@ -322,51 +343,24 @@ export function ImprovedThermometer({
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Stats display - side by side below thermometer */}
-      <div className="w-full max-w-4xl mx-auto mt-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Total Pledged - Left */}
-          <div className="bg-gradient-to-r from-primary/10 via-success/10 to-primary/10 rounded-xl p-4 sm:p-6 border-2 border-primary/30 shadow-lg">
-            <h4 className="text-base sm:text-lg font-bold text-foreground mb-3 sm:mb-4">Total Pledged (Paid + Unpaid)</h4>
-            <div className="grid grid-cols-2 gap-3 sm:gap-6">
+          {/* Target Goal Card */}
+          <div className="bg-gradient-to-br from-primary/5 to-transparent rounded-xl p-4 border-2 border-dashed border-primary/40 shadow-md">
+            <h4 className="text-base font-bold text-foreground mb-3">Target Goal</h4>
+            <div className="space-y-2">
               <div>
-                <p className="text-xs sm:text-sm text-muted-foreground mb-1">USD</p>
-                <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary break-all">${formatAmount(displayPaidUSD + displayUnpaidUSD)}</p>
+                <p className="text-xs text-muted-foreground">KSh</p>
+                <p className="text-xl font-bold text-success/80">KSh {formatAmount(goalKES)}</p>
               </div>
               <div>
-                <p className="text-xs sm:text-sm text-muted-foreground mb-1">KSh</p>
-                <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-success break-all">KSh {formatAmount(displayPaidKES + displayUnpaidKES)}</p>
-              </div>
-            </div>
-            <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-primary/20">
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-sm sm:text-base font-semibold text-foreground">Progress to Goal</span>
-                <span className="text-2xl sm:text-3xl font-bold text-primary">
-                  {totalPledgedPercentage.toFixed(1)}%
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Goal - Right */}
-          <div className="bg-gradient-to-br from-primary/5 to-transparent rounded-xl p-4 sm:p-6 border-2 border-dashed border-primary/40 shadow-md">
-            <h4 className="text-base sm:text-lg font-bold text-foreground mb-3 sm:mb-4">Target Goal</h4>
-            <div className="grid grid-cols-2 gap-3 sm:gap-6">
-              <div>
-                <p className="text-xs sm:text-sm text-muted-foreground mb-1">KSh</p>
-                <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-success/80 break-all">KSh {formatAmount(goalKES)}</p>
-              </div>
-              <div>
-                <p className="text-xs sm:text-sm text-muted-foreground mb-1">USD</p>
-                <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary/80 break-all">${formatAmount(goalAmountUSD)}</p>
+                <p className="text-xs text-muted-foreground">USD</p>
+                <p className="text-lg font-bold text-primary/80">${formatAmount(goalAmountUSD)}</p>
               </div>
             </div>
           </div>
         </div>
       </div>
+
     </div>
   );
 }
