@@ -147,50 +147,67 @@ export function ImprovedThermometer({
   const unpaidPercentage = goalAmountUSD > 0 ? (unpaidAmountUSD / goalAmountUSD) * 100 : 0;
 
   return (
-    <div className={cn("flex flex-col lg:flex-row gap-6 items-center lg:items-start justify-center", className)}>
-      {/* Left side cards */}
-      <div className="flex flex-col gap-4 w-full lg:w-64">
-        {/* Paid Card */}
+    <div className={cn("flex flex-col items-center justify-center w-full", className)}>
+      {/* Top cards - visible only on mobile */}
+      <div className="lg:hidden w-full max-w-md mb-6">
+        {/* Total Pledged Card - Mobile Top */}
         <div className="bg-gradient-to-br from-success/10 to-success/5 rounded-xl p-6 border border-success/30 shadow-lg">
-          <div className="flex items-center gap-2 mb-4">
-            <div className="w-3 h-3 bg-success rounded-full animate-pulse" />
-            <h3 className="text-sm font-semibold text-success uppercase tracking-wide">Paid Pledges</h3>
-          </div>
-          <div className="space-y-2">
-            <div>
-              <p className="text-3xl font-bold text-success">${formatAmount(displayPaidUSD)}</p>
-              <p className="text-sm text-muted-foreground">KSh {formatAmount(displayPaidKES)}</p>
-            </div>
-            <div className="pt-2 border-t border-success/20">
-              <p className="text-xs text-success/70">
-                {paidPercentage.toFixed(1)}% of goal achieved
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Unpaid Card */}
-        <div className="bg-gradient-to-br from-amber-500/10 to-amber-500/5 rounded-xl p-6 border border-amber-500/30 shadow-lg">
-          <div className="flex items-center gap-2 mb-4">
-            <div className="w-3 h-3 bg-amber-500 rounded-full animate-pulse" />
-            <h3 className="text-sm font-semibold text-amber-600 uppercase tracking-wide">Unpaid Pledges</h3>
-          </div>
-          <div className="space-y-2">
-            <div>
-              <p className="text-3xl font-bold text-amber-600">${formatAmount(displayUnpaidUSD)}</p>
-              <p className="text-sm text-muted-foreground">KSh {formatAmount(displayUnpaidKES)}</p>
-            </div>
-            <div className="pt-2 border-t border-amber-500/20">
-              <p className="text-xs text-amber-600/70">
-                {unpaidPercentage.toFixed(1)}% of goal pending
-              </p>
+          <div className="text-center space-y-2">
+            <p className="text-sm text-muted-foreground">KSh</p>
+            <p className="text-4xl font-bold text-success">KSh {formatAmount(displayPaidKES + displayUnpaidKES)}</p>
+            <div className="pt-3">
+              <p className="text-sm text-muted-foreground">Of Goal</p>
+              <p className="text-5xl font-bold text-success">{totalPledgedPercentage.toFixed(1)}%</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Thermometer */}
-      <div className="flex-1 flex items-center justify-center min-h-[600px] w-full max-w-2xl">
+      {/* Main content - thermometer with side cards on desktop */}
+      <div className="flex flex-col lg:flex-row gap-6 items-center lg:items-start justify-center w-full">
+        {/* Left side cards - visible only on desktop */}
+        <div className="hidden lg:flex flex-col gap-4 w-64">
+          {/* Paid Card */}
+          <div className="bg-gradient-to-br from-success/10 to-success/5 rounded-xl p-6 border border-success/30 shadow-lg">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-3 h-3 bg-success rounded-full animate-pulse" />
+              <h3 className="text-sm font-semibold text-success uppercase tracking-wide">Paid Pledges</h3>
+            </div>
+            <div className="space-y-2">
+              <div>
+                <p className="text-3xl font-bold text-success">${formatAmount(displayPaidUSD)}</p>
+                <p className="text-sm text-muted-foreground">KSh {formatAmount(displayPaidKES)}</p>
+              </div>
+              <div className="pt-2 border-t border-success/20">
+                <p className="text-xs text-success/70">
+                  {paidPercentage.toFixed(1)}% of goal achieved
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Unpaid Card */}
+          <div className="bg-gradient-to-br from-amber-500/10 to-amber-500/5 rounded-xl p-6 border border-amber-500/30 shadow-lg">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-3 h-3 bg-amber-500 rounded-full animate-pulse" />
+              <h3 className="text-sm font-semibold text-amber-600 uppercase tracking-wide">Unpaid Pledges</h3>
+            </div>
+            <div className="space-y-2">
+              <div>
+                <p className="text-3xl font-bold text-amber-600">${formatAmount(displayUnpaidUSD)}</p>
+                <p className="text-sm text-muted-foreground">KSh {formatAmount(displayUnpaidKES)}</p>
+              </div>
+              <div className="pt-2 border-t border-amber-500/20">
+                <p className="text-xs text-amber-600/70">
+                  {unpaidPercentage.toFixed(1)}% of goal pending
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Thermometer */}
+        <div className="flex-1 flex items-center justify-center min-h-[500px] lg:min-h-[600px] w-full max-w-2xl">
         <div className="relative h-full w-full flex items-end justify-center px-12">
           {/* Calibration marks on the left */}
           <div className="absolute left-0 h-full flex flex-col justify-between py-4">
@@ -270,44 +287,60 @@ export function ImprovedThermometer({
         </div>
       </div>
 
-      {/* Right side cards */}
-      <div className="flex flex-col gap-4 w-full lg:w-64">
-        {/* Total Pledged Card */}
-        <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl p-6 border border-primary/30 shadow-lg">
-          <div className="flex items-center gap-2 mb-4">
-            <TrendingUp className="w-4 h-4 text-primary" />
-            <h3 className="text-sm font-semibold text-primary uppercase tracking-wide">Total Pledged</h3>
-          </div>
-          <div className="space-y-2">
-            <div>
-              <p className="text-3xl font-bold text-primary">${formatAmount(displayPaidUSD + displayUnpaidUSD)}</p>
-              <p className="text-sm text-muted-foreground">KSh {formatAmount(displayPaidKES + displayUnpaidKES)}</p>
+        {/* Right side cards - visible only on desktop */}
+        <div className="hidden lg:flex flex-col gap-4 w-64">
+          {/* Total Pledged Card */}
+          <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl p-6 border border-primary/30 shadow-lg">
+            <div className="flex items-center gap-2 mb-4">
+              <TrendingUp className="w-4 h-4 text-primary" />
+              <h3 className="text-sm font-semibold text-primary uppercase tracking-wide">Total Pledged</h3>
             </div>
-            <div className="pt-2 border-t border-primary/20">
-              <p className="text-xs text-primary/70">
-                {totalPledgedPercentage.toFixed(1)}% of goal
-              </p>
+            <div className="space-y-2">
+              <div>
+                <p className="text-3xl font-bold text-primary">${formatAmount(displayPaidUSD + displayUnpaidUSD)}</p>
+                <p className="text-sm text-muted-foreground">KSh {formatAmount(displayPaidKES + displayUnpaidKES)}</p>
+              </div>
+              <div className="pt-2 border-t border-primary/20">
+                <p className="text-xs text-primary/70">
+                  {totalPledgedPercentage.toFixed(1)}% of goal
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Goal Card */}
+          <div className="bg-gradient-to-br from-primary/5 to-transparent rounded-xl p-6 border-2 border-dashed border-primary/40 shadow-lg">
+            <div className="flex items-center gap-2 mb-4">
+              <DollarSign className="w-4 h-4 text-foreground" />
+              <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">Campaign Goal</h3>
+            </div>
+            <div className="space-y-2">
+              <div>
+                <p className="text-3xl font-bold text-foreground">${formatAmount(goalAmountUSD)}</p>
+                <p className="text-sm text-muted-foreground">KSh {formatAmount(goalKES)}</p>
+              </div>
+              <div className="pt-2 border-t border-border">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                  <span className="text-xs text-muted-foreground font-medium">Live Updates</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Goal Card */}
-        <div className="bg-gradient-to-br from-primary/5 to-transparent rounded-xl p-6 border-2 border-dashed border-primary/40 shadow-lg">
-          <div className="flex items-center gap-2 mb-4">
-            <DollarSign className="w-4 h-4 text-foreground" />
-            <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">Campaign Goal</h3>
-          </div>
-          <div className="space-y-2">
-            <div>
-              <p className="text-3xl font-bold text-foreground">${formatAmount(goalAmountUSD)}</p>
-              <p className="text-sm text-muted-foreground">KSh {formatAmount(goalKES)}</p>
+      {/* Bottom card - visible only on mobile */}
+      <div className="lg:hidden w-full max-w-md mt-6">
+        {/* Unpaid Pledges Card - Mobile Bottom */}
+        <div className="bg-gradient-to-br from-amber-500/10 to-amber-500/5 rounded-xl p-6 border border-amber-500/30 shadow-lg">
+          <div className="text-center space-y-2">
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <div className="w-3 h-3 bg-amber-500 rounded-full animate-pulse" />
+              <h3 className="text-base font-semibold text-amber-600">Unpaid Pledges</h3>
             </div>
-            <div className="pt-2 border-t border-border">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-                <span className="text-xs text-muted-foreground font-medium">Live Updates</span>
-              </div>
-            </div>
+            <p className="text-4xl font-bold text-amber-600">${formatAmount(displayUnpaidUSD)}</p>
+            <p className="text-lg text-muted-foreground">KSh {formatAmount(displayUnpaidKES)}</p>
           </div>
         </div>
       </div>
