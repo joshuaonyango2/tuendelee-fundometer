@@ -27,7 +27,7 @@ export function ImprovedThermometer({
   const totalPledgedUSD = paidAmountUSD + unpaidAmountUSD;
   const totalPledgedKES = paidAmountKES + unpaidAmountKES;
 
-  // Exchange rate (you can make this dynamic if needed)
+  // Exchange rate
   const exchangeRate = 128;
 
   useEffect(() => {
@@ -58,9 +58,14 @@ export function ImprovedThermometer({
     return () => clearInterval(timer);
   }, [paidAmountUSD, paidAmountKES, unpaidAmountUSD, unpaidAmountKES]);
 
-  // Smart calibration marks that adapt to pledge amounts
+  // Enhanced calibration marks that show beyond goal
   const generateCalibrationMarks = () => {
-    const maxAmount = Math.max(goalAmountUSD, totalPledgedUSD, paidAmountUSD);
+    // Calculate maximum amount to display (goal or 20% beyond current total, whichever is larger)
+    const maxAmount = Math.max(
+      goalAmountUSD, 
+      totalPledgedUSD * 1.2,
+      goalAmountUSD * 1.5 // Always show at least 50% beyond goal
+    );
     
     const formatLabelUSD = (value: number) => {
       if (value >= 1000000) return `$${(value / 1000000).toFixed(1)}M`;
@@ -74,99 +79,106 @@ export function ImprovedThermometer({
       return `KSh ${value.toLocaleString()}`;
     };
 
-    // Determine optimal step size based on amounts
+    // Smart step calculation that considers the entire range
     const getStepSize = () => {
-      const range = Math.max(maxAmount, goalAmountUSD * 1.2);
+      const range = maxAmount;
       
-      if (range <= 1000) return 200;
+      if (range <= 2000) return 500;
       if (range <= 5000) return 1000;
-      if (range <= 10000) return 2500;
-      if (range <= 50000) return 10000;
-      if (range <= 100000) return 25000;
-      if (range <= 500000) return 100000;
-      if (range <= 1000000) return 250000;
+      if (range <= 15000) return 2500;
+      if (range <= 30000) return 5000;
+      if (range <= 75000) return 15000;
+      if (range <= 150000) return 30000;
+      if (range <= 300000) return 75000;
+      if (range <= 750000) return 150000;
+      if (range <= 1500000) return 300000;
       return 500000;
     };
 
     const step = getStepSize();
     const marks = [];
 
-    // Generate base marks
-    for (let value = step; value <= maxAmount * 1.3; value += step) {
-      if (marks.length >= 8) break; // Limit number of marks
+    // Generate marks from bottom to beyond goal
+    for (let value = 0; value <= maxAmount; value += step) {
+      if (value === 0) continue; // Skip zero
       
       const kesValue = Math.round(value * exchangeRate);
+      const isGoal = Math.abs(value - goalAmountUSD) < step * 0.1;
+      const isPaid = Math.abs(value - paidAmountUSD) < step * 0.1 && paidAmountUSD > 0;
+      const isTotal = Math.abs(value - totalPledgedUSD) < step * 0.1 && totalPledgedUSD > paidAmountUSD;
+      
       marks.push({ 
         valueUSD: value, 
         valueKES: kesValue,
         labelUSD: formatLabelUSD(value),
         labelKES: formatLabelKES(kesValue),
-        isGoal: false,
+        isGoal,
+        isPaid,
+        isTotal
+      });
+      
+      // Stop if we have enough marks or reached max
+      if (marks.length >= 10) break;
+    }
+
+    // Ensure goal is always included
+    const hasGoal = marks.some(mark => mark.isGoal);
+    if (!hasGoal) {
+      marks.push({
+        valueUSD: goalAmountUSD,
+        valueKES: Math.round(goalAmountUSD * exchangeRate),
+        labelUSD: formatLabelUSD(goalAmountUSD),
+        labelKES: formatLabelKES(goalAmountUSD * exchangeRate),
+        isGoal: true,
         isPaid: false,
         isTotal: false
       });
     }
 
-    // Always include goal as a special mark
-    const goalMark = {
-      valueUSD: goalAmountUSD,
-      valueKES: Math.round(goalAmountUSD * exchangeRate),
-      labelUSD: `$${formatLabelUSD(goalAmountUSD).replace('$', '')}`,
-      labelKES: `KSh ${formatLabelKES(goalAmountUSD * exchangeRate).replace('KSh ', '')}`,
-      isGoal: true,
-      isPaid: false,
-      isTotal: false
-    };
-
-    // Add goal if not already close to an existing mark
-    const hasCloseGoal = marks.some(mark => 
-      Math.abs(mark.valueUSD - goalAmountUSD) < step * 0.3
-    );
-    if (!hasCloseGoal) {
-      marks.push(goalMark);
+    // Ensure current amounts are marked if significant
+    if (paidAmountUSD > goalAmountUSD * 0.1) {
+      const hasPaid = marks.some(mark => mark.isPaid);
+      if (!hasPaid) {
+        marks.push({
+          valueUSD: paidAmountUSD,
+          valueKES: paidAmountKES,
+          labelUSD: formatLabelUSD(paidAmountUSD),
+          labelKES: formatLabelKES(paidAmountKES),
+          isGoal: false,
+          isPaid: true,
+          isTotal: false
+        });
+      }
     }
 
-    // Add current paid amount as a special mark if significant
-    if (paidAmountUSD > goalAmountUSD * 0.05 && !marks.some(mark => 
-      Math.abs(mark.valueUSD - paidAmountUSD) < step * 0.3
-    )) {
-      marks.push({
-        valueUSD: paidAmountUSD,
-        valueKES: paidAmountKES,
-        labelUSD: `$${formatLabelUSD(paidAmountUSD).replace('$', '')}`,
-        labelKES: `KSh ${formatLabelKES(paidAmountKES).replace('KSh ', '')}`,
-        isGoal: false,
-        isPaid: true,
-        isTotal: false
-      });
-    }
-
-    // Add total pledged as a special mark if different from paid
-    if (totalPledgedUSD > paidAmountUSD * 1.1 && !marks.some(mark => 
-      Math.abs(mark.valueUSD - totalPledgedUSD) < step * 0.3
-    )) {
-      marks.push({
-        valueUSD: totalPledgedUSD,
-        valueKES: totalPledgedKES,
-        labelUSD: `$${formatLabelUSD(totalPledgedUSD).replace('$', '')}`,
-        labelKES: `KSh ${formatLabelKES(totalPledgedKES).replace('KSh ', '')}`,
-        isGoal: false,
-        isPaid: false,
-        isTotal: true
-      });
+    if (totalPledgedUSD > paidAmountUSD * 1.1) {
+      const hasTotal = marks.some(mark => mark.isTotal);
+      if (!hasTotal) {
+        marks.push({
+          valueUSD: totalPledgedUSD,
+          valueKES: totalPledgedKES,
+          labelUSD: formatLabelUSD(totalPledgedUSD),
+          labelKES: formatLabelKES(totalPledgedKES),
+          isGoal: false,
+          isPaid: false,
+          isTotal: true
+        });
+      }
     }
 
     return marks.sort((a, b) => a.valueUSD - b.valueUSD);
   };
 
   const calibrationMarks = generateCalibrationMarks();
-  const maxCalibration = Math.max(...calibrationMarks.map(m => m.valueUSD), goalAmountUSD * 1.2);
+  const maxCalibration = Math.max(...calibrationMarks.map(m => m.valueUSD));
 
   // Calculate heights
   const getPaidHeight = () => Math.min((paidAmountUSD / maxCalibration) * 100, 100);
+  const getUnpaidHeight = () => Math.min((unpaidAmountUSD / maxCalibration) * 100, 100);
   const getTotalHeight = () => Math.min((totalPledgedUSD / maxCalibration) * 100, 100);
 
   const paidHeight = getPaidHeight();
+  const unpaidHeight = getUnpaidHeight();
   const totalHeight = getTotalHeight();
 
   const getMarkPosition = (valueUSD: number) => (valueUSD / maxCalibration) * 100;
@@ -178,21 +190,11 @@ export function ImprovedThermometer({
   const totalPledgedPercentage = goalAmountUSD > 0 ? (totalPledgedUSD / goalAmountUSD) * 100 : 0;
   const paidPercentage = goalAmountUSD > 0 ? (paidAmountUSD / goalAmountUSD) * 100 : 0;
 
-  // Get dynamic color based on progress
-  const getProgressColor = () => {
-    const progress = totalPledgedPercentage;
-    if (progress < 25) return 'from-red-500 to-red-600';
-    if (progress < 50) return 'from-orange-500 to-orange-600';
-    if (progress < 75) return 'from-yellow-500 to-yellow-600';
-    if (progress < 100) return 'from-green-500 to-green-600';
-    return 'from-emerald-500 to-emerald-600';
-  };
-
   return (
     <div className={cn("w-full max-w-7xl mx-auto py-8 px-4", className)}>
       {/* Summary Cards */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
-        <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-2xl p-6 shadow-2xl transform hover:scale-105 transition-transform duration-300">
+        <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-2xl p-6 shadow-2xl">
           <div className="text-center space-y-3">
             <div className="flex items-center justify-center gap-3">
               <Target className="w-6 h-6" />
@@ -207,7 +209,7 @@ export function ImprovedThermometer({
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 text-white rounded-2xl p-6 shadow-2xl transform hover:scale-105 transition-transform duration-300">
+        <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 text-white rounded-2xl p-6 shadow-2xl">
           <div className="text-center space-y-3">
             <div className="flex items-center justify-center gap-3">
               <CheckCircle className="w-6 h-6" />
@@ -222,7 +224,7 @@ export function ImprovedThermometer({
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-amber-500 to-amber-600 text-white rounded-2xl p-6 shadow-2xl transform hover:scale-105 transition-transform duration-300">
+        <div className="bg-gradient-to-br from-amber-500 to-amber-600 text-white rounded-2xl p-6 shadow-2xl">
           <div className="text-center space-y-3">
             <div className="flex items-center justify-center gap-3">
               <Clock className="w-6 h-6" />
@@ -245,19 +247,19 @@ export function ImprovedThermometer({
         <div className="lg:w-48 text-center">
           <div className="flex items-center justify-end gap-2 text-blue-600 font-bold">
             <DollarSign className="w-5 h-5" />
-            <span className="text-lg">US Dollars (USD)</span>
+            <span className="text-lg">US Dollars</span>
           </div>
         </div>
-        <div className="w-16"></div> {/* Spacer for thermometer */}
+        <div className="w-16"></div>
         <div className="lg:w-48 text-center">
           <div className="flex items-center justify-start gap-2 text-green-600 font-bold">
             <TrendingUp className="w-5 h-5" />
-            <span className="text-lg">Kenya Shillings (KSh)</span>
+            <span className="text-lg">Kenya Shillings</span>
           </div>
         </div>
       </div>
 
-      {/* Modern Thermometer with Dynamic Calibrations */}
+      {/* Enhanced Thermometer */}
       <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-16">
         {/* Left Labels - USD */}
         <div className="lg:w-48 order-2 lg:order-1">
@@ -266,47 +268,35 @@ export function ImprovedThermometer({
               <div
                 key={index}
                 className={cn(
-                  "py-3 transition-all duration-300 border-r-2",
+                  "py-2 transition-all duration-300 border-r-2 relative",
                   mark.isGoal 
                     ? "border-red-500 bg-red-50 pr-4 -mr-2 rounded-l-lg" 
                     : mark.isPaid
                     ? "border-emerald-500 bg-emerald-50 pr-4 -mr-2 rounded-l-lg"
                     : mark.isTotal
                     ? "border-blue-500 bg-blue-50 pr-4 -mr-2 rounded-l-lg"
-                    : "border-gray-300 pr-3"
+                    : "border-gray-200 pr-3"
                 )}
                 style={{ 
-                  marginTop: index === 0 ? '0' : '-12px',
+                  marginTop: index === 0 ? '0' : '-8px',
                 }}
               >
                 <div className="flex items-center justify-end gap-2">
-                  {mark.isGoal && <Target className="w-4 h-4 text-red-500" />}
-                  {mark.isPaid && <CheckCircle className="w-4 h-4 text-emerald-500" />}
-                  {mark.isTotal && <TrendingUp className="w-4 h-4 text-blue-500" />}
+                  {mark.isGoal && <Target className="w-3 h-3 text-red-500" />}
+                  {mark.isPaid && <CheckCircle className="w-3 h-3 text-emerald-500" />}
+                  {mark.isTotal && <TrendingUp className="w-3 h-3 text-blue-500" />}
                   <span className={cn(
-                    "text-sm font-semibold block",
+                    "text-xs font-semibold block",
                     mark.isGoal 
                       ? "text-red-600" 
                       : mark.isPaid
                       ? "text-emerald-600"
                       : mark.isTotal
                       ? "text-blue-600"
-                      : "text-gray-700"
+                      : "text-gray-600"
                   )}>
                     {mark.labelUSD}
                   </span>
-                </div>
-                <div className={cn(
-                  "text-xs font-medium mt-1",
-                  mark.isGoal ? "text-red-500" :
-                  mark.isPaid ? "text-emerald-500" :
-                  mark.isTotal ? "text-blue-500" :
-                  "text-gray-500"
-                )}>
-                  {mark.isGoal && "🎯 GOAL"}
-                  {mark.isPaid && "✅ PAID"}
-                  {mark.isTotal && "📊 TOTAL"}
-                  {!mark.isGoal && !mark.isPaid && !mark.isTotal && "USD"}
                 </div>
               </div>
             ))}
@@ -315,116 +305,139 @@ export function ImprovedThermometer({
 
         {/* Thermometer Center */}
         <div className="order-1 lg:order-2 flex flex-col items-center">
-          {/* Thermometer Container */}
           <div className="relative">
             {/* Thermometer Tube */}
-            <div className="w-16 bg-gradient-to-b from-gray-100 to-gray-50 rounded-full border-4 border-gray-300 shadow-2xl overflow-hidden relative h-96 lg:h-[500px]">
+            <div className="w-14 bg-gradient-to-b from-gray-50 to-gray-100 rounded-full border-2 border-gray-300 shadow-xl overflow-hidden relative h-96 lg:h-[500px]">
               
               {/* Glass Reflection */}
-              <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-white/60 to-transparent z-10" />
+              <div className="absolute left-0 top-0 bottom-0 w-3 bg-gradient-to-r from-white/50 to-transparent z-10" />
               
-              {/* Unpaid Pledges Background (Amber) */}
-              <div
-                className="absolute bottom-0 left-0 right-0 bg-gradient-to-b from-amber-400/20 via-amber-300/30 to-amber-400/20 transition-all duration-1000 ease-out"
-                style={{ height: `${totalHeight}%` }}
-              >
-                {/* Subtle pattern */}
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-amber-200/40 via-transparent to-transparent" />
-              </div>
+              {/* Empty Tube Above Total */}
+              <div 
+                className="absolute top-0 left-0 right-0 bg-gradient-to-b from-gray-50 to-gray-100 transition-all duration-1000 ease-out"
+                style={{ height: `${100 - totalHeight}%` }}
+              />
 
-              {/* Paid Pledges Fill (Dynamic Color) */}
-              <div
-                className={cn(
-                  "absolute bottom-0 left-0 right-0 bg-gradient-to-b transition-all duration-1000 ease-out rounded-t-full shadow-inner z-20",
-                  getProgressColor()
-                )}
-                style={{ height: `${paidHeight}%` }}
-              >
-                {/* Shine Effect */}
-                <div className="absolute top-0 left-0 right-0 h-1/3 bg-gradient-to-b from-white/30 to-transparent rounded-t-full" />
-                
-                {/* Rising Bubbles */}
-                {paidHeight > 10 && (
-                  <div className="absolute inset-0 overflow-hidden">
-                    <div className="absolute bottom-8 left-3 w-1.5 h-1.5 bg-white/40 rounded-full animate-float" />
-                    <div className="absolute bottom-16 right-4 w-1 h-1 bg-white/50 rounded-full animate-float" style={{ animationDelay: '0.7s' }} />
-                    <div className="absolute bottom-24 left-4 w-2 h-2 bg-white/30 rounded-full animate-float" style={{ animationDelay: '1.4s' }} />
-                  </div>
-                )}
-              </div>
+              {/* Unpaid Pledges (Amber) - ON TOP of paid for meniscus effect */}
+              {unpaidAmountUSD > 0 && (
+                <div
+                  className="absolute left-0 right-0 bg-gradient-to-b from-amber-400 via-amber-300 to-amber-400 transition-all duration-1000 ease-out z-20"
+                  style={{ 
+                    bottom: `${paidHeight}%`,
+                    height: `${unpaidHeight}%`
+                  }}
+                >
+                  {/* Meniscus Curve for Unpaid */}
+                  <div className="absolute top-0 left-0 right-0 h-3 bg-amber-300 rounded-b-full" />
+                  
+                  {/* Shine Effect */}
+                  <div className="absolute top-0 left-0 right-0 h-1/3 bg-gradient-to-b from-amber-200/40 to-transparent" />
+                </div>
+              )}
 
-              {/* Dynamic Calibration Marks Inside */}
+              {/* Paid Pledges (Emerald) - BASE layer */}
+              {paidAmountUSD > 0 && (
+                <div
+                  className="absolute bottom-0 left-0 right-0 bg-gradient-to-b from-emerald-500 via-emerald-400 to-emerald-500 transition-all duration-1000 ease-out z-15 rounded-t-full"
+                  style={{ height: `${paidHeight}%` }}
+                >
+                  {/* Meniscus Curve for Paid */}
+                  <div className="absolute top-0 left-0 right-0 h-3 bg-emerald-400 rounded-t-full" />
+                  
+                  {/* Shine Effect */}
+                  <div className="absolute top-0 left-0 right-0 h-1/3 bg-gradient-to-b from-emerald-300/50 to-transparent rounded-t-full" />
+                  
+                  {/* Rising Bubbles */}
+                  {paidHeight > 10 && (
+                    <div className="absolute inset-0 overflow-hidden">
+                      <div className="absolute bottom-8 left-3 w-1.5 h-1.5 bg-emerald-300/60 rounded-full animate-float" />
+                      <div className="absolute bottom-16 right-4 w-1 h-1 bg-emerald-200/70 rounded-full animate-float" style={{ animationDelay: '0.7s' }} />
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Calibration Marks - Positioned at meniscus levels */}
               {calibrationMarks.map((mark, index) => (
                 <div
                   key={index}
-                  className="absolute left-0 right-0 flex justify-between px-1 z-15"
+                  className="absolute left-0 right-0 flex justify-between items-center px-1 z-30"
                   style={{ bottom: `${getMarkPosition(mark.valueUSD)}%` }}
                 >
+                  {/* Left tick */}
                   <div className={cn(
-                    "h-0.5 rounded-full",
+                    "h-0.5 rounded-full transition-all duration-300",
                     mark.isGoal 
-                      ? "w-3 bg-red-500" 
+                      ? "w-4 bg-red-500" 
                       : mark.isPaid
                       ? "w-3 bg-emerald-500"
                       : mark.isTotal
                       ? "w-3 bg-blue-500"
-                      : "w-2 bg-gray-400"
+                      : "w-2 bg-gray-500"
                   )} />
+                  
+                  {/* Right tick */}
                   <div className={cn(
-                    "h-0.5 rounded-full",
+                    "h-0.5 rounded-full transition-all duration-300",
                     mark.isGoal 
-                      ? "w-3 bg-red-500" 
+                      ? "w-4 bg-red-500" 
                       : mark.isPaid
                       ? "w-3 bg-emerald-500"
                       : mark.isTotal
                       ? "w-3 bg-blue-500"
-                      : "w-2 bg-gray-400"
+                      : "w-2 bg-gray-500"
                   )} />
                 </div>
               ))}
 
-              {/* Goal Line */}
+              {/* Current Level Indicators */}
+              {/* Paid Level Indicator */}
+              {paidAmountUSD > 0 && (
+                <div 
+                  className="absolute left-0 right-0 border-t-2 border-dashed border-emerald-300 z-25"
+                  style={{ bottom: `${paidHeight}%` }}
+                />
+              )}
+              
+              {/* Total Level Indicator */}
+              {totalPledgedUSD > paidAmountUSD && (
+                <div 
+                  className="absolute left-0 right-0 border-t-2 border-dashed border-amber-300 z-25"
+                  style={{ bottom: `${totalHeight}%` }}
+                />
+              )}
+
+              {/* Goal Line - Always visible */}
               <div
-                className="absolute left-0 right-0 border-t-2 border-dashed border-red-500 z-25 shadow-lg"
+                className="absolute left-0 right-0 border-t-2 border-dashed border-red-500 z-30 shadow-sm"
                 style={{ bottom: `${getMarkPosition(goalAmountUSD)}%` }}
               />
             </div>
 
             {/* Thermometer Bulb */}
-            <div className={cn(
-              "w-24 h-24 -mt-3 mx-auto rounded-full bg-gradient-to-br shadow-2xl border-4 border-white relative overflow-hidden z-30",
-              getProgressColor()
-            )}>
-              <div className="absolute inset-0 bg-gradient-to-tr from-white/30 to-transparent" />
+            <div className="w-20 h-20 -mt-2 mx-auto rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg border-2 border-white relative overflow-hidden z-30">
+              <div className="absolute inset-0 bg-gradient-to-tr from-emerald-400/30 to-transparent" />
               <div className="absolute inset-0 flex items-center justify-center">
-                <Flame className="w-10 h-10 text-white animate-pulse" />
+                <Flame className="w-8 h-8 text-white" />
               </div>
-              {/* Bulb Shine */}
-              <div className="absolute top-2 left-2 w-8 h-8 bg-white/30 rounded-full blur-sm" />
             </div>
 
-            {/* Current Progress Indicators */}
-            <div className="mt-6 space-y-4 text-center">
+            {/* Floating Amount Indicators */}
+            <div className="mt-4 space-y-2 text-center">
               {paidAmountUSD > 0 && (
-                <div className="bg-emerald-500 text-white px-6 py-3 rounded-full shadow-lg transform hover:scale-105 transition-transform duration-300">
+                <div className="bg-emerald-500 text-white px-4 py-2 rounded-full shadow-lg">
                   <div className="flex items-center justify-center gap-2">
-                    <CheckCircle className="w-4 h-4" />
-                    <span className="font-bold">Paid: ${formatAmount(paidAmountUSD)}</span>
-                  </div>
-                  <div className="text-sm opacity-90 mt-1">
-                    KSh {formatAmount(paidAmountKES)}
+                    <CheckCircle className="w-3 h-3" />
+                    <span className="text-sm font-bold">Paid: ${formatAmount(paidAmountUSD)}</span>
                   </div>
                 </div>
               )}
               
-              {totalPledgedUSD > paidAmountUSD && (
-                <div className="bg-blue-500 text-white px-6 py-3 rounded-full shadow-lg transform hover:scale-105 transition-transform duration-300">
+              {unpaidAmountUSD > 0 && (
+                <div className="bg-amber-500 text-white px-4 py-2 rounded-full shadow-lg">
                   <div className="flex items-center justify-center gap-2">
-                    <ArrowUp className="w-4 h-4" />
-                    <span className="font-bold">Total: ${formatAmount(totalPledgedUSD)}</span>
-                  </div>
-                  <div className="text-sm opacity-90 mt-1">
-                    KSh {formatAmount(totalPledgedKES)}
+                    <Clock className="w-3 h-3" />
+                    <span className="text-sm font-bold">Unpaid: ${formatAmount(unpaidAmountUSD)}</span>
                   </div>
                 </div>
               )}
@@ -439,47 +452,35 @@ export function ImprovedThermometer({
               <div
                 key={index}
                 className={cn(
-                  "py-3 transition-all duration-300 border-l-2",
+                  "py-2 transition-all duration-300 border-l-2 relative",
                   mark.isGoal 
                     ? "border-red-500 bg-red-50 pl-4 -ml-2 rounded-r-lg" 
                     : mark.isPaid
                     ? "border-emerald-500 bg-emerald-50 pl-4 -ml-2 rounded-r-lg"
                     : mark.isTotal
                     ? "border-blue-500 bg-blue-50 pl-4 -ml-2 rounded-r-lg"
-                    : "border-gray-300 pl-3"
+                    : "border-gray-200 pl-3"
                 )}
                 style={{ 
-                  marginTop: index === 0 ? '0' : '-12px',
+                  marginTop: index === 0 ? '0' : '-8px',
                 }}
               >
                 <div className="flex items-center justify-start gap-2">
                   <span className={cn(
-                    "text-sm font-semibold block",
+                    "text-xs font-semibold block",
                     mark.isGoal 
                       ? "text-red-600" 
                       : mark.isPaid
                       ? "text-emerald-600"
                       : mark.isTotal
                       ? "text-blue-600"
-                      : "text-gray-700"
+                      : "text-gray-600"
                   )}>
                     {mark.labelKES}
                   </span>
-                  {mark.isGoal && <Target className="w-4 h-4 text-red-500" />}
-                  {mark.isPaid && <CheckCircle className="w-4 h-4 text-emerald-500" />}
-                  {mark.isTotal && <TrendingUp className="w-4 h-4 text-blue-500" />}
-                </div>
-                <div className={cn(
-                  "text-xs font-medium mt-1",
-                  mark.isGoal ? "text-red-500" :
-                  mark.isPaid ? "text-emerald-500" :
-                  mark.isTotal ? "text-blue-500" :
-                  "text-gray-500"
-                )}>
-                  {mark.isGoal && "🎯 LENGO"}
-                  {mark.isPaid && "✅ IMELIPWA"}
-                  {mark.isTotal && "📊 JUMLA"}
-                  {!mark.isGoal && !mark.isPaid && !mark.isTotal && "KSh"}
+                  {mark.isGoal && <Target className="w-3 h-3 text-red-500" />}
+                  {mark.isPaid && <CheckCircle className="w-3 h-3 text-emerald-500" />}
+                  {mark.isTotal && <TrendingUp className="w-3 h-3 text-blue-500" />}
                 </div>
               </div>
             ))}
@@ -487,19 +488,30 @@ export function ImprovedThermometer({
         </div>
       </div>
 
-      {/* Exchange Rate Info */}
-      <div className="text-center mt-8 text-sm text-gray-600">
-        <p>Exchange Rate: 1 USD = {exchangeRate} KSh • Updates in real-time with pledges</p>
+      {/* Legend */}
+      <div className="flex justify-center gap-6 mt-8">
+        <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-gray-200 shadow-sm">
+          <div className="w-3 h-3 bg-emerald-500 rounded-full"></div>
+          <span className="text-sm font-medium text-gray-700">Paid Pledges</span>
+        </div>
+        <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-gray-200 shadow-sm">
+          <div className="w-3 h-3 bg-amber-400 rounded-full"></div>
+          <span className="text-sm font-medium text-gray-700">Unpaid Pledges</span>
+        </div>
+        <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-gray-200 shadow-sm">
+          <div className="w-4 h-1 border-t-2 border-dashed border-red-500"></div>
+          <span className="text-sm font-medium text-gray-700">Goal Target</span>
+        </div>
       </div>
 
       {/* Progress Animation */}
       <style jsx>{`
         @keyframes float {
           0%, 100% { transform: translateY(0) scale(1); opacity: 0.7; }
-          50% { transform: translateY(-10px) scale(1.1); opacity: 1; }
+          50% { transform: translateY(-8px) scale(1.05); opacity: 1; }
         }
         .animate-float {
-          animation: float 3s ease-in-out infinite;
+          animation: float 2.5s ease-in-out infinite;
         }
       `}</style>
     </div>
