@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
-import { TrendingUp, DollarSign } from 'lucide-react';
+import { TrendingUp } from 'lucide-react';
 
 interface ImprovedThermometerProps {
   paidAmountUSD: number;
@@ -140,17 +140,12 @@ export function ImprovedThermometer({
     }).format(amount);
   };
 
-  const goalKES = goalAmountUSD * 128;
-
-  const paidPercentage = goalAmountUSD > 0 ? (paidAmountUSD / goalAmountUSD) * 100 : 0;
   const totalPledgedPercentage = goalAmountUSD > 0 ? (totalPledgedUSD / goalAmountUSD) * 100 : 0;
-  const unpaidPercentage = goalAmountUSD > 0 ? (unpaidAmountUSD / goalAmountUSD) * 100 : 0;
 
   return (
     <div className={cn("flex flex-col items-center justify-center w-full", className)}>
-      {/* Top cards - visible only on mobile */}
+      {/* Top card - visible only on mobile */}
       <div className="lg:hidden w-full max-w-md mb-6">
-        {/* Total Pledged Card - Mobile Top */}
         <div className="bg-gradient-to-br from-success/10 to-success/5 rounded-xl p-6 border border-success/30 shadow-lg">
           <div className="text-center space-y-2">
             <p className="text-sm text-muted-foreground">KSh</p>
@@ -163,52 +158,9 @@ export function ImprovedThermometer({
         </div>
       </div>
 
-      {/* Main content - thermometer with side cards on desktop */}
-      <div className="flex flex-col lg:flex-row gap-6 items-center lg:items-start justify-center w-full">
-        {/* Left side cards - visible only on desktop */}
-        <div className="hidden lg:flex flex-col gap-4 w-64">
-          {/* Paid Card */}
-          <div className="bg-gradient-to-br from-success/10 to-success/5 rounded-xl p-6 border border-success/30 shadow-lg">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-3 h-3 bg-success rounded-full animate-pulse" />
-              <h3 className="text-sm font-semibold text-success uppercase tracking-wide">Paid Pledges</h3>
-            </div>
-            <div className="space-y-2">
-              <div>
-                <p className="text-3xl font-bold text-success">${formatAmount(displayPaidUSD)}</p>
-                <p className="text-sm text-muted-foreground">KSh {formatAmount(displayPaidKES)}</p>
-              </div>
-              <div className="pt-2 border-t border-success/20">
-                <p className="text-xs text-success/70">
-                  {paidPercentage.toFixed(1)}% of goal achieved
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Unpaid Card */}
-          <div className="bg-gradient-to-br from-amber-500/10 to-amber-500/5 rounded-xl p-6 border border-amber-500/30 shadow-lg">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-3 h-3 bg-amber-500 rounded-full animate-pulse" />
-              <h3 className="text-sm font-semibold text-amber-600 uppercase tracking-wide">Unpaid Pledges</h3>
-            </div>
-            <div className="space-y-2">
-              <div>
-                <p className="text-3xl font-bold text-amber-600">${formatAmount(displayUnpaidUSD)}</p>
-                <p className="text-sm text-muted-foreground">KSh {formatAmount(displayUnpaidKES)}</p>
-              </div>
-              <div className="pt-2 border-t border-amber-500/20">
-                <p className="text-xs text-amber-600/70">
-                  {unpaidPercentage.toFixed(1)}% of goal pending
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Thermometer */}
-        <div className="flex-1 flex items-center justify-center min-h-[500px] lg:min-h-[600px] w-full max-w-2xl">
-        <div className="relative h-full w-full flex items-end justify-center px-12">
+      {/* Thermometer */}
+      <div className="flex items-center justify-center min-h-[500px] lg:min-h-[600px] w-full max-w-2xl">
+        <div className="relative h-full w-full flex items-end justify-center px-12 lg:px-20">
           {/* Calibration marks on the left */}
           <div className="absolute left-0 h-full flex flex-col justify-between py-4">
             {calibrationMarks.map((mark, index) => (
@@ -231,16 +183,12 @@ export function ImprovedThermometer({
           {/* Thermometer bulb and tube */}
           <div className="relative flex flex-col items-center h-full pb-2">
             {/* Thermometer tube container */}
-            <div className="relative w-24 flex-1 bg-muted/30 rounded-full border-4 border-border shadow-inner overflow-hidden">
+            <div className="relative w-20 lg:w-24 flex-1 bg-muted/30 rounded-full border-4 border-border shadow-inner overflow-hidden">
               {/* Goal line */}
               <div 
                 className="absolute w-full border-t-2 border-dashed border-primary/60 z-10"
                 style={{ bottom: `${getMarkPosition(goalAmountUSD)}%` }}
-              >
-                <span className="absolute -right-16 -top-3 text-xs font-semibold text-primary whitespace-nowrap">
-                  Goal
-                </span>
-              </div>
+              />
 
               {/* Total pledged fill (background layer - lighter) */}
               <div 
@@ -258,10 +206,10 @@ export function ImprovedThermometer({
             </div>
 
             {/* Thermometer bulb */}
-            <div className="w-32 h-32 rounded-full bg-gradient-to-br from-success via-success to-success/80 shadow-xl border-4 border-border mt-2 relative overflow-hidden">
+            <div className="w-28 h-28 lg:w-32 lg:h-32 rounded-full bg-gradient-to-br from-success via-success to-success/80 shadow-xl border-4 border-border mt-2 relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-tr from-white/30 to-transparent" />
               <div className="absolute inset-0 flex items-center justify-center">
-                <TrendingUp className="w-12 h-12 text-white" />
+                <TrendingUp className="w-10 h-10 lg:w-12 lg:h-12 text-white" />
               </div>
             </div>
           </div>
@@ -287,52 +235,8 @@ export function ImprovedThermometer({
         </div>
       </div>
 
-        {/* Right side cards - visible only on desktop */}
-        <div className="hidden lg:flex flex-col gap-4 w-64">
-          {/* Total Pledged Card */}
-          <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl p-6 border border-primary/30 shadow-lg">
-            <div className="flex items-center gap-2 mb-4">
-              <TrendingUp className="w-4 h-4 text-primary" />
-              <h3 className="text-sm font-semibold text-primary uppercase tracking-wide">Total Pledged</h3>
-            </div>
-            <div className="space-y-2">
-              <div>
-                <p className="text-3xl font-bold text-primary">${formatAmount(displayPaidUSD + displayUnpaidUSD)}</p>
-                <p className="text-sm text-muted-foreground">KSh {formatAmount(displayPaidKES + displayUnpaidKES)}</p>
-              </div>
-              <div className="pt-2 border-t border-primary/20">
-                <p className="text-xs text-primary/70">
-                  {totalPledgedPercentage.toFixed(1)}% of goal
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Goal Card */}
-          <div className="bg-gradient-to-br from-primary/5 to-transparent rounded-xl p-6 border-2 border-dashed border-primary/40 shadow-lg">
-            <div className="flex items-center gap-2 mb-4">
-              <DollarSign className="w-4 h-4 text-foreground" />
-              <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">Campaign Goal</h3>
-            </div>
-            <div className="space-y-2">
-              <div>
-                <p className="text-3xl font-bold text-foreground">${formatAmount(goalAmountUSD)}</p>
-                <p className="text-sm text-muted-foreground">KSh {formatAmount(goalKES)}</p>
-              </div>
-              <div className="pt-2 border-t border-border">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-                  <span className="text-xs text-muted-foreground font-medium">Live Updates</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Bottom card - visible only on mobile */}
       <div className="lg:hidden w-full max-w-md mt-6">
-        {/* Unpaid Pledges Card - Mobile Bottom */}
         <div className="bg-gradient-to-br from-amber-500/10 to-amber-500/5 rounded-xl p-6 border border-amber-500/30 shadow-lg">
           <div className="text-center space-y-2">
             <div className="flex items-center justify-center gap-2 mb-3">
