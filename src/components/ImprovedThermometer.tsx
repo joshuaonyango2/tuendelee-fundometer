@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
-import { Target, CheckCircle, Clock, Flame, ArrowUp, DollarSign, TrendingUp } from 'lucide-react';
+import { Target, CheckCircle, Clock, Flame, ArrowUp, DollarSign, TrendingUp, Trophy } from 'lucide-react';
 
 interface ImprovedThermometerProps {
   paidAmountUSD: number;
@@ -189,12 +189,32 @@ export function ImprovedThermometer({
 
   const totalPledgedPercentage = goalAmountUSD > 0 ? (totalPledgedUSD / goalAmountUSD) * 100 : 0;
   const paidPercentage = goalAmountUSD > 0 ? (paidAmountUSD / goalAmountUSD) * 100 : 0;
+  const remainingPercentage = Math.max(0, 100 - totalPledgedPercentage);
+  const remainingAmountUSD = Math.max(0, goalAmountUSD - totalPledgedUSD);
+  const remainingAmountKES = Math.max(0, goalAmountUSD * exchangeRate - totalPledgedKES);
 
   return (
     <div className={cn("w-full max-w-7xl mx-auto py-8 px-4", className)}>
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
-        <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-2xl p-6 shadow-2xl">
+      {/* Summary Cards - Now 4 cards in 2x2 grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        {/* Target Goal Card */}
+        <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-2xl p-6 shadow-2xl transform hover:scale-105 transition-transform duration-300">
+          <div className="text-center space-y-3">
+            <div className="flex items-center justify-center gap-3">
+              <Trophy className="w-6 h-6" />
+              <h3 className="text-lg font-bold">Campaign Goal</h3>
+            </div>
+            <p className="text-3xl font-bold">${formatAmount(goalAmountUSD)}</p>
+            <p className="text-purple-100">KSh {formatAmount(goalAmountUSD * exchangeRate)}</p>
+            <div className="pt-3">
+              <p className="text-purple-200 text-sm">Target Amount</p>
+              <p className="text-2xl font-bold">100%</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Total Pledged Card */}
+        <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-2xl p-6 shadow-2xl transform hover:scale-105 transition-transform duration-300">
           <div className="text-center space-y-3">
             <div className="flex items-center justify-center gap-3">
               <Target className="w-6 h-6" />
@@ -209,7 +229,8 @@ export function ImprovedThermometer({
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 text-white rounded-2xl p-6 shadow-2xl">
+        {/* Paid Pledges Card */}
+        <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 text-white rounded-2xl p-6 shadow-2xl transform hover:scale-105 transition-transform duration-300">
           <div className="text-center space-y-3">
             <div className="flex items-center justify-center gap-3">
               <CheckCircle className="w-6 h-6" />
@@ -224,19 +245,18 @@ export function ImprovedThermometer({
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-amber-500 to-amber-600 text-white rounded-2xl p-6 shadow-2xl">
+        {/* Remaining Needed Card */}
+        <div className="bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-2xl p-6 shadow-2xl transform hover:scale-105 transition-transform duration-300">
           <div className="text-center space-y-3">
             <div className="flex items-center justify-center gap-3">
-              <Clock className="w-6 h-6" />
-              <h3 className="text-lg font-bold">Unpaid Pledges</h3>
+              <ArrowUp className="w-6 h-6" />
+              <h3 className="text-lg font-bold">Still Needed</h3>
             </div>
-            <p className="text-3xl font-bold">${formatAmount(displayUnpaidUSD)}</p>
-            <p className="text-amber-100">KSh {formatAmount(displayUnpaidKES)}</p>
+            <p className="text-3xl font-bold">${formatAmount(remainingAmountUSD)}</p>
+            <p className="text-orange-100">KSh {formatAmount(remainingAmountKES)}</p>
             <div className="pt-3">
-              <p className="text-amber-200 text-sm">Of Total</p>
-              <p className="text-2xl font-bold">
-                {totalPledgedUSD > 0 ? ((unpaidAmountUSD / totalPledgedUSD) * 100).toFixed(1) : 0}%
-              </p>
+              <p className="text-orange-200 text-sm">To Reach Goal</p>
+              <p className="text-2xl font-bold">{remainingPercentage.toFixed(1)}%</p>
             </div>
           </div>
         </div>
