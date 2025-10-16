@@ -144,6 +144,11 @@ export function ImprovedThermometer({
 
   return (
     <div className={cn("flex flex-col items-center justify-center w-full", className)}>
+      {/* Title showing unpaid pledges - visible only on mobile */}
+      <div className="lg:hidden w-full text-center mb-4">
+        <p className="text-muted-foreground">unpaid pledges</p>
+      </div>
+
       {/* Top card - visible only on mobile */}
       <div className="lg:hidden w-full max-w-md mb-6">
         <div className="bg-gradient-to-br from-success/10 to-success/5 rounded-xl p-6 border border-success/30 shadow-lg">
@@ -159,11 +164,38 @@ export function ImprovedThermometer({
       </div>
 
       {/* Thermometer */}
-      <div className="flex items-center justify-center min-h-[500px] lg:min-h-[600px] w-full max-w-2xl">
-        <div className="relative h-full w-full flex items-end justify-center px-12 lg:px-20">
-          {/* Calibration marks on the left */}
-          <div className="absolute left-0 h-full flex flex-col justify-between py-4">
-            {calibrationMarks.map((mark, index) => (
+      <div className="flex items-center justify-center min-h-[500px] lg:min-h-[700px] w-full max-w-3xl">
+        <div className="relative h-full w-full flex items-end justify-center px-16 lg:px-24">
+          {/* Calibration marks on the left (USD) */}
+          <div className="absolute left-0 h-full flex flex-col justify-between py-8">
+            {/* Paid amount mark */}
+            {paidAmountUSD > 0 && (
+              <div 
+                className="absolute flex items-center gap-2"
+                style={{ bottom: `${paidHeight}%` }}
+              >
+                <span className="text-sm font-bold text-success whitespace-nowrap">
+                  ${formatAmount(paidAmountUSD)}
+                </span>
+                <div className="h-0.5 w-4 bg-success" />
+              </div>
+            )}
+            
+            {/* Total pledged mark */}
+            {totalPledgedUSD > paidAmountUSD && (
+              <div 
+                className="absolute flex items-center gap-2"
+                style={{ bottom: `${totalHeight}%` }}
+              >
+                <span className="text-sm font-bold text-amber-600 whitespace-nowrap">
+                  ${formatAmount(totalPledgedUSD)}
+                </span>
+                <div className="h-0.5 w-4 bg-amber-500" />
+              </div>
+            )}
+
+            {/* Additional calibration marks */}
+            {calibrationMarks.slice(0, 4).map((mark, index) => (
               <div 
                 key={index} 
                 className="absolute flex items-center gap-2"
@@ -183,22 +215,24 @@ export function ImprovedThermometer({
           {/* Thermometer bulb and tube */}
           <div className="relative flex flex-col items-center h-full pb-2">
             {/* Thermometer tube container */}
-            <div className="relative w-20 lg:w-24 flex-1 bg-muted/30 rounded-full border-4 border-border shadow-inner overflow-hidden">
+            <div className="relative w-24 lg:w-28 flex-1 bg-muted/20 rounded-full border-4 border-border shadow-inner overflow-hidden">
               {/* Goal line */}
               <div 
                 className="absolute w-full border-t-2 border-dashed border-primary/60 z-10"
                 style={{ bottom: `${getMarkPosition(goalAmountUSD)}%` }}
               />
 
-              {/* Total pledged fill (background layer - lighter) */}
+              {/* Unpaid pledges fill (background layer - cream/yellow) */}
               <div 
-                className="absolute bottom-0 w-full bg-gradient-to-t from-primary/30 to-primary/20 transition-all duration-1000 ease-out rounded-b-full"
+                className="absolute bottom-0 w-full bg-gradient-to-t from-amber-100 via-amber-50 to-amber-100/50 transition-all duration-1000 ease-out rounded-b-full"
                 style={{ height: `${totalHeight}%` }}
-              />
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-white/30 to-transparent" />
+              </div>
 
-              {/* Paid amount fill (foreground layer - solid) */}
+              {/* Paid pledges fill (foreground layer - solid green) */}
               <div 
-                className="absolute bottom-0 w-full bg-gradient-to-t from-success via-success/90 to-success/70 transition-all duration-1000 ease-out rounded-b-full shadow-lg"
+                className="absolute bottom-0 w-full bg-gradient-to-t from-emerald-500 via-emerald-400 to-emerald-500/80 transition-all duration-1000 ease-out rounded-b-full shadow-lg z-[5]"
                 style={{ height: `${paidHeight}%` }}
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent" />
@@ -206,17 +240,44 @@ export function ImprovedThermometer({
             </div>
 
             {/* Thermometer bulb */}
-            <div className="w-28 h-28 lg:w-32 lg:h-32 rounded-full bg-gradient-to-br from-success via-success to-success/80 shadow-xl border-4 border-border mt-2 relative overflow-hidden">
+            <div className="w-32 h-32 lg:w-36 lg:h-36 rounded-full bg-gradient-to-br from-emerald-500 via-emerald-400 to-emerald-500/80 shadow-2xl border-4 border-border mt-2 relative overflow-hidden z-[5]">
               <div className="absolute inset-0 bg-gradient-to-tr from-white/30 to-transparent" />
               <div className="absolute inset-0 flex items-center justify-center">
-                <TrendingUp className="w-10 h-10 lg:w-12 lg:h-12 text-white" />
+                <TrendingUp className="w-12 h-12 lg:w-14 lg:h-14 text-white" />
               </div>
             </div>
           </div>
 
           {/* Calibration marks on the right (KES) */}
-          <div className="absolute right-0 h-full flex flex-col justify-between py-4">
-            {calibrationMarks.map((mark, index) => (
+          <div className="absolute right-0 h-full flex flex-col justify-between py-8">
+            {/* Paid amount mark in KES */}
+            {paidAmountKES > 0 && (
+              <div 
+                className="absolute flex items-center gap-2"
+                style={{ bottom: `${paidHeight}%` }}
+              >
+                <div className="h-0.5 w-4 bg-success" />
+                <span className="text-sm font-bold text-success whitespace-nowrap">
+                  KES {formatAmount(paidAmountKES)}
+                </span>
+              </div>
+            )}
+            
+            {/* Total pledged mark in KES */}
+            {totalPledgedKES > paidAmountKES && (
+              <div 
+                className="absolute flex items-center gap-2"
+                style={{ bottom: `${totalHeight}%` }}
+              >
+                <div className="h-0.5 w-4 bg-amber-500" />
+                <span className="text-sm font-bold text-amber-600 whitespace-nowrap">
+                  KES {formatAmount(totalPledgedKES)}
+                </span>
+              </div>
+            )}
+
+            {/* Additional calibration marks */}
+            {calibrationMarks.slice(0, 4).map((mark, index) => (
               <div 
                 key={index} 
                 className="absolute flex items-center gap-2"
