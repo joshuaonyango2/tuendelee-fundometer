@@ -422,6 +422,22 @@ export type Database = {
         Args: { p_event_id: string }
         Returns: number
       }
+      find_my_pledges: {
+        Args: { p_event_id: string; p_search_term: string }
+        Returns: {
+          amount: number
+          created_at: string
+          currency: string
+          id: string
+          is_confirmed: boolean
+          message: string
+          name: string
+          payment_deadline: string
+          payment_method: string
+          payment_reference: string
+          payment_type: string
+        }[]
+      }
       get_admin_pledges: {
         Args: { p_event_id: string }
         Returns: {

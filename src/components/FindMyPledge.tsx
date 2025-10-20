@@ -35,40 +35,33 @@ interface Pledge {
 
 export function FindMyPledge({ eventId }: FindMyPledgeProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [email, setEmail] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const [pledges, setPledges] = useState<Pledge[]>([]);
   const [selectedPledge, setSelectedPledge] = useState<Pledge | null>(null);
   const [showPaymentConfirmation, setShowPaymentConfirmation] = useState(false);
 
   const handleSearch = async () => {
-    if (!email || !email.includes('@')) {
-      toast.error("Please enter a valid email address");
+    if (!searchTerm || searchTerm.trim().length < 2) {
+      toast.error("Please enter at least 2 characters to search");
       return;
     }
 
     setIsSearching(true);
     try {
-      // Get session token from localStorage
-      const sessionToken = localStorage.getItem('session_token');
-      
-      const { data, error } = await supabase.rpc('get_admin_pledges', {
-        p_event_id: eventId
+      const { data, error } = await supabase.rpc('find_my_pledges', {
+        p_event_id: eventId,
+        p_search_term: searchTerm.trim()
       });
 
       if (error) throw error;
 
-      // Filter pledges by email (case insensitive)
-      const userPledges = (data || []).filter(
-        (p: any) => p.email?.toLowerCase() === email.toLowerCase()
-      );
-
-      if (userPledges.length === 0) {
-        toast.info("No pledges found for this email address");
+      if (!data || data.length === 0) {
+        toast.info("No pledges found. Try searching with your email, full name, or phone number.");
         setPledges([]);
       } else {
-        setPledges(userPledges);
-        toast.success(`Found ${userPledges.length} pledge${userPledges.length > 1 ? 's' : ''}`);
+        setPledges(data);
+        toast.success(`Found ${data.length} pledge${data.length > 1 ? 's' : ''}`);
       }
     } catch (error: any) {
       console.error('Error searching pledges:', error);
@@ -126,7 +119,7 @@ export function FindMyPledge({ eventId }: FindMyPledgeProps) {
         <DialogHeader>
           <DialogTitle>Find & Pay Your Pledge</DialogTitle>
           <DialogDescription>
-            Enter your email to view and complete payment for your pledges
+            Search using your email, full name, or phone number
           </DialogDescription>
         </DialogHeader>
 
@@ -134,13 +127,13 @@ export function FindMyPledge({ eventId }: FindMyPledgeProps) {
           <div className="space-y-6">
             <div className="flex gap-4">
               <div className="flex-1 space-y-2">
-                <Label htmlFor="search-email">Email Address</Label>
+                <Label htmlFor="search-term">Email, Name, or Phone</Label>
                 <Input
-                  id="search-email"
-                  type="email"
-                  placeholder="Enter your email..."
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  id="search-term"
+                  type="text"
+                  placeholder="e.g., john@example.com or John Doe or +254712345678"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 />
               </div>
