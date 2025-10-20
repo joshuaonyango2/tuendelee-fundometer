@@ -259,7 +259,8 @@ export default function MeetingRoom() {
             {/* Fundraising Thermometer */}
             <div className="flex justify-center">
               <FundraisingThermometer
-                currentAmount={totalRaised}
+                paidAmount={totalRaised}
+                unpaidAmount={0}
                 goalAmount={meeting.event.goal_amount}
                 currency="USD"
               />
