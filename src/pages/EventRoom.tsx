@@ -10,6 +10,8 @@ import { ImprovedThermometer } from "@/components/ImprovedThermometer";
 import { PledgeForm, PledgeData } from "@/components/PledgeForm";
 import { ImprovedPaymentOptions } from "@/components/ImprovedPaymentOptions";
 import { PaymentConfirmation } from "@/components/PaymentConfirmation";
+import { FindMyPledge } from "@/components/FindMyPledge";
+import { HelpDialog } from "@/components/HelpDialog";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { LoadingSpinner, ConnectionStatus, ErrorFallback, ThermometerSkeleton, PledgeSkeleton } from "@/components/ui/loading-states";
 import { supabase } from "@/integrations/supabase/client";
@@ -325,6 +327,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-3xl font-bold">{event.title}</CardTitle>
                   <div className="flex items-center gap-2">
+                    <HelpDialog />
                     <ConnectionStatus 
                       isConnected={connectionStatus.isConnected}
                       isReconnecting={connectionStatus.isReconnecting}
@@ -357,6 +360,11 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
                 )}
               </CardHeader>
               <CardContent>
+                {/* Find My Pledge Button */}
+                <div className="mb-6 flex justify-center">
+                  <FindMyPledge eventId={eventId!} />
+                </div>
+                
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                   <div className="flex items-center gap-2">
                     <Calendar className="h-5 w-5 text-primary" />
