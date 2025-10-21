@@ -65,7 +65,9 @@ export function FindMyPledge({ eventId }: FindMyPledgeProps) {
       }
     } catch (error: any) {
       console.error('Error searching pledges:', error);
-      toast.error("Unable to search pledges. Please try again later.");
+      const msg = error?.message || 'Unknown error';
+      const code = error?.code ? ` (${error.code})` : '';
+      toast.error(`Unable to search pledges${code}: ${msg}`);
     } finally {
       setIsSearching(false);
     }
