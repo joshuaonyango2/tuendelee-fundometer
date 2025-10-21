@@ -165,7 +165,7 @@ export function FindMyPledge({ eventId }: FindMyPledgeProps) {
 
   return (
     <div className="text-center space-y-3">
-      <p className="text-sm text-muted-foreground font-medium">
+      <p className="text-sm font-medium text-blue-600 dark:text-blue-400">
         To pay an existing pledge, click below
       </p>
       
