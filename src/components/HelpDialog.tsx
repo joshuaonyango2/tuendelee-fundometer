@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { HelpCircle, CreditCard, Clock, Search, AlertCircle } from "lucide-react";
+import { HelpCircle, CreditCard, Clock, Search, AlertCircle, UserPlus, DollarSign } from "lucide-react";
 
 export function HelpDialog() {
   return (
@@ -20,12 +20,43 @@ export function HelpDialog() {
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>How to Use the Fundraising Platform</DialogTitle>
+          <DialogTitle>How the Fundraising Platform Works</DialogTitle>
           <DialogDescription>
-            Complete guide to making and managing your pledges
+            Complete guide to joining events and making contributions
           </DialogDescription>
         </DialogHeader>
 
+        {/* How It Works Section */}
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold mb-4">How It Works</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-primary/5 p-4 rounded-lg border border-primary/10">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+                  <span className="text-primary font-bold">1</span>
+                </div>
+                <h4 className="font-semibold">Join Instantly</h4>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Click "Join Event Now" and you're in. Simple as that. No complicated forms or long sign-ups.
+              </p>
+            </div>
+
+            <div className="bg-primary/5 p-4 rounded-lg border border-primary/10">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+                  <span className="text-primary font-bold">2</span>
+                </div>
+                <h4 className="font-semibold">Make Your Contribution</h4>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Choose to pay now for immediate impact or pledge to pay later. Pick your preferred payment method - it's flexible and secure.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <h3 className="text-lg font-semibold mb-2">Frequently Asked Questions</h3>
         <Accordion type="single" collapsible className="w-full">
           <AccordionItem value="payment-options">
             <AccordionTrigger className="text-left">
