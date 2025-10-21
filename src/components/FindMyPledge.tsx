@@ -165,9 +165,12 @@ export function FindMyPledge({ eventId }: FindMyPledgeProps) {
 
   return (
     <div className="text-center space-y-3">
-      <p className="text-sm font-medium text-blue-600 dark:text-blue-400">
-        To pay an existing pledge, click below
-      </p>
+      <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg py-3 px-4 shadow-md">
+        <p className="text-sm font-bold flex items-center justify-center gap-2">
+          <CreditCard className="w-4 h-4" />
+          TO PAY AN EXISTING PLEDGE, CLICK BELOW
+        </p>
+      </div>
       
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
