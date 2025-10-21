@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -40,6 +40,31 @@ export function FindMyPledge({ eventId }: FindMyPledgeProps) {
   const [pledges, setPledges] = useState<Pledge[]>([]);
   const [selectedPledge, setSelectedPledge] = useState<Pledge | null>(null);
   const [showPaymentConfirmation, setShowPaymentConfirmation] = useState(false);
+  const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<any>(null);
+
+  useEffect(() => {
+    loadPaymentMethods();
+  }, []);
+
+  const loadPaymentMethods = async () => {
+    const { data, error } = await supabase
+      .from('payment_methods')
+      .select('*')
+      .eq('is_active', true)
+      .order('name');
+
+    if (error) {
+      console.error('Error loading payment methods:', error);
+      return;
+    }
+
+    setPaymentMethods(data || []);
+    // Default to first payment method (usually M-Pesa)
+    if (data && data.length > 0) {
+      setSelectedPaymentMethod(data[0]);
+    }
+  };
 
   const handleSearch = async () => {
     if (!searchTerm || searchTerm.trim().length < 2) {
@@ -218,12 +243,12 @@ export function FindMyPledge({ eventId }: FindMyPledgeProps) {
               </div>
             )}
           </div>
-        ) : selectedPledge && (
+        ) : selectedPledge && selectedPaymentMethod && (
           <PaymentConfirmation
             pledgeId={selectedPledge.id}
             amount={selectedPledge.amount}
             currency={selectedPledge.currency}
-            paymentMethod={{ type: 'mpesa', name: 'M-Pesa' }}
+            paymentMethod={selectedPaymentMethod}
             onBack={() => setShowPaymentConfirmation(false)}
             onComplete={handlePaymentComplete}
           />
