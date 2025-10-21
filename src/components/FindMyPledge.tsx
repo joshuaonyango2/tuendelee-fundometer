@@ -31,6 +31,8 @@ interface Pledge {
   created_at: string;
   payment_deadline: string | null;
   message: string | null;
+  payment_method: string | null;
+  payment_reference: string | null;
 }
 
 export function FindMyPledge({ eventId }: FindMyPledgeProps) {
@@ -100,6 +102,17 @@ export function FindMyPledge({ eventId }: FindMyPledgeProps) {
 
   const handlePayPledge = (pledge: Pledge) => {
     setSelectedPledge(pledge);
+    
+    // Find and set the payment method that was originally chosen
+    if (pledge.payment_method && paymentMethods.length > 0) {
+      const matchedMethod = paymentMethods.find(
+        pm => pm.name.toLowerCase() === pledge.payment_method?.toLowerCase()
+      );
+      if (matchedMethod) {
+        setSelectedPaymentMethod(matchedMethod);
+      }
+    }
+    
     setShowPaymentConfirmation(true);
   };
 
