@@ -42,6 +42,7 @@ export function FindMyPledge({ eventId }: FindMyPledgeProps) {
   const [pledges, setPledges] = useState<Pledge[]>([]);
   const [selectedPledge, setSelectedPledge] = useState<Pledge | null>(null);
   const [showPaymentConfirmation, setShowPaymentConfirmation] = useState(false);
+  const [showPaymentMethodSelector, setShowPaymentMethodSelector] = useState(false);
   const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<any>(null);
 
@@ -103,22 +104,37 @@ export function FindMyPledge({ eventId }: FindMyPledgeProps) {
   const handlePayPledge = (pledge: Pledge) => {
     setSelectedPledge(pledge);
     
-    // Find and set the payment method that was originally chosen
+    // Find and set the payment method that was originally chosen as default
     if (pledge.payment_method && paymentMethods.length > 0) {
       const matchedMethod = paymentMethods.find(
         pm => pm.name.toLowerCase() === pledge.payment_method?.toLowerCase()
       );
       if (matchedMethod) {
         setSelectedPaymentMethod(matchedMethod);
+      } else if (paymentMethods.length > 0) {
+        setSelectedPaymentMethod(paymentMethods[0]);
       }
+    } else if (paymentMethods.length > 0) {
+      setSelectedPaymentMethod(paymentMethods[0]);
     }
     
+    setShowPaymentMethodSelector(true);
+  };
+
+  const handleProceedToPayment = () => {
+    if (!selectedPaymentMethod) {
+      toast.error("Please select a payment method");
+      return;
+    }
+    setShowPaymentMethodSelector(false);
     setShowPaymentConfirmation(true);
   };
 
   const handlePaymentComplete = () => {
     setShowPaymentConfirmation(false);
+    setShowPaymentMethodSelector(false);
     setSelectedPledge(null);
+    setSelectedPaymentMethod(null);
     // Refresh the pledges list
     handleSearch();
     toast.success("Payment confirmation submitted successfully!");
@@ -163,7 +179,7 @@ export function FindMyPledge({ eventId }: FindMyPledgeProps) {
           </DialogDescription>
         </DialogHeader>
 
-        {!showPaymentConfirmation ? (
+        {!showPaymentConfirmation && !showPaymentMethodSelector ? (
           <div className="space-y-6">
             <div className="flex gap-4">
               <div className="flex-1 space-y-2">
@@ -256,13 +272,74 @@ export function FindMyPledge({ eventId }: FindMyPledgeProps) {
               </div>
             )}
           </div>
+        ) : showPaymentMethodSelector && selectedPledge ? (
+          <div className="space-y-6">
+            <div>
+              <h3 className="font-semibold text-lg mb-2">Select Payment Method</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Paying: {formatAmount(selectedPledge.amount, selectedPledge.currency)}
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              {paymentMethods.map((method) => (
+                <Card 
+                  key={method.id}
+                  className={`cursor-pointer transition-all ${
+                    selectedPaymentMethod?.id === method.id 
+                      ? 'border-primary bg-primary/5' 
+                      : 'hover:border-primary/50'
+                  }`}
+                  onClick={() => setSelectedPaymentMethod(method)}
+                >
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-4 h-4 rounded-full border-2 ${
+                        selectedPaymentMethod?.id === method.id
+                          ? 'border-primary bg-primary'
+                          : 'border-gray-300'
+                      }`} />
+                      <div className="flex-1">
+                        <p className="font-medium">{method.name}</p>
+                        <p className="text-sm text-muted-foreground capitalize">{method.type}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            <div className="flex gap-3">
+              <Button 
+                variant="outline" 
+                className="flex-1"
+                onClick={() => {
+                  setShowPaymentMethodSelector(false);
+                  setSelectedPledge(null);
+                  setSelectedPaymentMethod(null);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button 
+                className="flex-1"
+                onClick={handleProceedToPayment}
+                disabled={!selectedPaymentMethod}
+              >
+                Continue to Payment
+              </Button>
+            </div>
+          </div>
         ) : selectedPledge && selectedPaymentMethod && (
           <PaymentConfirmation
             pledgeId={selectedPledge.id}
             amount={selectedPledge.amount}
             currency={selectedPledge.currency}
             paymentMethod={selectedPaymentMethod}
-            onBack={() => setShowPaymentConfirmation(false)}
+            onBack={() => {
+              setShowPaymentConfirmation(false);
+              setShowPaymentMethodSelector(true);
+            }}
             onComplete={handlePaymentComplete}
           />
         )}
