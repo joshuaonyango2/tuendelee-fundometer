@@ -13,7 +13,7 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Search, CreditCard, Clock, CheckCircle2 } from "lucide-react";
+import { Search, CreditCard, Clock, CheckCircle2, ArrowRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PaymentConfirmation } from "./PaymentConfirmation";
 
@@ -164,186 +164,211 @@ export function FindMyPledge({ eventId }: FindMyPledgeProps) {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline" className="gap-2">
-          <Search className="w-4 h-4" />
-          Find My Pledge
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>Find & Pay Your Pledge</DialogTitle>
-          <DialogDescription>
-            Search using your email, full name, or phone number
-          </DialogDescription>
-        </DialogHeader>
+    <div className="text-center space-y-3">
+      <p className="text-sm text-muted-foreground font-medium">
+        To pay an existing pledge, click below
+      </p>
+      
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogTrigger asChild>
+          <Button 
+            variant="default" 
+            size="lg"
+            className="gap-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-base py-3 px-6 shadow-lg hover:shadow-xl transition-all duration-200"
+          >
+            <Search className="w-5 h-5" />
+            Find & Pay My Pledge
+            <ArrowRight className="w-4 h-4" />
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold">Find & Pay Your Pledge</DialogTitle>
+            <DialogDescription className="text-base">
+              Search using your email, full name, or phone number to find and complete payment for your existing pledges
+            </DialogDescription>
+          </DialogHeader>
 
-        {!showPaymentConfirmation && !showPaymentMethodSelector ? (
-          <div className="space-y-6">
-            <div className="flex gap-4">
-              <div className="flex-1 space-y-2">
-                <Label htmlFor="search-term">Email, Name, or Phone</Label>
-                <Input
-                  id="search-term"
-                  type="text"
-                  placeholder="e.g., john@example.com or John Doe or +254712345678"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                />
+          {!showPaymentConfirmation && !showPaymentMethodSelector ? (
+            <div className="space-y-6">
+              <div className="space-y-4">
+                <div className="flex gap-4">
+                  <div className="flex-1 space-y-2">
+                    <Label htmlFor="search-term" className="text-base font-medium">
+                      Search by Email, Name, or Phone
+                    </Label>
+                    <Input
+                      id="search-term"
+                      type="text"
+                      placeholder="e.g., john@example.com or John Doe or +254712345678"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                      className="h-12 text-base"
+                    />
+                  </div>
+                  <div className="flex items-end">
+                    <Button 
+                      onClick={handleSearch} 
+                      disabled={isSearching}
+                      size="lg"
+                      className="h-12 px-6"
+                    >
+                      {isSearching ? "Searching..." : "Search"}
+                    </Button>
+                  </div>
+                </div>
+                <p className="text-sm text-muted-foreground text-center">
+                  Enter the email, name, or phone number you used when making your pledge
+                </p>
               </div>
-              <div className="flex items-end">
-                <Button onClick={handleSearch} disabled={isSearching}>
-                  {isSearching ? "Searching..." : "Search"}
+
+              {pledges.length > 0 && (
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg">Your Pledges</h3>
+                  {pledges.map((pledge) => {
+                    const daysRemaining = getDaysRemaining(pledge.payment_deadline);
+                    return (
+                      <Card key={pledge.id} className={pledge.is_confirmed ? "border-green-200 bg-green-50/50" : "border-orange-200 bg-orange-50/50"}>
+                        <CardHeader className="pb-3">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <CardTitle className="text-lg">
+                                {formatAmount(pledge.amount, pledge.currency)}
+                              </CardTitle>
+                              <CardDescription>
+                                Pledged on {formatDate(pledge.created_at)}
+                              </CardDescription>
+                            </div>
+                            <Badge variant={pledge.is_confirmed ? "default" : "secondary"} className="text-sm">
+                              {pledge.is_confirmed ? (
+                                <span className="flex items-center gap-1">
+                                  <CheckCircle2 className="w-4 h-4" />
+                                  Paid
+                                </span>
+                              ) : (
+                                <span className="flex items-center gap-1">
+                                  <Clock className="w-4 h-4" />
+                                  Pending
+                                </span>
+                              )}
+                            </Badge>
+                          </div>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                          {pledge.message && (
+                            <p className="text-sm text-muted-foreground italic">
+                              "{pledge.message}"
+                            </p>
+                          )}
+                          
+                          {!pledge.is_confirmed && (
+                            <>
+                              {daysRemaining !== null && (
+                                <p className="text-sm">
+                                  <span className="font-medium">Payment due in:</span>{" "}
+                                  <span className={daysRemaining <= 3 ? "text-red-600 font-semibold" : "text-orange-600"}>
+                                    {daysRemaining > 0 ? `${daysRemaining} days` : "Overdue"}
+                                  </span>
+                                </p>
+                              )}
+                              
+                              <Button 
+                                onClick={() => handlePayPledge(pledge)}
+                                className="w-full gap-2 h-11 text-base font-medium"
+                                size="lg"
+                              >
+                                <CreditCard className="w-5 h-5" />
+                                Complete Payment
+                              </Button>
+                            </>
+                          )}
+                          
+                          {pledge.is_confirmed && (
+                            <p className="text-sm text-green-700 font-medium">
+                              ✓ Thank you for your payment!
+                            </p>
+                          )}
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          ) : showPaymentMethodSelector && selectedPledge ? (
+            <div className="space-y-6">
+              <div>
+                <h3 className="font-semibold text-lg mb-2">Select Payment Method</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Paying: {formatAmount(selectedPledge.amount, selectedPledge.currency)}
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                {paymentMethods.map((method) => (
+                  <Card 
+                    key={method.id}
+                    className={`cursor-pointer transition-all ${
+                      selectedPaymentMethod?.id === method.id 
+                        ? 'border-primary bg-primary/5' 
+                        : 'hover:border-primary/50'
+                    }`}
+                    onClick={() => setSelectedPaymentMethod(method)}
+                  >
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-4 h-4 rounded-full border-2 ${
+                          selectedPaymentMethod?.id === method.id
+                            ? 'border-primary bg-primary'
+                            : 'border-gray-300'
+                        }`} />
+                        <div className="flex-1">
+                          <p className="font-medium">{method.name}</p>
+                          <p className="text-sm text-muted-foreground capitalize">{method.type}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="flex gap-3">
+                <Button 
+                  variant="outline" 
+                  className="flex-1 h-11"
+                  onClick={() => {
+                    setShowPaymentMethodSelector(false);
+                    setSelectedPledge(null);
+                    setSelectedPaymentMethod(null);
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  className="flex-1 h-11"
+                  onClick={handleProceedToPayment}
+                  disabled={!selectedPaymentMethod}
+                >
+                  Continue to Payment
                 </Button>
               </div>
             </div>
-
-            {pledges.length > 0 && (
-              <div className="space-y-4">
-                <h3 className="font-semibold text-lg">Your Pledges</h3>
-                {pledges.map((pledge) => {
-                  const daysRemaining = getDaysRemaining(pledge.payment_deadline);
-                  return (
-                    <Card key={pledge.id} className={pledge.is_confirmed ? "border-green-200 bg-green-50/50" : "border-orange-200 bg-orange-50/50"}>
-                      <CardHeader className="pb-3">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <CardTitle className="text-lg">
-                              {formatAmount(pledge.amount, pledge.currency)}
-                            </CardTitle>
-                            <CardDescription>
-                              Pledged on {formatDate(pledge.created_at)}
-                            </CardDescription>
-                          </div>
-                          <Badge variant={pledge.is_confirmed ? "default" : "secondary"}>
-                            {pledge.is_confirmed ? (
-                              <span className="flex items-center gap-1">
-                                <CheckCircle2 className="w-3 h-3" />
-                                Paid
-                              </span>
-                            ) : (
-                              <span className="flex items-center gap-1">
-                                <Clock className="w-3 h-3" />
-                                Pending
-                              </span>
-                            )}
-                          </Badge>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="space-y-3">
-                        {pledge.message && (
-                          <p className="text-sm text-muted-foreground italic">
-                            "{pledge.message}"
-                          </p>
-                        )}
-                        
-                        {!pledge.is_confirmed && (
-                          <>
-                            {daysRemaining !== null && (
-                              <p className="text-sm">
-                                <span className="font-medium">Payment due in:</span>{" "}
-                                <span className={daysRemaining <= 3 ? "text-red-600 font-semibold" : "text-orange-600"}>
-                                  {daysRemaining > 0 ? `${daysRemaining} days` : "Overdue"}
-                                </span>
-                              </p>
-                            )}
-                            
-                            <Button 
-                              onClick={() => handlePayPledge(pledge)}
-                              className="w-full gap-2"
-                            >
-                              <CreditCard className="w-4 h-4" />
-                              Complete Payment
-                            </Button>
-                          </>
-                        )}
-                        
-                        {pledge.is_confirmed && (
-                          <p className="text-sm text-green-700 font-medium">
-                            ✓ Thank you for your payment!
-                          </p>
-                        )}
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        ) : showPaymentMethodSelector && selectedPledge ? (
-          <div className="space-y-6">
-            <div>
-              <h3 className="font-semibold text-lg mb-2">Select Payment Method</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Paying: {formatAmount(selectedPledge.amount, selectedPledge.currency)}
-              </p>
-            </div>
-
-            <div className="space-y-3">
-              {paymentMethods.map((method) => (
-                <Card 
-                  key={method.id}
-                  className={`cursor-pointer transition-all ${
-                    selectedPaymentMethod?.id === method.id 
-                      ? 'border-primary bg-primary/5' 
-                      : 'hover:border-primary/50'
-                  }`}
-                  onClick={() => setSelectedPaymentMethod(method)}
-                >
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-4 h-4 rounded-full border-2 ${
-                        selectedPaymentMethod?.id === method.id
-                          ? 'border-primary bg-primary'
-                          : 'border-gray-300'
-                      }`} />
-                      <div className="flex-1">
-                        <p className="font-medium">{method.name}</p>
-                        <p className="text-sm text-muted-foreground capitalize">{method.type}</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-
-            <div className="flex gap-3">
-              <Button 
-                variant="outline" 
-                className="flex-1"
-                onClick={() => {
-                  setShowPaymentMethodSelector(false);
-                  setSelectedPledge(null);
-                  setSelectedPaymentMethod(null);
-                }}
-              >
-                Cancel
-              </Button>
-              <Button 
-                className="flex-1"
-                onClick={handleProceedToPayment}
-                disabled={!selectedPaymentMethod}
-              >
-                Continue to Payment
-              </Button>
-            </div>
-          </div>
-        ) : selectedPledge && selectedPaymentMethod && (
-          <PaymentConfirmation
-            pledgeId={selectedPledge.id}
-            amount={selectedPledge.amount}
-            currency={selectedPledge.currency}
-            paymentMethod={selectedPaymentMethod}
-            onBack={() => {
-              setShowPaymentConfirmation(false);
-              setShowPaymentMethodSelector(true);
-            }}
-            onComplete={handlePaymentComplete}
-          />
-        )}
-      </DialogContent>
-    </Dialog>
+          ) : selectedPledge && selectedPaymentMethod && (
+            <PaymentConfirmation
+              pledgeId={selectedPledge.id}
+              amount={selectedPledge.amount}
+              currency={selectedPledge.currency}
+              paymentMethod={selectedPaymentMethod}
+              onBack={() => {
+                setShowPaymentConfirmation(false);
+                setShowPaymentMethodSelector(true);
+              }}
+              onComplete={handlePaymentComplete}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 }
