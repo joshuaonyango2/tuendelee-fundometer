@@ -114,7 +114,7 @@ export function HomeHelpDialog() {
                   <p className="mt-3"><strong>How to make a pledge:</strong></p>
                   <ol className="list-decimal ml-6 space-y-1">
                     <li>Click the "Make a Pledge" button in the event room</li>
-                    <li>Enter your pledge amount in KES (Kenyan Shillings)</li>
+                    <li>Enter your pledge amount and select your currency (USD, EUR, KES, or GBP)</li>
                     <li>Choose your payment method (M-Pesa, PayPal, Bank Transfer, or Benevity)</li>
                     <li>Select "Pay Now" or "Pay Later"</li>
                     <li>If paying now, follow the payment instructions for your chosen method</li>
