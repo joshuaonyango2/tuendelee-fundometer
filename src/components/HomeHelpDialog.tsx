@@ -118,7 +118,7 @@ export function HomeHelpDialog() {
                     <li>Choose your payment method (M-Pesa, PayPal, Bank Transfer, or Benevity)</li>
                     <li>Select "Pay Now" or "Pay Later"</li>
                     <li>If paying now, follow the payment instructions for your chosen method</li>
-                    <li>If pledging for later, save your unique pledge code that appears</li>
+                    <li>If pledging for later, remember your details (name/email/phone) to find your pledge later</li>
                   </ol>
 
                   <div className="bg-muted/50 p-3 rounded border-l-4 border-success">
@@ -201,7 +201,7 @@ export function HomeHelpDialog() {
                     <li>
                       <strong>Inside Event Room:</strong> Look for the "Find My Pledge" or "Pay Existing Pledge" button
                     </li>
-                    <li>Enter your pledge code (the unique code you received when creating the pledge)</li>
+                    <li>Enter your name, email, or phone number (any of these that you used when creating the pledge)</li>
                     <li>Your pledge details will appear including amount and current status</li>
                     <li>Choose your preferred payment method (you can change from your original selection)</li>
                     <li>Follow the payment instructions provided</li>
@@ -209,7 +209,7 @@ export function HomeHelpDialog() {
                   </ol>
 
                   <div className="bg-muted/50 p-3 rounded border-l-4 border-amber-500 mt-3">
-                    <p className="text-xs font-medium">📝 Lost your pledge code? Contact the event organizer with your name and email - they can help you locate your pledge from the admin dashboard.</p>
+                    <p className="text-xs font-medium">📝 Can't find your pledge? Contact the event organizer with your details - they can help you locate your pledge from the admin dashboard.</p>
                   </div>
                 </AccordionContent>
               </AccordionItem>
@@ -363,7 +363,7 @@ export function HomeHelpDialog() {
               <ul className="text-sm space-y-1.5 text-muted-foreground">
                 <li className="flex items-start gap-2">
                   <span className="text-primary mt-0.5">•</span>
-                  <span>Save your event code and pledge code in a safe place</span>
+                  <span>Remember your details (name, email, or phone) to easily find your pledges later</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-primary mt-0.5">•</span>
