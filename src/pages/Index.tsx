@@ -14,31 +14,27 @@ const Index = () => {
 
       {/* Main Content */}
       <div className="container mx-auto px-4 pb-16">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl md:text-3xl font-bold mb-3">
             Empowering Bright Minds Through Education
           </h2>
-          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-            Join us in supporting deserving students who need scholarships to continue their education. 
-            Every contribution makes a difference in transforming lives and building a brighter future for Kenya.
+          <p className="text-base text-muted-foreground max-w-2xl mx-auto">
+            Support deserving students with scholarships. Every contribution transforms lives and builds a brighter future for Kenya.
           </p>
         </div>
 
         {/* Primary CTA - Join Event */}
         <div className="flex justify-center mb-16">
-          <div className="bg-gradient-primary text-white rounded-2xl p-8 max-w-2xl w-full shadow-2xl">
-            <h3 className="text-2xl font-bold mb-4 text-center">Ready to Make a Difference?</h3>
-            <p className="text-center mb-6 text-primary-foreground/90 text-lg">
-              One click and you're in. Join our live fundraising event and start changing lives today.
-            </p>
+          <div className="bg-gradient-primary text-white rounded-2xl p-6 max-w-2xl w-full shadow-2xl">
+            <h3 className="text-xl font-bold mb-3 text-center">Ready to Make a Difference?</h3>
             <div className="flex justify-center">
               <Button 
                 size="lg" 
                 onClick={() => navigate("/join")}
-                className="bg-white text-primary hover:bg-white/90 font-bold text-lg py-6 px-8 shadow-lg"
+                className="bg-white text-primary hover:bg-white/90 font-bold text-base py-6 px-8 shadow-lg"
               >
-                <Users className="w-6 h-6 mr-2" />
-                Join Event Now
+                <Users className="w-5 h-5 mr-2" />
+                Sign Up to Pledge & Track Progress
               </Button>
             </div>
           </div>
