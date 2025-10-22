@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { HeroSection } from "@/components/HeroSection";
+import { HomeHelpDialog } from "@/components/HomeHelpDialog";
 import { Shield, Users, Lock, CreditCard, Database, CheckCircle } from "lucide-react";
 
 const Index = () => {
@@ -11,6 +12,9 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-background">
       {/* Hero Section */}
       <HeroSection />
+      
+      {/* Help Button */}
+      <HomeHelpDialog />
 
       {/* Main Content */}
       <div className="container mx-auto px-4 pb-16">
