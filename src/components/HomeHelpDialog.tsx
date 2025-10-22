@@ -9,6 +9,12 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   Accordion,
   AccordionContent,
   AccordionItem,
@@ -18,17 +24,25 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 export function HomeHelpDialog() {
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button
-          variant="outline"
-          size="lg"
-          className="fixed bottom-6 right-6 rounded-full shadow-lg hover:shadow-xl transition-all z-50 h-14 w-14 p-0"
-        >
-          <HelpCircle className="w-6 h-6" />
-          <span className="sr-only">Help</span>
-        </Button>
-      </DialogTrigger>
+    <TooltipProvider>
+      <Dialog>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <DialogTrigger asChild>
+              <Button
+                variant="default"
+                size="lg"
+                className="fixed bottom-6 right-6 rounded-full shadow-2xl hover:shadow-3xl transition-all z-50 h-16 w-16 p-0 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white border-4 border-white animate-pulse hover:animate-none hover:scale-110"
+              >
+                <HelpCircle className="w-8 h-8" />
+                <span className="sr-only">Help</span>
+              </Button>
+            </DialogTrigger>
+          </TooltipTrigger>
+          <TooltipContent side="left" className="bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold text-base px-4 py-2 border-2 border-white shadow-lg">
+            <p>Need Help? Click Here!</p>
+          </TooltipContent>
+        </Tooltip>
       <DialogContent className="max-w-3xl max-h-[90vh]">
         <DialogHeader>
           <DialogTitle className="text-2xl flex items-center gap-2">
@@ -375,5 +389,6 @@ export function HomeHelpDialog() {
         </ScrollArea>
       </DialogContent>
     </Dialog>
+    </TooltipProvider>
   );
 }
