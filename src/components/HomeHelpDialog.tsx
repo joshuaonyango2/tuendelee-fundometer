@@ -80,11 +80,10 @@ export function HomeHelpDialog() {
                 </AccordionTrigger>
                 <AccordionContent className="space-y-3 text-sm">
                   <p><strong>Step 1:</strong> Click the "Sign Up to Pledge & Track Progress" button on the home page.</p>
-                  <p><strong>Step 2:</strong> Enter the Event Code provided by the fundraiser organizer (e.g., via email, WhatsApp, or during a live event).</p>
-                  <p><strong>Step 3:</strong> Fill in your details: Name, Email, and Phone Number.</p>
-                  <p><strong>Step 4:</strong> Click "Join Event" and you'll be instantly connected to the live fundraising room.</p>
+                  <p><strong>Step 2:</strong> Fill in your details: Name, Email, and Phone Number.</p>
+                  <p><strong>Step 3:</strong> Click "Join Event" and you'll be instantly connected to the live fundraising room.</p>
                   <div className="bg-muted/50 p-3 rounded border-l-4 border-primary">
-                    <p className="text-xs font-medium">💡 Tip: Keep your event code safe! You can rejoin the same event anytime using it.</p>
+                    <p className="text-xs font-medium">💡 Tip: You can rejoin the same event anytime by clicking the join button again.</p>
                   </div>
                 </AccordionContent>
               </AccordionItem>
