@@ -60,10 +60,10 @@ export function HomeHelpDialog() {
             <div className="bg-primary/5 rounded-lg p-4 border border-primary/20">
               <h3 className="font-semibold text-lg mb-2">What is the Fundometer?</h3>
               <p className="text-sm text-muted-foreground">
-                The Fundometer is a live fundraising platform for the Tuendelee Foundation's scholarship program. 
+                The Fundometer is a live fundraising platform for the Tuendelee Foundation. 
                 It allows donors to make pledges, track contributions in real-time, and see the collective impact 
                 of all donations toward educational goals. Think of it as a transparent, interactive way to support 
-                deserving students together.
+                deserving students and Tuendelee Foundation projects together.
               </p>
             </div>
 
@@ -145,7 +145,8 @@ export function HomeHelpDialog() {
                       </p>
                       <p className="text-xs text-muted-foreground mt-1">
                         Popular mobile money payment. You'll receive paybill/till number and account details. 
-                        Send payment via M-Pesa app or USSD code, then confirm your payment in the app.
+                        Send payment via M-Pesa app or USSD code, then confirm your payment in the app. 
+                        Remember to include the M-Pesa payment reference (transaction ID) to facilitate tracking of your donation.
                       </p>
                     </div>
 
@@ -155,7 +156,8 @@ export function HomeHelpDialog() {
                       </p>
                       <p className="text-xs text-muted-foreground mt-1">
                         International payments accepted. You'll receive PayPal.me link or email address. 
-                        Send payment through PayPal, then mark as paid in the app.
+                        Send payment through PayPal, then mark as paid in the app. 
+                        Remember to include the PayPal transaction ID to facilitate tracking of your donation.
                       </p>
                     </div>
 
@@ -341,14 +343,18 @@ export function HomeHelpDialog() {
                   
                   <ul className="list-disc ml-6 space-y-1">
                     <li><strong>In-App Help:</strong> Click the help icon (❓) in any event room for context-specific guidance</li>
-                    <li><strong>Lost Pledge Code:</strong> Contact the event organizer with your name and email</li>
+                    <li><strong>Lost Pledge:</strong> Contact the event organizer with your name and email</li>
                     <li><strong>Payment Issues:</strong> Check the payment confirmation screen for troubleshooting tips</li>
                     <li><strong>Technical Problems:</strong> Reach out to the event organizer who can escalate to technical support</li>
-                    <li><strong>General Questions:</strong> Contact Tuendelee Foundation directly through official channels</li>
+                    <li><strong>General Questions:</strong> Contact Tuendelee Foundation directly</li>
                   </ul>
 
                   <div className="bg-muted/50 p-3 rounded border-l-4 border-teal-500 mt-3">
-                    <p className="text-xs font-medium">💬 Event organizers have access to all pledge details and can assist with most issues quickly.</p>
+                    <p className="text-xs font-medium mb-2">💬 Event organizers have access to all pledge details and can assist with most issues quickly.</p>
+                    <div className="space-y-1">
+                      <p className="text-xs"><strong>Email:</strong> donor-relations@tuendelee.org</p>
+                      <p className="text-xs"><strong>Phone:</strong> +254 111 209249 or +254 10 30 90 308</p>
+                    </div>
                   </div>
                 </AccordionContent>
               </AccordionItem>
