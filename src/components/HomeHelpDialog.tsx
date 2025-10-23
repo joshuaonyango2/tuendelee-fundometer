@@ -62,8 +62,8 @@ export function HomeHelpDialog() {
               <p className="text-sm text-muted-foreground">
                 The Fundometer is a live fundraising platform for the Tuendelee Foundation. 
                 It allows donors to make pledges, track contributions in real-time, and see the collective impact 
-                of all donations toward educational goals. Think of it as a transparent, interactive way to support 
-                deserving students and Tuendelee Foundation projects together.
+                of all donations toward our projects. Think of it as a transparent, interactive way to support 
+                the Tuendelee Foundation's mission together.
               </p>
             </div>
 
