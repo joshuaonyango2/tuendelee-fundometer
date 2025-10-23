@@ -45,11 +45,11 @@ export function HomeHelpDialog() {
         </Tooltip>
       <DialogContent className="max-w-3xl max-h-[90vh]">
         <DialogHeader>
-          <DialogTitle className="text-2xl flex items-center gap-2">
-            <HelpCircle className="w-6 h-6 text-primary" />
+          <DialogTitle className="text-3xl flex items-center gap-2">
+            <HelpCircle className="w-7 h-7 text-primary" />
             Fundometer - Complete Guide
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-base">
             Everything you need to know about using the Tuendelee Foundation Fundometer
           </DialogDescription>
         </DialogHeader>
@@ -58,8 +58,8 @@ export function HomeHelpDialog() {
           <div className="space-y-6">
             {/* Overview */}
             <div className="bg-primary/5 rounded-lg p-4 border border-primary/20">
-              <h3 className="font-semibold text-lg mb-2">What is the Fundometer?</h3>
-              <p className="text-sm text-muted-foreground">
+              <h3 className="font-semibold text-xl mb-2">What is the Fundometer?</h3>
+              <p className="text-base text-muted-foreground">
                 The Fundometer is a live fundraising platform for the Tuendelee Foundation. 
                 It allows donors to make pledges, track contributions in real-time, and see the collective impact 
                 of all donations toward our projects. Think of it as a transparent, interactive way to support 
@@ -75,15 +75,15 @@ export function HomeHelpDialog() {
                 <AccordionTrigger className="text-left">
                   <div className="flex items-center gap-2">
                     <Users className="w-5 h-5 text-primary" />
-                    <span className="font-semibold">Getting Started - Joining an Event</span>
+                    <span className="font-semibold text-base">Getting Started - Joining an Event</span>
                   </div>
                 </AccordionTrigger>
-                <AccordionContent className="space-y-3 text-sm">
+                <AccordionContent className="space-y-3 text-base">
                   <p><strong>Step 1:</strong> Click the "Sign Up to Pledge & Track Progress" button on the home page.</p>
                   <p><strong>Step 2:</strong> Fill in your details: Name, Email, and Phone Number.</p>
                   <p><strong>Step 3:</strong> Click "Join Event" and you'll be instantly connected to the live fundraising room.</p>
                   <div className="bg-muted/50 p-3 rounded border-l-4 border-primary">
-                    <p className="text-xs font-medium">💡 Tip: You can rejoin the same event anytime by clicking the join button again.</p>
+                    <p className="text-sm font-medium">💡 Tip: You can rejoin the same event anytime by clicking the join button again.</p>
                   </div>
                 </AccordionContent>
               </AccordionItem>
@@ -93,10 +93,10 @@ export function HomeHelpDialog() {
                 <AccordionTrigger className="text-left">
                   <div className="flex items-center gap-2">
                     <DollarSign className="w-5 h-5 text-success" />
-                    <span className="font-semibold">Making a Pledge or Donation</span>
+                    <span className="font-semibold text-base">Making a Pledge or Donation</span>
                   </div>
                 </AccordionTrigger>
-                <AccordionContent className="space-y-3 text-sm">
+                <AccordionContent className="space-y-3 text-base">
                   <p>Once inside the event room, you can contribute in two ways:</p>
                   
                   <div className="space-y-2 ml-4">
@@ -122,7 +122,7 @@ export function HomeHelpDialog() {
                   </ol>
 
                   <div className="bg-muted/50 p-3 rounded border-l-4 border-success">
-                    <p className="text-xs font-medium">✅ Your pledge is recorded immediately and appears in the recent pledges list!</p>
+                    <p className="text-sm font-medium">✅ Your pledge is recorded immediately and appears in the recent pledges list!</p>
                   </div>
                 </AccordionContent>
               </AccordionItem>
@@ -132,10 +132,10 @@ export function HomeHelpDialog() {
                 <AccordionTrigger className="text-left">
                   <div className="flex items-center gap-2">
                     <CreditCard className="w-5 h-5 text-blue-500" />
-                    <span className="font-semibold">Payment Methods Explained</span>
+                    <span className="font-semibold text-base">Payment Methods Explained</span>
                   </div>
                 </AccordionTrigger>
-                <AccordionContent className="space-y-3 text-sm">
+                <AccordionContent className="space-y-3 text-base">
                   <p>We accept multiple payment methods for your convenience:</p>
                   
                   <div className="space-y-3">
@@ -143,7 +143,7 @@ export function HomeHelpDialog() {
                       <p className="font-semibold flex items-center gap-2">
                         <span className="text-green-600">●</span> M-Pesa (Kenya)
                       </p>
-                      <p className="text-xs text-muted-foreground mt-1">
+                      <p className="text-sm text-muted-foreground mt-1">
                         Popular mobile money payment. You'll receive paybill/till number and account details. 
                         Send payment via M-Pesa app or USSD code, then confirm your payment in the app. 
                         Remember to include the M-Pesa payment reference (transaction ID) to facilitate tracking of your donation.
@@ -154,7 +154,7 @@ export function HomeHelpDialog() {
                       <p className="font-semibold flex items-center gap-2">
                         <span className="text-blue-600">●</span> PayPal
                       </p>
-                      <p className="text-xs text-muted-foreground mt-1">
+                      <p className="text-sm text-muted-foreground mt-1">
                         International payments accepted. You'll receive PayPal.me link or email address. 
                         Send payment through PayPal, then mark as paid in the app. 
                         Remember to include the PayPal transaction ID to facilitate tracking of your donation.
@@ -165,7 +165,7 @@ export function HomeHelpDialog() {
                       <p className="font-semibold flex items-center gap-2">
                         <span className="text-purple-600">●</span> Bank Transfer
                       </p>
-                      <p className="text-xs text-muted-foreground mt-1">
+                      <p className="text-sm text-muted-foreground mt-1">
                         Direct bank transfers via Standard Chartered or other banks. You'll receive complete 
                         bank account details including account number, bank name, and SWIFT code if needed.
                       </p>
@@ -175,7 +175,7 @@ export function HomeHelpDialog() {
                       <p className="font-semibold flex items-center gap-2">
                         <span className="text-orange-600">●</span> Benevity
                       </p>
-                      <p className="text-xs text-muted-foreground mt-1">
+                      <p className="text-sm text-muted-foreground mt-1">
                         Corporate giving platform. If your employer uses Benevity for matching donations, 
                         you'll receive instructions on how to donate through your company's portal.
                       </p>
@@ -183,7 +183,7 @@ export function HomeHelpDialog() {
                   </div>
 
                   <div className="bg-muted/50 p-3 rounded border-l-4 border-blue-500">
-                    <p className="text-xs font-medium">🔒 Security: We never store your payment credentials. All transactions are processed through trusted providers.</p>
+                    <p className="text-sm font-medium">🔒 Security: We never store your payment credentials. All transactions are processed through trusted providers.</p>
                   </div>
                 </AccordionContent>
               </AccordionItem>
@@ -193,10 +193,10 @@ export function HomeHelpDialog() {
                 <AccordionTrigger className="text-left">
                   <div className="flex items-center gap-2">
                     <Search className="w-5 h-5 text-amber-500" />
-                    <span className="font-semibold">Finding & Paying Existing Pledges</span>
+                    <span className="font-semibold text-base">Finding & Paying Existing Pledges</span>
                   </div>
                 </AccordionTrigger>
-                <AccordionContent className="space-y-3 text-sm">
+                <AccordionContent className="space-y-3 text-base">
                   <p>If you made a "Pay Later" pledge and want to complete payment:</p>
                   
                   <ol className="list-decimal ml-6 space-y-2">
@@ -211,7 +211,7 @@ export function HomeHelpDialog() {
                   </ol>
 
                   <div className="bg-muted/50 p-3 rounded border-l-4 border-amber-500 mt-3">
-                    <p className="text-xs font-medium">📝 Can't find your pledge? Contact the event organizer with your details - they can help you locate your pledge from the admin dashboard.</p>
+                    <p className="text-sm font-medium">📝 Can't find your pledge? Contact the event organizer with your details - they can help you locate your pledge from the admin dashboard.</p>
                   </div>
                 </AccordionContent>
               </AccordionItem>
@@ -221,16 +221,16 @@ export function HomeHelpDialog() {
                 <AccordionTrigger className="text-left">
                   <div className="flex items-center gap-2">
                     <TrendingUp className="w-5 h-5 text-purple-500" />
-                    <span className="font-semibold">Live Progress Tracking</span>
+                    <span className="font-semibold text-base">Live Progress Tracking</span>
                   </div>
                 </AccordionTrigger>
-                <AccordionContent className="space-y-3 text-sm">
+                <AccordionContent className="space-y-3 text-base">
                   <p>The Fundometer provides real-time transparency of the fundraising progress:</p>
                   
                   <div className="space-y-2">
                     <div>
                       <p className="font-semibold">Fundraising Thermometer</p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-sm text-muted-foreground">
                         Visual display showing total raised, goal amount, and percentage achieved. 
                         Updates instantly when new payments are confirmed.
                       </p>
@@ -238,7 +238,7 @@ export function HomeHelpDialog() {
 
                     <div>
                       <p className="font-semibold">Recent Pledges Feed</p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-sm text-muted-foreground">
                         Live stream of all pledges made during the event. Shows donor names, amounts, 
                         payment status (Paid/Pending), and timestamps. Updates automatically as new pledges come in.
                       </p>
@@ -246,7 +246,7 @@ export function HomeHelpDialog() {
 
                     <div>
                       <p className="font-semibold">Total Statistics</p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-sm text-muted-foreground">
                         Key metrics including total amount raised, number of donors, average pledge size, 
                         and breakdown by payment status.
                       </p>
@@ -254,7 +254,7 @@ export function HomeHelpDialog() {
                   </div>
 
                   <div className="bg-muted/50 p-3 rounded border-l-4 border-purple-500">
-                    <p className="text-xs font-medium">🎯 All data updates in real-time! No need to refresh the page - you see contributions as they happen.</p>
+                    <p className="text-sm font-medium">🎯 All data updates in real-time! No need to refresh the page - you see contributions as they happen.</p>
                   </div>
                 </AccordionContent>
               </AccordionItem>
@@ -264,10 +264,10 @@ export function HomeHelpDialog() {
                 <AccordionTrigger className="text-left">
                   <div className="flex items-center gap-2">
                     <Calendar className="w-5 h-5 text-pink-500" />
-                    <span className="font-semibold">Event Information & Details</span>
+                    <span className="font-semibold text-base">Event Information & Details</span>
                   </div>
                 </AccordionTrigger>
-                <AccordionContent className="space-y-3 text-sm">
+                <AccordionContent className="space-y-3 text-base">
                   <p>Each fundraising event includes:</p>
                   
                   <ul className="list-disc ml-6 space-y-1">
@@ -288,16 +288,16 @@ export function HomeHelpDialog() {
                 <AccordionTrigger className="text-left">
                   <div className="flex items-center gap-2">
                     <Shield className="w-5 h-5 text-red-500" />
-                    <span className="font-semibold">Security & Privacy Protection</span>
+                    <span className="font-semibold text-base">Security & Privacy Protection</span>
                   </div>
                 </AccordionTrigger>
-                <AccordionContent className="space-y-3 text-sm">
+                <AccordionContent className="space-y-3 text-base">
                   <p>Your security and privacy are our top priorities:</p>
                   
                   <div className="space-y-2">
                     <div>
                       <p className="font-semibold">Encrypted Data Transfer</p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-sm text-muted-foreground">
                         All data transmitted between your device and our servers is encrypted using SSL/TLS 
                         (the same security technology used by banks).
                       </p>
@@ -305,7 +305,7 @@ export function HomeHelpDialog() {
 
                     <div>
                       <p className="font-semibold">No Payment Credential Storage</p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-sm text-muted-foreground">
                         We never store credit card numbers, M-Pesa PINs, or PayPal passwords. 
                         Payments are processed through trusted third-party providers.
                       </p>
@@ -313,7 +313,7 @@ export function HomeHelpDialog() {
 
                     <div>
                       <p className="font-semibold">Data Privacy</p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-sm text-muted-foreground">
                         Your personal information (name, email, phone) is used solely for event participation 
                         and donation tracking. We never share or sell your data to third parties.
                       </p>
@@ -321,7 +321,7 @@ export function HomeHelpDialog() {
 
                     <div>
                       <p className="font-semibold">Secure Database</p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-sm text-muted-foreground">
                         All pledge and donor information is stored in encrypted databases with restricted access 
                         and regular security audits.
                       </p>
@@ -335,10 +335,10 @@ export function HomeHelpDialog() {
                 <AccordionTrigger className="text-left">
                   <div className="flex items-center gap-2">
                     <CheckCircle className="w-5 h-5 text-teal-500" />
-                    <span className="font-semibold">Getting Help & Support</span>
+                    <span className="font-semibold text-base">Getting Help & Support</span>
                   </div>
                 </AccordionTrigger>
-                <AccordionContent className="space-y-3 text-sm">
+                <AccordionContent className="space-y-3 text-base">
                   <p>Need assistance? Here's how to get help:</p>
                   
                   <ul className="list-disc ml-6 space-y-1">
