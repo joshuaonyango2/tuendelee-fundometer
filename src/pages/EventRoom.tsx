@@ -340,7 +340,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
                       isConnected={connectionStatus.isConnected}
                       isReconnecting={connectionStatus.isReconnecting}
                     />
-                    {liveMeeting && event.is_active ? (
+                    {liveMeeting ? (
                       <a 
                         href={liveMeeting.join_url || '#'} 
                         target="_blank" 
