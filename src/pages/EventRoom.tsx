@@ -166,12 +166,20 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
 
       setEvent(eventData);
 
-      // Load live meeting if exists
+      // Load live meeting if exists (check for both active and scheduled meetings)
       const { data: meetingData } = await supabase
         .from('event_meetings')
-        .select('*')
+        .select(`
+          *,
+          meeting_platforms (
+            name,
+            display_name
+          )
+        `)
         .eq('event_id', eventId)
-        .eq('status', 'active')
+        .in('status', ['active', 'scheduled'])
+        .order('start_time', { ascending: false })
+        .limit(1)
         .single();
 
       if (meetingData) {
@@ -405,20 +413,45 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
                 
                 {/* Fundraising Room Section */}
                 <div className="mt-4">
-                  {liveMeeting && event.is_active ? (
+                  {liveMeeting ? (
                     <Button
-                      onClick={() => window.open(liveMeeting.join_url || `/meeting/room/${liveMeeting.id}`, '_blank')}
+                      onClick={() => window.open(liveMeeting.join_url, '_blank')}
                       className="w-full p-6 h-auto bg-gradient-secondary hover:bg-gradient-secondary/90 rounded-lg border-2 border-white/20"
                     >
-                      <div className="flex items-center justify-between w-full">
-                        <div className="flex items-center gap-3">
-                          <Video className="h-6 w-6 text-white" />
-                          <div className="text-left">
-                            <h3 className="font-semibold text-white text-lg">Fundraising Room</h3>
-                            <p className="text-xs text-white/70">Click to join the live meeting</p>
+                      <div className="flex flex-col w-full gap-3">
+                        <div className="flex items-center justify-between w-full">
+                          <div className="flex items-center gap-3">
+                            <Video className="h-6 w-6 text-white" />
+                            <div className="text-left">
+                              <h3 className="font-semibold text-white text-lg">Join Fundraising Meeting</h3>
+                              <p className="text-xs text-white/70">
+                                {liveMeeting.meeting_platforms?.display_name || 'Virtual Meeting'}
+                              </p>
+                            </div>
                           </div>
+                          <Badge className="bg-green-500 text-white">
+                            {liveMeeting.status === 'active' ? 'Live Now' : 'Scheduled'}
+                          </Badge>
                         </div>
-                        <Badge className="bg-green-500 text-white">Live</Badge>
+                        <div className="w-full bg-white/10 rounded p-3 text-left text-xs text-white/90 space-y-1">
+                          <div className="flex justify-between">
+                            <span className="font-medium">Meeting ID:</span>
+                            <span className="font-mono">{liveMeeting.meeting_id}</span>
+                          </div>
+                          {liveMeeting.passcode && (
+                            <div className="flex justify-between">
+                              <span className="font-medium">Passcode:</span>
+                              <span className="font-mono font-semibold">{liveMeeting.passcode}</span>
+                            </div>
+                          )}
+                          {liveMeeting.start_time && (
+                            <div className="flex justify-between">
+                              <span className="font-medium">Time:</span>
+                              <span>{new Date(liveMeeting.start_time).toLocaleString()}</span>
+                            </div>
+                          )}
+                        </div>
+                        <p className="text-xs text-white/80 text-center">Click to open meeting in new tab</p>
                       </div>
                     </Button>
                   ) : (
@@ -428,7 +461,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
                           <Video className="h-6 w-6 text-muted-foreground" />
                           <div className="text-left">
                             <h3 className="font-semibold text-muted-foreground text-lg">Fundraising Room</h3>
-                            <p className="text-xs text-muted-foreground/70">Waiting for event to start</p>
+                            <p className="text-xs text-muted-foreground/70">No meeting scheduled yet</p>
                           </div>
                         </div>
                         <Badge variant="secondary" className="bg-red-500 text-white">Offline</Badge>

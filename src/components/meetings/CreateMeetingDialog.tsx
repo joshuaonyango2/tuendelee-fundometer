@@ -182,6 +182,11 @@ export default function CreateMeetingDialog({
           hostUrl = meetingUrl;
       }
 
+      // Prepare description with meeting details
+      const meetingDescription = meetingDetails.description 
+        ? `${meetingDetails.description}\n\n--- Meeting Details ---\nMeeting Link: ${joinUrl}\nMeeting ID: ${meetingId}\nPasscode: ${passcode}\nPlatform: ${platform.display_name}`
+        : `Join the virtual meeting:\n\nMeeting Link: ${joinUrl}\nMeeting ID: ${meetingId}\nPasscode: ${passcode}\nPlatform: ${platform.display_name}`;
+
       // Save meeting to database
       const { data, error } = await supabase
         .from("event_meetings")
