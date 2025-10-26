@@ -433,22 +433,28 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
                             {liveMeeting.status === 'active' ? 'Live Now' : 'Scheduled'}
                           </Badge>
                         </div>
-                        <div className="w-full bg-white/10 rounded p-3 text-left text-xs text-white/90 space-y-1">
-                          <div className="flex justify-between">
-                            <span className="font-medium">Meeting ID:</span>
-                            <span className="font-mono">{liveMeeting.meeting_id}</span>
-                          </div>
-                          {liveMeeting.passcode && (
-                            <div className="flex justify-between">
-                              <span className="font-medium">Passcode:</span>
-                              <span className="font-mono font-semibold">{liveMeeting.passcode}</span>
-                            </div>
-                          )}
-                          {liveMeeting.start_time && (
-                            <div className="flex justify-between">
-                              <span className="font-medium">Time:</span>
-                              <span>{new Date(liveMeeting.start_time).toLocaleString()}</span>
-                            </div>
+                         <div className="w-full bg-white/10 rounded p-3 text-left text-xs text-white/90 space-y-2">
+                          {liveMeeting.description ? (
+                            <div className="whitespace-pre-wrap">{liveMeeting.description}</div>
+                          ) : (
+                            <>
+                              <div className="flex justify-between">
+                                <span className="font-medium">Meeting ID:</span>
+                                <span className="font-mono">{liveMeeting.meeting_id}</span>
+                              </div>
+                              {liveMeeting.passcode && (
+                                <div className="flex justify-between">
+                                  <span className="font-medium">Passcode:</span>
+                                  <span className="font-mono font-semibold">{liveMeeting.passcode}</span>
+                                </div>
+                              )}
+                              {liveMeeting.start_time && (
+                                <div className="flex justify-between">
+                                  <span className="font-medium">Time:</span>
+                                  <span>{new Date(liveMeeting.start_time).toLocaleString()}</span>
+                                </div>
+                              )}
+                            </>
                           )}
                         </div>
                         <p className="text-xs text-white/80 text-center">Click to open meeting in new tab</p>
