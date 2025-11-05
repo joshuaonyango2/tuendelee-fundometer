@@ -243,7 +243,7 @@ export default function EventManagement() {
 
                         <div className="flex gap-2">
                           <Button
-                            onClick={() => window.open(meeting.host_url || meeting.join_url, '_blank', 'noopener,noreferrer')}
+                            onClick={() => window.open(meeting.host_url || meeting.meeting_url || meeting.join_url, '_blank', 'noopener,noreferrer')}
                             className="flex-1"
                           >
                             Join as Host
@@ -251,7 +251,7 @@ export default function EventManagement() {
                           <Button
                             variant="outline"
                             onClick={() => {
-                              navigator.clipboard.writeText(meeting.join_url);
+                              navigator.clipboard.writeText(meeting.join_url || meeting.meeting_url);
                               toast.success('Participant link copied!');
                             }}
                           >
