@@ -343,16 +343,12 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
                       isReconnecting={connectionStatus.isReconnecting}
                     />
                     {liveMeeting ? (
-                      <a 
-                        href={liveMeeting.join_url || '#'} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="inline-block"
+                      <Badge 
+                        className="bg-green-500 hover:bg-green-600 text-white cursor-pointer"
+                        onClick={() => window.open(liveMeeting.join_url || liveMeeting.meeting_url, '_blank', 'noopener,noreferrer')}
                       >
-                        <Badge className="bg-green-500 hover:bg-green-600 text-white cursor-pointer">
-                          Online
-                        </Badge>
-                      </a>
+                        Online
+                      </Badge>
                     ) : (
                       <Badge variant="secondary" className="bg-red-500 text-white">
                         Offline
@@ -417,7 +413,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
                 <div className="mt-4">
                   {liveMeeting ? (
                     <Button
-                      onClick={() => window.open(liveMeeting.join_url, '_blank')}
+                      onClick={() => window.open(liveMeeting.join_url || liveMeeting.meeting_url, '_blank', 'noopener,noreferrer')}
                       className="w-full p-6 h-auto bg-gradient-secondary hover:bg-gradient-secondary/90 rounded-lg border-2 border-white/20"
                     >
                       <div className="flex flex-col w-full gap-3">
