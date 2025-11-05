@@ -5,11 +5,13 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { ArrowLeft, Trash2, TrendingUp, Users, FileText, Plus } from 'lucide-react';
+import { ArrowLeft, Trash2, TrendingUp, Users, FileText, Plus, Video } from 'lucide-react';
 import { EventThermometer } from '@/components/admin/EventThermometer';
 import { ParticipantsView } from '@/components/admin/ParticipantsView';
 import { PledgeReportsView } from '@/components/admin/PledgeReportsView';
 import { ManualPledgeEntry } from '@/components/admin/ManualPledgeEntry';
+import { format } from 'date-fns';
+import { Badge } from '@/components/ui/badge';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,10 +31,12 @@ export default function EventManagement() {
   const [isLoading, setIsLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isAdminForEvent, setIsAdminForEvent] = useState<boolean | null>(null);
+  const [meetings, setMeetings] = useState<any[]>([]);
 
   useEffect(() => {
     if (!eventId) return;
     loadEvent();
+    loadMeetings();
   }, [eventId]);
 
   const loadEvent = async () => {
@@ -54,6 +58,26 @@ export default function EventManagement() {
       navigate('/admin/dashboard');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const loadMeetings = async () => {
+    if (!eventId) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('event_meetings')
+        .select(`
+          *,
+          platform:meeting_platforms(*)
+        `)
+        .eq('event_id', eventId)
+        .order('start_time', { ascending: true });
+
+      if (error) throw error;
+      setMeetings(data || []);
+    } catch (error) {
+      console.error('Error loading meetings:', error);
     }
   };
 
@@ -154,6 +178,10 @@ export default function EventManagement() {
               <TrendingUp className="w-4 h-4 mr-2" />
               Thermometer
             </TabsTrigger>
+            <TabsTrigger value="meetings">
+              <Video className="w-4 h-4 mr-2" />
+              Meetings
+            </TabsTrigger>
             <TabsTrigger value="participants">
               <Users className="w-4 h-4 mr-2" />
               Participants
@@ -170,6 +198,72 @@ export default function EventManagement() {
 
           <TabsContent value="thermometer" className="space-y-4">
             <EventThermometer eventId={eventId!} />
+          </TabsContent>
+
+          <TabsContent value="meetings" className="space-y-4">
+            <Card>
+              <CardContent className="p-6">
+                <h3 className="text-lg font-semibold mb-4">Your Scheduled Meetings</h3>
+                {meetings.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">No meetings scheduled yet.</p>
+                ) : (
+                  <div className="space-y-4">
+                    {meetings.map((meeting) => (
+                      <div key={meeting.id} className="p-4 border rounded-lg space-y-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Video className="w-5 h-5 text-primary" />
+                            <span className="font-medium">{meeting.platform?.display_name}</span>
+                            <Badge variant={meeting.status === 'scheduled' ? 'secondary' : 'default'}>
+                              {meeting.status}
+                            </Badge>
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-2 text-sm">
+                          <div>
+                            <span className="text-muted-foreground">Start Time: </span>
+                            <span>{format(new Date(meeting.start_time), 'PPpp')}</span>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">Duration: </span>
+                            <span>{meeting.duration_minutes} minutes</span>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">Meeting ID: </span>
+                            <span className="font-mono">{meeting.meeting_id}</span>
+                          </div>
+                          {meeting.passcode && (
+                            <div>
+                              <span className="text-muted-foreground">Passcode: </span>
+                              <span className="font-mono font-semibold">{meeting.passcode}</span>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="flex gap-2">
+                          <Button
+                            onClick={() => window.open(meeting.host_url || meeting.join_url, '_blank', 'noopener,noreferrer')}
+                            className="flex-1"
+                          >
+                            Join as Host
+                          </Button>
+                          <Button
+                            variant="outline"
+                            onClick={() => {
+                              navigator.clipboard.writeText(meeting.join_url);
+                              toast.success('Participant link copied!');
+                            }}
+                          >
+                            Copy Participant Link
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="participants" className="space-y-4">
