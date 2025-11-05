@@ -180,10 +180,12 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
         .in('status', ['active', 'scheduled'])
         .order('start_time', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
       if (meetingData) {
         setLiveMeeting(meetingData);
+      } else {
+        setLiveMeeting(null);
       }
 
       // Count active sessions
