@@ -151,6 +151,7 @@ export type Database = {
           amount_in_kes: number
           amount_in_usd: number
           confirmed_at: string | null
+          country_code: string | null
           created_at: string
           currency: string
           donor_address: string | null
@@ -172,6 +173,7 @@ export type Database = {
           amount_in_kes: number
           amount_in_usd: number
           confirmed_at?: string | null
+          country_code?: string | null
           created_at?: string
           currency?: string
           donor_address?: string | null
@@ -193,6 +195,7 @@ export type Database = {
           amount_in_kes?: number
           amount_in_usd?: number
           confirmed_at?: string | null
+          country_code?: string | null
           created_at?: string
           currency?: string
           donor_address?: string | null
@@ -265,8 +268,13 @@ export type Database = {
           is_active: boolean | null
           passcode: string
           scheduled_at: string
+          sender_email: string | null
+          sender_phone: string | null
           share_link: string
           status: string | null
+          template_payment_confirmed: string | null
+          template_payment_reminder: string | null
+          template_pledge_created: string | null
           title: string
           updated_at: string
         }
@@ -280,8 +288,13 @@ export type Database = {
           is_active?: boolean | null
           passcode: string
           scheduled_at: string
+          sender_email?: string | null
+          sender_phone?: string | null
           share_link: string
           status?: string | null
+          template_payment_confirmed?: string | null
+          template_payment_reminder?: string | null
+          template_pledge_created?: string | null
           title: string
           updated_at?: string
         }
@@ -295,8 +308,13 @@ export type Database = {
           is_active?: boolean | null
           passcode?: string
           scheduled_at?: string
+          sender_email?: string | null
+          sender_phone?: string | null
           share_link?: string
           status?: string | null
+          template_payment_confirmed?: string | null
+          template_payment_reminder?: string | null
+          template_pledge_created?: string | null
           title?: string
           updated_at?: string
         }
@@ -362,6 +380,50 @@ export type Database = {
         }
         Relationships: []
       }
+      pledge_notifications: {
+        Row: {
+          channel: string
+          error_message: string | null
+          id: string
+          message: string
+          notification_type: string
+          pledge_id: string
+          recipient: string
+          sent_at: string | null
+          status: string | null
+        }
+        Insert: {
+          channel: string
+          error_message?: string | null
+          id?: string
+          message: string
+          notification_type: string
+          pledge_id: string
+          recipient: string
+          sent_at?: string | null
+          status?: string | null
+        }
+        Update: {
+          channel?: string
+          error_message?: string | null
+          id?: string
+          message?: string
+          notification_type?: string
+          pledge_id?: string
+          recipient?: string
+          sent_at?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pledge_notifications_pledge_id_fkey"
+            columns: ["pledge_id"]
+            isOneToOne: false
+            referencedRelation: "event_pledges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           id: string
@@ -418,10 +480,7 @@ export type Database = {
         }
         Returns: undefined
       }
-      count_active_sessions: {
-        Args: { p_event_id: string }
-        Returns: number
-      }
+      count_active_sessions: { Args: { p_event_id: string }; Returns: number }
       find_my_pledges: {
         Args: { p_event_id: string; p_search_term: string }
         Returns: {
