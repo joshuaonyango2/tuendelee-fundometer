@@ -92,7 +92,7 @@ export function PledgeEditor({ pledge, onUpdate }: PledgeEditorProps) {
 
       if (error) throw error;
 
-      toast.success('Pledge updated successfully!');
+      toast.success('Updated successfully! Thank you for supporting the Tuendelee Foundation. Let\'s progress together! 🎉');
       setIsOpen(false);
       onUpdate();
     } catch (error: any) {

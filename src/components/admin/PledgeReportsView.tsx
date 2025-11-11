@@ -9,6 +9,7 @@ import { format, formatDistanceToNow } from 'date-fns';
 import { Download, CheckCircle, XCircle } from 'lucide-react';
 import { PledgeEditor } from './PledgeEditor';
 import { formatAmountWithKES } from '@/lib/currencyUtils';
+import { PledgeSearch } from './PledgeSearch';
 
 interface Pledge {
   id: string;
@@ -206,9 +207,10 @@ export function PledgeReportsView({ eventId }: PledgeReportsViewProps) {
   return (
     <Card>
       <CardHeader>
-        <div className="flex justify-between items-center">
-          <CardTitle>Pledge Reports</CardTitle>
-          <div className="flex gap-2">
+        <div className="flex flex-col gap-4">
+          <div className="flex justify-between items-center">
+            <CardTitle>Pledge Reports</CardTitle>
+            <div className="flex gap-2">
             <Button
               variant="outline"
               size="sm"
@@ -233,7 +235,9 @@ export function PledgeReportsView({ eventId }: PledgeReportsViewProps) {
               <Download className="w-4 h-4 mr-2" />
               Export All
             </Button>
+            </div>
           </div>
+          <PledgeSearch pledges={pledges} />
         </div>
       </CardHeader>
       <CardContent className="space-y-6">

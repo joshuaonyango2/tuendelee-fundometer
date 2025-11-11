@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { ArrowLeft, Trash2, TrendingUp, Users, FileText, Plus, Video } from 'lucide-react';
 import { EventThermometer } from '@/components/admin/EventThermometer';
 import { ParticipantsView } from '@/components/admin/ParticipantsView';
+import { PlatformCredentialsManager } from '@/components/admin/PlatformCredentialsManager';
 import { PledgeReportsView } from '@/components/admin/PledgeReportsView';
 import { ManualPledgeEntry } from '@/components/admin/ManualPledgeEntry';
 import { format } from 'date-fns';
@@ -203,7 +204,10 @@ export default function EventManagement() {
           <TabsContent value="meetings" className="space-y-4">
             <Card>
               <CardContent className="p-6">
-                <h3 className="text-lg font-semibold mb-4">Your Scheduled Meetings</h3>
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold">Your Scheduled Meetings</h3>
+                  <PlatformCredentialsManager />
+                </div>
                 {meetings.length === 0 ? (
                   <p className="text-sm text-muted-foreground">No meetings scheduled yet.</p>
                 ) : (

@@ -13,9 +13,10 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Search, CreditCard, Clock, CheckCircle2, ArrowRight } from "lucide-react";
+import { Search, CreditCard, Clock, CheckCircle2, ArrowRight, Download } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PaymentConfirmation } from "./PaymentConfirmation";
+import { PledgeReceipt } from "./PledgeReceipt";
 
 interface FindMyPledgeProps {
   eventId: string;
@@ -24,7 +25,9 @@ interface FindMyPledgeProps {
 interface Pledge {
   id: string;
   name: string;
+  email: string;
   amount: number;
+  amount_in_kes: number;
   currency: string;
   payment_type: string;
   is_confirmed: boolean;
@@ -45,10 +48,24 @@ export function FindMyPledge({ eventId }: FindMyPledgeProps) {
   const [showPaymentMethodSelector, setShowPaymentMethodSelector] = useState(false);
   const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<any>(null);
+  const [eventTitle, setEventTitle] = useState("");
 
   useEffect(() => {
     loadPaymentMethods();
-  }, []);
+    loadEventDetails();
+  }, [eventId]);
+
+  const loadEventDetails = async () => {
+    const { data, error } = await supabase
+      .from('fundraising_events')
+      .select('title')
+      .eq('id', eventId)
+      .single();
+
+    if (!error && data) {
+      setEventTitle(data.title);
+    }
+  };
 
   const loadPaymentMethods = async () => {
     const { data, error } = await supabase
@@ -88,7 +105,13 @@ export function FindMyPledge({ eventId }: FindMyPledgeProps) {
         toast.info("No pledges found. Try searching with your email, full name, or phone number.");
         setPledges([]);
       } else {
-        setPledges(data);
+        // Map the data to include the missing fields with default values
+        const mappedData = data.map((pledge: any) => ({
+          ...pledge,
+          email: pledge.email || '',
+          amount_in_kes: pledge.amount_in_kes || pledge.amount * 128
+        }));
+        setPledges(mappedData);
         toast.success(`Found ${data.length} pledge${data.length > 1 ? 's' : ''}`);
       }
     } catch (error: any) {
@@ -137,7 +160,7 @@ export function FindMyPledge({ eventId }: FindMyPledgeProps) {
     setSelectedPaymentMethod(null);
     // Refresh the pledges list
     handleSearch();
-    toast.success("Payment confirmation submitted successfully!");
+    toast.success("Updated successfully! Thank you for supporting the Tuendelee Foundation. Let's progress together! 🎉");
   };
 
   const formatDate = (dateString: string) => {
@@ -288,9 +311,12 @@ export function FindMyPledge({ eventId }: FindMyPledgeProps) {
                           )}
                           
                           {pledge.is_confirmed && (
-                            <p className="text-sm text-green-700 font-medium">
-                              ✓ Thank you for your payment!
-                            </p>
+                            <div className="space-y-3">
+                              <p className="text-sm text-green-700 font-medium">
+                                ✓ Thank you for your payment!
+                              </p>
+                              <PledgeReceipt pledge={pledge} eventTitle={eventTitle} />
+                            </div>
                           )}
                         </CardContent>
                       </Card>
