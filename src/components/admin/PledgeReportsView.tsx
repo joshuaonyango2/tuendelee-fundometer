@@ -226,10 +226,9 @@ export function PledgeReportsView({ eventId }: PledgeReportsViewProps) {
   return (
     <Card>
       <CardHeader>
-        <div className="flex flex-col gap-4">
-          <div className="flex justify-between items-center">
-            <CardTitle>Pledge Reports</CardTitle>
-            <div className="flex gap-2">
+        <div className="flex justify-between items-start mb-4">
+          <CardTitle>Pledge Reports</CardTitle>
+          <div className="flex gap-2">
             <Button
               variant="outline"
               size="sm"
@@ -254,47 +253,52 @@ export function PledgeReportsView({ eventId }: PledgeReportsViewProps) {
               <Download className="w-4 h-4 mr-2" />
               Export All
             </Button>
-            </div>
           </div>
-          <PledgeSearch pledges={pledges} />
         </div>
         
-        {/* Filters */}
-        <div className="flex flex-wrap gap-3">
-          <Select value={filterStatus} onValueChange={setFilterStatus}>
-            <SelectTrigger className="w-[160px]">
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="paid">Paid</SelectItem>
-              <SelectItem value="pending">Pending</SelectItem>
-            </SelectContent>
-          </Select>
+        <div className="space-y-4">
+          <PledgeSearch pledges={pledges} />
+          
+          {/* Filters */}
+          <div className="flex flex-wrap gap-3 p-4 bg-muted/30 rounded-lg">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-muted-foreground">Filters:</span>
+            </div>
+            <Select value={filterStatus} onValueChange={setFilterStatus}>
+              <SelectTrigger className="w-[160px] bg-background">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="paid">Paid</SelectItem>
+                <SelectItem value="pending">Pending</SelectItem>
+              </SelectContent>
+            </Select>
 
-          <Select value={filterPaymentMethod} onValueChange={setFilterPaymentMethod}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Payment Method" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Methods</SelectItem>
-              {paymentMethods.map(method => (
-                <SelectItem key={method} value={method}>{method}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            <Select value={filterPaymentMethod} onValueChange={setFilterPaymentMethod}>
+              <SelectTrigger className="w-[180px] bg-background">
+                <SelectValue placeholder="Payment Method" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Methods</SelectItem>
+                {paymentMethods.map(method => (
+                  <SelectItem key={method} value={method}>{method}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
-          <Select value={filterCurrency} onValueChange={setFilterCurrency}>
-            <SelectTrigger className="w-[140px]">
-              <SelectValue placeholder="Currency" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Currencies</SelectItem>
-              {currencies.map(currency => (
-                <SelectItem key={currency} value={currency}>{currency}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            <Select value={filterCurrency} onValueChange={setFilterCurrency}>
+              <SelectTrigger className="w-[140px] bg-background">
+                <SelectValue placeholder="Currency" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Currencies</SelectItem>
+                {currencies.map(currency => (
+                  <SelectItem key={currency} value={currency}>{currency}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
