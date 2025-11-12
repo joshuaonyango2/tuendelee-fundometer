@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { format, formatDistanceToNow } from 'date-fns';
@@ -36,6 +37,9 @@ interface PledgeReportsViewProps {
 export function PledgeReportsView({ eventId }: PledgeReportsViewProps) {
   const [pledges, setPledges] = useState<Pledge[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [filterPaymentMethod, setFilterPaymentMethod] = useState<string>('all');
+  const [filterCurrency, setFilterCurrency] = useState<string>('all');
+  const [filterStatus, setFilterStatus] = useState<string>('all');
 
   const loadPledges = async () => {
     try {
@@ -105,8 +109,23 @@ export function PledgeReportsView({ eventId }: PledgeReportsViewProps) {
     window.URL.revokeObjectURL(url);
   };
 
-  const paidPledges = pledges.filter(p => p.is_confirmed);
-  const pendingPledges = pledges.filter(p => !p.is_confirmed);
+  // Apply filters
+  const filteredPledges = pledges.filter(pledge => {
+    if (filterStatus !== 'all') {
+      if (filterStatus === 'paid' && !pledge.is_confirmed) return false;
+      if (filterStatus === 'pending' && pledge.is_confirmed) return false;
+    }
+    if (filterPaymentMethod !== 'all' && pledge.payment_method !== filterPaymentMethod) return false;
+    if (filterCurrency !== 'all' && pledge.currency !== filterCurrency) return false;
+    return true;
+  });
+
+  const paidPledges = filteredPledges.filter(p => p.is_confirmed);
+  const pendingPledges = filteredPledges.filter(p => !p.is_confirmed);
+
+  // Get unique payment methods and currencies for filters
+  const paymentMethods = Array.from(new Set(pledges.map(p => p.payment_method).filter(Boolean)));
+  const currencies = Array.from(new Set(pledges.map(p => p.currency)));
 
   const PledgeTable = ({ data }: { data: Pledge[] }) => (
     <Table>
@@ -198,7 +217,7 @@ export function PledgeReportsView({ eventId }: PledgeReportsViewProps) {
 
   const totalPaidAmountUSD = paidPledges.reduce((sum, p) => sum + p.amount_in_usd, 0);
   const totalPendingAmountUSD = pendingPledges.reduce((sum, p) => sum + p.amount_in_usd, 0);
-  const totalAmountUSD = pledges.reduce((sum, p) => sum + p.amount_in_usd, 0);
+  const totalAmountUSD = filteredPledges.reduce((sum, p) => sum + p.amount_in_usd, 0);
   
   const totalPaidAmountKES = totalPaidAmountUSD * 128;
   const totalPendingAmountKES = totalPendingAmountUSD * 128;
@@ -239,6 +258,44 @@ export function PledgeReportsView({ eventId }: PledgeReportsViewProps) {
           </div>
           <PledgeSearch pledges={pledges} />
         </div>
+        
+        {/* Filters */}
+        <div className="flex flex-wrap gap-3">
+          <Select value={filterStatus} onValueChange={setFilterStatus}>
+            <SelectTrigger className="w-[160px]">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="paid">Paid</SelectItem>
+              <SelectItem value="pending">Pending</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select value={filterPaymentMethod} onValueChange={setFilterPaymentMethod}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Payment Method" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Methods</SelectItem>
+              {paymentMethods.map(method => (
+                <SelectItem key={method} value={method}>{method}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Select value={filterCurrency} onValueChange={setFilterCurrency}>
+            <SelectTrigger className="w-[140px]">
+              <SelectValue placeholder="Currency" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Currencies</SelectItem>
+              {currencies.map(currency => (
+                <SelectItem key={currency} value={currency}>{currency}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Summary Statistics */}
@@ -248,7 +305,7 @@ export function PledgeReportsView({ eventId }: PledgeReportsViewProps) {
               <div className="text-sm text-muted-foreground mb-2">Total Pledges</div>
               <div className="text-2xl font-bold">${totalAmountUSD.toLocaleString()}</div>
               <div className="text-lg font-semibold text-primary/80">KES {totalAmountKES.toLocaleString()}</div>
-              <div className="text-xs text-muted-foreground mt-1">{pledges.length} pledges</div>
+              <div className="text-xs text-muted-foreground mt-1">{filteredPledges.length} pledges</div>
             </CardContent>
           </Card>
           <Card className="bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-800">
@@ -270,22 +327,9 @@ export function PledgeReportsView({ eventId }: PledgeReportsViewProps) {
         </div>
 
         {/* Pledge Tables */}
-        <Tabs defaultValue="all">
-          <TabsList>
-            <TabsTrigger value="all">All ({pledges.length})</TabsTrigger>
-            <TabsTrigger value="paid">Paid ({paidPledges.length})</TabsTrigger>
-            <TabsTrigger value="pending">Pending ({pendingPledges.length})</TabsTrigger>
-          </TabsList>
-          <TabsContent value="all">
-            <PledgeTable data={pledges} />
-          </TabsContent>
-          <TabsContent value="paid">
-            <PledgeTable data={paidPledges} />
-          </TabsContent>
-          <TabsContent value="pending">
-            <PledgeTable data={pendingPledges} />
-          </TabsContent>
-        </Tabs>
+        <div>
+          <PledgeTable data={filteredPledges} />
+        </div>
       </CardContent>
     </Card>
   );
