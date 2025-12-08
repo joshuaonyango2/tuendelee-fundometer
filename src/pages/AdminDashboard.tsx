@@ -60,38 +60,58 @@ export default function AdminDashboard() {
   });
 
   useEffect(() => {
-    checkAuth();
-    loadEvents();
-    
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!session?.user) {
+        navigate("/admin/auth");
+        return;
+      }
+      setUser(session.user);
+      setNewEmail(session.user.email || "");
+      
+      // Load events after auth is confirmed
+      setTimeout(() => {
+        loadEvents();
+      }, 0);
+    });
+
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session?.user) {
+        navigate("/admin/auth");
+        return;
+      }
+      setUser(session.user);
+      setNewEmail(session.user.email || "");
+      loadEvents();
+    });
+
     // Check if we should show password change prompt
     const shouldShowPrompt = localStorage.getItem("showPasswordChangePrompt");
     if (shouldShowPrompt === "true") {
       setShowPasswordChange(true);
       localStorage.removeItem("showPasswordChangePrompt");
     }
-  }, []);
 
-  const checkAuth = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      navigate("/admin/auth");
-      return;
-    }
-    setUser(user);
-    setNewEmail(user.email || "");
-  };
+    return () => subscription.unsubscribe();
+  }, [navigate]);
 
   const loadEvents = async () => {
     try {
+      setIsLoading(true);
       const { data, error } = await supabase
         .from("fundraising_events")
         .select("*")
         .order("scheduled_at", { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Failed to load events:", error);
+        throw error;
+      }
       setEvents(data || []);
     } catch (error: any) {
-      toast.error("Failed to load events");
+      console.error("Load events error:", error);
+      toast.error("Failed to load events: " + error.message);
     } finally {
       setIsLoading(false);
     }
@@ -268,7 +288,11 @@ export default function AdminDashboard() {
       setConfirmPassword("");
       
       // Reload user data
-      await checkAuth();
+      const { data: { user: updatedUser } } = await supabase.auth.getUser();
+      if (updatedUser) {
+        setUser(updatedUser);
+        setNewEmail(updatedUser.email || "");
+      }
     } catch (err: any) {
       toast.error(err.message || "Failed to update account");
     } finally {
