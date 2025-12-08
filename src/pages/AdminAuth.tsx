@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,23 +18,42 @@ export default function AdminAuth() {
   const [showResetInfo, setShowResetInfo] = useState(false);
   const [isFirstTimeSetup, setIsFirstTimeSetup] = useState(false);
 
+  // Check if already logged in
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session?.user) {
+        navigate("/admin/dashboard");
+      }
+    });
+
+    // Check existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        navigate("/admin/dashboard");
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
 
     try {
-      const { error: signInError } = await supabase.auth.signInWithPassword({
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (signInError) throw signInError;
       
+      // The onAuthStateChange will handle navigation
       toast.success("Welcome to Tuendelee Foundation Admin Portal!");
-      navigate("/admin/dashboard");
     } catch (err: any) {
-      setError(err.message || "An error occurred");
+      console.error("Login error:", err);
+      setError(err.message || "An error occurred during login");
       toast.error(err.message);
     } finally {
       setIsLoading(false);
