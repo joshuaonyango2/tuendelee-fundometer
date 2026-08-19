@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Helmet } from "react-helmet-async";
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -327,7 +328,30 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
 
   return (
     <div className="min-h-screen bg-gradient-background">
+      <Helmet>
+        <title>{`${event.title} | Tuendelee Fundometer`}</title>
+        <meta
+          name="description"
+          content={
+            event.description
+              ? `${event.description}`.slice(0, 155)
+              : `Follow live fundraising progress for ${event.title} and make your pledge with the Tuendelee Foundation.`
+          }
+        />
+        <link rel="canonical" href={`https://tuendelee-fundometer.lovable.app/event/${event.id}`} />
+        <meta property="og:title" content={`${event.title} | Tuendelee Fundometer`} />
+        <meta
+          property="og:description"
+          content={
+            event.description
+              ? `${event.description}`.slice(0, 155)
+              : `Follow live fundraising progress for ${event.title}.`
+          }
+        />
+        <meta property="og:url" content={`https://tuendelee-fundometer.lovable.app/event/${event.id}`} />
+      </Helmet>
       <div className="container mx-auto px-4 py-8">
+        <h1 className="sr-only">{`${event.title} — Fundraising Room`}</h1>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
@@ -421,7 +445,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
                           <div className="flex items-center gap-3">
                             <Video className="h-6 w-6 text-white" />
                             <div className="text-left">
-                              <h3 className="font-semibold text-white text-lg">Join Fundraising Meeting</h3>
+                              <h2 className="font-semibold text-white text-lg">Join Fundraising Meeting</h2>
                               <p className="text-xs text-white/70">
                                 {liveMeeting.meeting_platforms?.display_name || 'Virtual Meeting'}
                               </p>
@@ -464,7 +488,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
                         <div className="flex items-center gap-3">
                           <Video className="h-6 w-6 text-muted-foreground" />
                           <div className="text-left">
-                            <h3 className="font-semibold text-muted-foreground text-lg">Fundraising Room</h3>
+                            <h2 className="font-semibold text-muted-foreground text-lg">Fundraising Room</h2>
                             <p className="text-xs text-muted-foreground/70">No meeting scheduled yet</p>
                           </div>
                         </div>

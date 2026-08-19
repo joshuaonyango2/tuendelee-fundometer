@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { HeroSection } from "@/components/HeroSection";
@@ -10,6 +11,15 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-background">
+      <Helmet>
+        <title>Tuendelee Fundometer — Live Fundraising for Students</title>
+        <meta
+          name="description"
+          content="Pledge, donate and follow live fundraising progress for Tuendelee Foundation projects supporting bright, financially disadvantaged students."
+        />
+        <link rel="canonical" href="https://tuendelee-fundometer.lovable.app/" />
+        <meta property="og:url" content="https://tuendelee-fundometer.lovable.app/" />
+      </Helmet>
       {/* Hero Section */}
       <HeroSection />
       
