@@ -14,7 +14,7 @@ export interface OptimisticOperation<T> {
 export function useOptimisticUpdates<T extends { id?: string }>() {
   const [items, setItems] = useState<T[]>([]);
   const [operations, setOperations] = useState<Map<string, OptimisticOperation<T>>>(new Map());
-  const operationTimeoutRef = useRef<Map<string, NodeJS.Timeout>>(new Map());
+  const operationTimeoutRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 
   const generateOperationId = () => `op_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
