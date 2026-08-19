@@ -153,6 +153,21 @@ export default function JoinEvent() {
 
   return (
     <div className="min-h-screen bg-gradient-background flex items-center justify-center p-4">
+      <Helmet>
+        <title>Join Fundraising Event | Tuendelee Foundation</title>
+        <meta
+          name="description"
+          content={`Join ${activeEvent.title} with the Tuendelee Foundation — pledge, donate and follow live fundraising progress.`}
+        />
+        <link rel="canonical" href="https://tuendelee-fundometer.lovable.app/join" />
+        <meta property="og:title" content={`Join ${activeEvent.title} | Tuendelee Foundation`} />
+        <meta
+          property="og:description"
+          content={activeEvent.description || "Enter your details to join the live fundraising event."}
+        />
+        <meta property="og:url" content="https://tuendelee-fundometer.lovable.app/join" />
+      </Helmet>
+      <h1 className="sr-only">Join Fundraising Event</h1>
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
