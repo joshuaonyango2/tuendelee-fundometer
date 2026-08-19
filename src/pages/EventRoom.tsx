@@ -327,7 +327,30 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
 
   return (
     <div className="min-h-screen bg-gradient-background">
+      <Helmet>
+        <title>{`${event.title} | Tuendelee Fundometer`}</title>
+        <meta
+          name="description"
+          content={
+            event.description
+              ? `${event.description}`.slice(0, 155)
+              : `Follow live fundraising progress for ${event.title} and make your pledge with the Tuendelee Foundation.`
+          }
+        />
+        <link rel="canonical" href={`https://tuendelee-fundometer.lovable.app/event/${event.id}`} />
+        <meta property="og:title" content={`${event.title} | Tuendelee Fundometer`} />
+        <meta
+          property="og:description"
+          content={
+            event.description
+              ? `${event.description}`.slice(0, 155)
+              : `Follow live fundraising progress for ${event.title}.`
+          }
+        />
+        <meta property="og:url" content={`https://tuendelee-fundometer.lovable.app/event/${event.id}`} />
+      </Helmet>
       <div className="container mx-auto px-4 py-8">
+        <h1 className="sr-only">{`${event.title} — Fundraising Room`}</h1>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
