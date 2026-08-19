@@ -18,7 +18,7 @@ interface MeetingDetails {
   meeting_id: string;
   meeting_url: string;
   join_url: string;
-  host_url: string;
+  host_url?: string | null;
   passcode: string | null;
   start_time: string;
   duration_minutes: number;
