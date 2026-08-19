@@ -445,7 +445,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
                           <div className="flex items-center gap-3">
                             <Video className="h-6 w-6 text-white" />
                             <div className="text-left">
-                              <h3 className="font-semibold text-white text-lg">Join Fundraising Meeting</h3>
+                              <h2 className="font-semibold text-white text-lg">Join Fundraising Meeting</h2>
                               <p className="text-xs text-white/70">
                                 {liveMeeting.meeting_platforms?.display_name || 'Virtual Meeting'}
                               </p>
@@ -488,7 +488,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
                         <div className="flex items-center gap-3">
                           <Video className="h-6 w-6 text-muted-foreground" />
                           <div className="text-left">
-                            <h3 className="font-semibold text-muted-foreground text-lg">Fundraising Room</h3>
+                            <h2 className="font-semibold text-muted-foreground text-lg">Fundraising Room</h2>
                             <p className="text-xs text-muted-foreground/70">No meeting scheduled yet</p>
                           </div>
                         </div>
