@@ -193,8 +193,11 @@ export function ImprovedThermometer({
   const remainingAmountUSD = Math.max(0, goalAmountUSD - totalPledgedUSD);
   const remainingAmountKES = Math.max(0, goalAmountUSD * exchangeRate - totalPledgedKES);
 
+  const progressLabel = `Fundraising progress: ${totalPledgedPercentage.toFixed(1)}% of goal. KSh ${formatAmount(totalPledgedKES)} pledged of a KSh ${formatAmount(goalAmountUSD * exchangeRate)} goal (KSh ${formatAmount(paidAmountKES)} paid). KSh ${formatAmount(remainingAmountKES)} still needed.`;
+
   return (
     <div className={cn("w-full max-w-7xl mx-auto py-8 px-4", className)}>
+      <p className="sr-only" role="status" aria-live="polite">{progressLabel}</p>
       {/* Summary Cards - Now 4 cards in 2x2 grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
         {/* Target Goal Card */}
@@ -327,7 +330,15 @@ export function ImprovedThermometer({
         <div className="order-1 lg:order-2 flex flex-col items-center">
           <div className="relative">
             {/* Thermometer Tube */}
-            <div className="w-14 bg-gradient-to-b from-gray-50 to-gray-100 rounded-full border-2 border-gray-300 shadow-xl overflow-hidden relative h-96 lg:h-[500px]">
+            <div
+              className="w-14 bg-gradient-to-b from-gray-50 to-gray-100 rounded-full border-2 border-gray-300 shadow-xl overflow-hidden relative h-96 lg:h-[500px]"
+              role="progressbar"
+              aria-valuenow={Math.round(totalPledgedUSD)}
+              aria-valuemin={0}
+              aria-valuemax={Math.round(goalAmountUSD)}
+              aria-valuetext={progressLabel}
+              aria-label="Fundraising progress toward goal"
+            >
               
               {/* Glass Reflection */}
               <div className="absolute left-0 top-0 bottom-0 w-3 bg-gradient-to-r from-white/50 to-transparent z-10" />
