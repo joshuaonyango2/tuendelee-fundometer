@@ -77,7 +77,7 @@ export default function MeetingRoom() {
       const { data, error } = await supabase
         .from("event_meetings")
         .select(`
-          *,
+          id, event_id, platform_id, meeting_id, meeting_url, join_url, passcode, start_time, duration_minutes, status, created_at, updated_at,
           platform:meeting_platforms(
             name,
             display_name
