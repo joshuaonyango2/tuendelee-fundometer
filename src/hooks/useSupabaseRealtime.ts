@@ -33,7 +33,7 @@ export function useSupabaseRealtime(options: UseSupabaseRealtimeOptions = {}) {
   });
 
   const channelsRef = useRef<Map<string, RealtimeChannel>>(new Map());
-  const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const subscribersRef = useRef<Map<string, Set<(payload: any) => void>>>(new Map());
 
   const updateStatus = useCallback((updates: Partial<RealtimeStatus>) => {
