@@ -320,6 +320,60 @@ export type Database = {
         }
         Relationships: []
       }
+      impact_stories: {
+        Row: {
+          audio_url: string | null
+          created_at: string
+          description: string | null
+          description_fr: string | null
+          description_it: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          media_type: string
+          media_url: string | null
+          sort_order: number
+          title: string
+          title_fr: string | null
+          title_it: string | null
+          updated_at: string
+        }
+        Insert: {
+          audio_url?: string | null
+          created_at?: string
+          description?: string | null
+          description_fr?: string | null
+          description_it?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          media_type?: string
+          media_url?: string | null
+          sort_order?: number
+          title: string
+          title_fr?: string | null
+          title_it?: string | null
+          updated_at?: string
+        }
+        Update: {
+          audio_url?: string | null
+          created_at?: string
+          description?: string | null
+          description_fr?: string | null
+          description_it?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          media_type?: string
+          media_url?: string | null
+          sort_order?: number
+          title?: string
+          title_fr?: string | null
+          title_it?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       meeting_platforms: {
         Row: {
           created_at: string | null
