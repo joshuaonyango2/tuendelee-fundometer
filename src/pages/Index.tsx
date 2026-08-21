@@ -4,10 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { HeroSection } from "@/components/HeroSection";
 import { HomeHelpDialog } from "@/components/HomeHelpDialog";
+import { ImpactStories } from "@/components/ImpactStories";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Shield, Users, Lock, CreditCard, Database, CheckCircle } from "lucide-react";
 
 const Index = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   return (
     <div className="min-h-screen bg-gradient-background">
@@ -20,9 +24,18 @@ const Index = () => {
         <link rel="canonical" href="https://tuendelee-fundometer.lovable.app/" />
         <meta property="og:url" content="https://tuendelee-fundometer.lovable.app/" />
       </Helmet>
+
+      {/* Language selector */}
+      <div className="container mx-auto px-4 pt-3 flex justify-end">
+        <LanguageSwitcher />
+      </div>
+
       {/* Hero Section */}
       <HeroSection />
-      
+
+      {/* Impact Stories (admin-managed video / photo / audio) */}
+      <ImpactStories />
+
       {/* Help Button */}
       <HomeHelpDialog />
 
@@ -30,17 +43,17 @@ const Index = () => {
       <div className="container mx-auto px-4 pb-16">
         <div className="text-center mb-8">
           <h2 className="text-2xl md:text-3xl font-bold mb-3">
-            Empowering Bright Minds Through Education
+            {t("home.heading")}
           </h2>
           <p className="text-base text-muted-foreground max-w-2xl mx-auto">
-            Support deserving students with scholarships. Every contribution transforms lives and builds a brighter future for Kenya.
+            {t("home.subheading")}
           </p>
         </div>
 
         {/* Primary CTA - Join Event */}
         <div className="flex justify-center mb-16">
           <div className="bg-gradient-primary text-white rounded-2xl p-6 max-w-2xl w-full shadow-2xl">
-            <h3 className="text-xl font-bold mb-3 text-center">Ready to Make a Difference?</h3>
+            <h3 className="text-xl font-bold mb-3 text-center">{t("home.ctaCardTitle")}</h3>
             <div className="flex justify-center">
               <Button 
                 size="lg" 
@@ -48,11 +61,12 @@ const Index = () => {
                 className="bg-white text-primary hover:bg-white/90 font-bold text-base py-6 px-8 shadow-lg"
               >
                 <Users className="w-5 h-5 mr-2" />
-                Sign Up to Pledge & Track Progress
+                {t("home.ctaButton")}
               </Button>
             </div>
           </div>
         </div>
+
 
         {/* Security & Data Protection Section */}
         <div className="mb-16">
