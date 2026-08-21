@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PaymentMethodsManager } from "@/components/admin/PaymentMethodsManager";
+import { ImpactStoriesManager } from "@/components/admin/ImpactStoriesManager";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
@@ -341,6 +342,10 @@ export default function AdminDashboard() {
               <Settings className="w-4 h-4 mr-2" />
               Payment Methods
             </TabsTrigger>
+            <TabsTrigger value="stories">
+              <Video className="w-4 h-4 mr-2" />
+              Impact Stories
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="events" className="space-y-4">
@@ -563,6 +568,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="payments">
             <PaymentMethodsManager />
+          </TabsContent>
+
+          <TabsContent value="stories">
+            <ImpactStoriesManager />
           </TabsContent>
         </Tabs>
       </div>
