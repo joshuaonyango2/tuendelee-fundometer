@@ -73,11 +73,10 @@ const Index = () => {
           <div className="text-center mb-8">
             <Shield className="w-12 h-12 text-success mx-auto mb-4" />
             <h3 className="text-2xl md:text-3xl font-bold mb-3">
-              Your Security is Our Priority
+              {t("security.title")}
             </h3>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              We understand the importance of protecting your personal and financial information. 
-              Your trust matters to us.
+              {t("security.subtitle")}
             </p>
           </div>
 
@@ -85,78 +84,60 @@ const Index = () => {
             <Card className="border-success/30 bg-success/5">
               <CardHeader>
                 <Lock className="w-8 h-8 text-success mb-2" />
-                <CardTitle>Encrypted Data Transfer</CardTitle>
+                <CardTitle>{t("security.encryptionTitle")}</CardTitle>
               </CardHeader>
               <CardContent>
-                <CardDescription>
-                  Your personal information is protected using SSL/TLS encryption during transmission, 
-                  the same technology used by secure websites worldwide
-                </CardDescription>
+                <CardDescription>{t("security.encryptionBody")}</CardDescription>
               </CardContent>
             </Card>
 
             <Card className="border-success/30 bg-success/5">
               <CardHeader>
                 <CreditCard className="w-8 h-8 text-success mb-2" />
-                <CardTitle>Secure Payment Processing</CardTitle>
+                <CardTitle>{t("security.paymentTitle")}</CardTitle>
               </CardHeader>
               <CardContent>
-                <CardDescription>
-                  We never store your credit card details. All payments are processed through 
-                  trusted providers like M-Pesa, PayPal, and secure bank transfers
-                </CardDescription>
+                <CardDescription>{t("security.paymentBody")}</CardDescription>
               </CardContent>
             </Card>
 
             <Card className="border-success/30 bg-success/5">
               <CardHeader>
                 <Database className="w-8 h-8 text-success mb-2" />
-                <CardTitle>Protected Data Storage</CardTitle>
+                <CardTitle>{t("security.storageTitle")}</CardTitle>
               </CardHeader>
               <CardContent>
-                <CardDescription>
-                  Your information is stored in secure, encrypted databases with restricted access 
-                  and regular security audits
-                </CardDescription>
+                <CardDescription>{t("security.storageBody")}</CardDescription>
               </CardContent>
             </Card>
 
             <Card className="border-success/30 bg-success/5">
               <CardHeader>
                 <Shield className="w-8 h-8 text-success mb-2" />
-                <CardTitle>Privacy Guaranteed</CardTitle>
+                <CardTitle>{t("security.privacyTitle")}</CardTitle>
               </CardHeader>
               <CardContent>
-                <CardDescription>
-                  We will never share, sell, or distribute your personal information to third parties. 
-                  Your data is used solely for event participation and donation processing
-                </CardDescription>
+                <CardDescription>{t("security.privacyBody")}</CardDescription>
               </CardContent>
             </Card>
 
             <Card className="border-success/30 bg-success/5">
               <CardHeader>
                 <CheckCircle className="w-8 h-8 text-success mb-2" />
-                <CardTitle>Verified & Trusted</CardTitle>
+                <CardTitle>{t("security.trustedTitle")}</CardTitle>
               </CardHeader>
               <CardContent>
-                <CardDescription>
-                  Our platform is built with security best practices and regularly audited 
-                  to ensure the highest standards of data protection and reliability
-                </CardDescription>
+                <CardDescription>{t("security.trustedBody")}</CardDescription>
               </CardContent>
             </Card>
 
             <Card className="border-success/30 bg-success/5">
               <CardHeader>
                 <Users className="w-8 h-8 text-success mb-2" />
-                <CardTitle>Transparent Tracking</CardTitle>
+                <CardTitle>{t("security.trackingTitle")}</CardTitle>
               </CardHeader>
               <CardContent>
-                <CardDescription>
-                  See real-time updates of contributions with full transparency. 
-                  Track how your donation helps us reach our scholarship goals
-                </CardDescription>
+                <CardDescription>{t("security.trackingBody")}</CardDescription>
               </CardContent>
             </Card>
           </div>
@@ -165,46 +146,38 @@ const Index = () => {
         {/* How It Works Section */}
         <div className="mb-12">
           <h3 className="text-2xl md:text-3xl font-bold text-center mb-8">
-            How It Works
+            {t("how.title")}
           </h3>
           <div className="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto">
             <div className="text-center">
               <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl font-bold text-primary">1</span>
               </div>
-              <h4 className="font-bold mb-2">Join Instantly</h4>
-              <p className="text-sm text-muted-foreground">
-                Click "Join Event Now" and you're in. Simple as that. No complicated forms or long sign-ups.
-              </p>
+              <h4 className="font-bold mb-2">{t("how.step1Title")}</h4>
+              <p className="text-sm text-muted-foreground">{t("how.step1Body")}</p>
             </div>
             <div className="text-center">
               <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl font-bold text-primary">2</span>
               </div>
-              <h4 className="font-bold mb-2">Make Your Contribution</h4>
-              <p className="text-sm text-muted-foreground">
-                Choose to pay now for immediate impact or pledge to pay later. Pick your preferred payment method - it's flexible and secure.
-              </p>
+              <h4 className="font-bold mb-2">{t("how.step2Title")}</h4>
+              <p className="text-sm text-muted-foreground">{t("how.step2Body")}</p>
             </div>
           </div>
         </div>
 
         {/* Final CTA */}
         <div className="text-center">
-          <p className="text-xl mb-6 font-medium">
-            It takes just moments to make a lasting impact
-          </p>
+          <p className="text-xl mb-6 font-medium">{t("home.finalCtaText")}</p>
           <Button 
             size="lg" 
             onClick={() => navigate("/join")}
             className="bg-gradient-primary hover:opacity-90 text-white font-bold text-lg py-6 px-10"
           >
             <Users className="w-5 h-5 mr-2" />
-            Start Making a Difference
+            {t("home.finalCtaButton")}
           </Button>
-          <p className="text-sm text-muted-foreground mt-4">
-            Together, we empower deserving students to achieve their educational dreams
-          </p>
+          <p className="text-sm text-muted-foreground mt-4">{t("home.finalCtaNote")}</p>
         </div>
       </div>
     </div>
