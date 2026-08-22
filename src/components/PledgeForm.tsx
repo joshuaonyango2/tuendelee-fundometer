@@ -40,6 +40,7 @@ const currencies = [
 // Payment methods will be loaded dynamically from Supabase
 
 export function PledgeForm({ onSubmit }: PledgeFormProps) {
+  const { t } = useLanguage();
   // Load saved donor info from localStorage
   const getSavedDonorInfo = () => {
     const saved = localStorage.getItem('donor_info');

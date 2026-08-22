@@ -24,6 +24,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 export function HomeHelpDialog() {
+  const { t } = useLanguage();
   return (
     <TooltipProvider>
       <Dialog>
