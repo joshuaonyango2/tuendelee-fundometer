@@ -21,8 +21,10 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export function HomeHelpDialog() {
+  const { t } = useLanguage();
   return (
     <TooltipProvider>
       <Dialog>
@@ -40,7 +42,7 @@ export function HomeHelpDialog() {
             </DialogTrigger>
           </TooltipTrigger>
           <TooltipContent side="left" className="bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold text-base px-4 py-2 border-2 border-white shadow-lg">
-            <p>Need Help? Click Here!</p>
+            <p>{t("help.button")}</p>
           </TooltipContent>
         </Tooltip>
       <DialogContent className="max-w-3xl max-h-[90vh]">

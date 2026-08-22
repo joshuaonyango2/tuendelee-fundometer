@@ -1,6 +1,8 @@
 import tuendeleeLogo from "@/assets/tuendelee-logo.jpg";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export function HeroSection() {
+  const { t } = useLanguage();
   return (
     <section className="relative overflow-hidden bg-gradient-background pb-8 pt-12">
       <div className="absolute inset-0 bg-gradient-hero opacity-5" />
@@ -17,7 +19,7 @@ export function HeroSection() {
           
           <h1 className="text-2xl md:text-3xl font-bold mb-2">
             <span className="bg-gradient-primary bg-clip-text text-transparent">
-              Tuendelee Foundation Fundometer
+              {t("home.title")}
             </span>
           </h1>
         </div>
