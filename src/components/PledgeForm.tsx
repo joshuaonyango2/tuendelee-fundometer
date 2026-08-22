@@ -14,6 +14,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { toast } from "sonner";
 import { Heart, DollarSign, User, Mail, MessageSquare } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useLanguage } from "@/contexts/LanguageContext";
 interface PledgeFormProps {
   onSubmit: (pledge: PledgeData) => void;
 }
@@ -158,7 +159,7 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
           <div className="space-y-2">
             <Label htmlFor="name" className="flex items-center gap-2">
               <User className="w-4 h-4" />
-              Your Name *
+              {t("pledge.name")} *
             </Label>
             <Input
               id="name"
@@ -173,7 +174,7 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
           <div className="space-y-2">
             <Label htmlFor="email" className="flex items-center gap-2">
               <Mail className="w-4 h-4" />
-              Email Address *
+              {t("pledge.email")} *
             </Label>
             <Input
               id="email"
@@ -189,7 +190,7 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="amount">
-                Amount (in {currencies.find(c => c.code === formData.currency)?.code || 'KES'}) *
+                {t("pledge.amount")} (in {currencies.find(c => c.code === formData.currency)?.code || 'KES'}) *
               </Label>
               <Input
                 id="amount"
@@ -204,7 +205,7 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="currency">Input Currency</Label>
+              <Label htmlFor="currency">{t("pledge.currency")}</Label>
               <Select
                 value={formData.currency}
                 onValueChange={(value) => setFormData({ ...formData, currency: value })}
@@ -224,7 +225,7 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="paymentMethod">Payment Method *</Label>
+            <Label htmlFor="paymentMethod">{t("pledge.paymentMethod")} *</Label>
             <Select
               value={formData.paymentMethod}
               onValueChange={(value) => setFormData({ ...formData, paymentMethod: value })}
@@ -243,7 +244,7 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="duration">Payment Duration (For Pledges)</Label>
+            <Label htmlFor="duration">{t("pledge.duration")}</Label>
             <Select
               value={formData.pledgeDurationDays?.toString() || "7"}
               onValueChange={(value) => setFormData({ ...formData, pledgeDurationDays: parseInt(value) })}
@@ -263,11 +264,11 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
           <div className="space-y-2">
             <Label htmlFor="message" className="flex items-center gap-2">
               <MessageSquare className="w-4 h-4" />
-              Message (Optional)
+              {t("pledge.message")}
             </Label>
             <Textarea
               id="message"
-              placeholder="Your message of support..."
+              placeholder={t("pledge.messagePlaceholder")}
               value={formData.message}
               onChange={(e) => setFormData({ ...formData, message: e.target.value })}
               className="border-primary/20 focus:border-primary resize-none"
