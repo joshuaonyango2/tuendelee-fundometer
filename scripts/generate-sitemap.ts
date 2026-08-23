@@ -14,6 +14,7 @@ interface SitemapEntry {
 const entries: SitemapEntry[] = [
   { path: "/", changefreq: "weekly", priority: "1.0" },
   { path: "/join", changefreq: "weekly", priority: "0.8" },
+  { path: "/impact-stories", changefreq: "weekly", priority: "0.9" },
 ]
 
 function generateSitemap(items: SitemapEntry[]) {
