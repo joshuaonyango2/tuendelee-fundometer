@@ -36,6 +36,16 @@ const Index = () => {
       {/* Impact Stories (admin-managed video / photo / audio) */}
       <ImpactStories />
 
+      <div className="container mx-auto px-4 pb-8 text-center">
+        <Link
+          to="/impact-stories"
+          className="text-primary font-medium underline underline-offset-4 hover:opacity-80"
+        >
+          Read our impact stories — Kenyan student scholarships
+        </Link>
+      </div>
+
+
       {/* Help Button */}
       <HomeHelpDialog />
 
