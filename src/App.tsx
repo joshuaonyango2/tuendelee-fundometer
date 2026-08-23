@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import AdminAuth from "./pages/AdminAuth";
 import AdminDashboard from "./pages/AdminDashboard";
 import JoinEvent from "./pages/JoinEvent";
+import ImpactStoriesPage from "./pages/ImpactStoriesPage";
 import EventRoom from "./pages/EventRoom";
 import MeetingRoom from "./pages/MeetingRoom";
 import EventManagement from "./pages/EventManagement";
@@ -25,6 +26,7 @@ const App = () => (
           <Route path="/admin/auth" element={<AdminAuth />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/join" element={<JoinEvent />} />
+          <Route path="/impact-stories" element={<ImpactStoriesPage />} />
           <Route path="/event/:eventId" element={<EventRoom />} />
           <Route path="/event/:eventId/manage" element={<EventManagement />} />
           <Route path="/meeting/:platform/:meetingId" element={<MeetingRoom />} />

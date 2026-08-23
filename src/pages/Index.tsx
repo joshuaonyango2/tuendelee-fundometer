@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -35,6 +35,16 @@ const Index = () => {
 
       {/* Impact Stories (admin-managed video / photo / audio) */}
       <ImpactStories />
+
+      <div className="container mx-auto px-4 pb-8 text-center">
+        <Link
+          to="/impact-stories"
+          className="text-primary font-medium underline underline-offset-4 hover:opacity-80"
+        >
+          Read our impact stories — Kenyan student scholarships
+        </Link>
+      </div>
+
 
       {/* Help Button */}
       <HomeHelpDialog />
