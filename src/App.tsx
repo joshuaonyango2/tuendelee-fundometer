@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import AdminAuth from "./pages/AdminAuth";
 import AdminDashboard from "./pages/AdminDashboard";
 import JoinEvent from "./pages/JoinEvent";
+import ImpactStoriesPage from "./pages/ImpactStoriesPage";
 import EventRoom from "./pages/EventRoom";
 import MeetingRoom from "./pages/MeetingRoom";
 import EventManagement from "./pages/EventManagement";
