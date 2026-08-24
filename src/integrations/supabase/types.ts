@@ -58,6 +58,60 @@ export type Database = {
           },
         ]
       }
+      admin_notifications: {
+        Row: {
+          admin_id: string
+          body: string | null
+          created_at: string
+          event_id: string | null
+          id: string
+          is_read: boolean
+          pledge_id: string | null
+          severity: string
+          title: string
+          type: string
+        }
+        Insert: {
+          admin_id: string
+          body?: string | null
+          created_at?: string
+          event_id?: string | null
+          id?: string
+          is_read?: boolean
+          pledge_id?: string | null
+          severity?: string
+          title: string
+          type: string
+        }
+        Update: {
+          admin_id?: string
+          body?: string | null
+          created_at?: string
+          event_id?: string | null
+          id?: string
+          is_read?: boolean
+          pledge_id?: string | null
+          severity?: string
+          title?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_notifications_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "fundraising_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "admin_notifications_pledge_id_fkey"
+            columns: ["pledge_id"]
+            isOneToOne: false
+            referencedRelation: "event_pledges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       admin_profiles: {
         Row: {
           created_at: string
@@ -150,6 +204,8 @@ export type Database = {
           amount: number
           amount_in_kes: number
           amount_in_usd: number
+          archived_at: string | null
+          badge_rank: number | null
           confirmed_at: string | null
           country_code: string | null
           created_at: string
@@ -159,6 +215,7 @@ export type Database = {
           email: string | null
           event_id: string
           id: string
+          is_archived: boolean
           is_confirmed: boolean | null
           message: string | null
           name: string
@@ -167,11 +224,22 @@ export type Database = {
           payment_reference: string | null
           payment_type: string
           pledge_duration_days: number | null
+          possible_duplicate_of: string | null
+          receipt_sent_at: string | null
+          reminder_final_sent_at: string | null
+          reminder_half_sent_at: string | null
+          thank_you_sent_at: string | null
+          verification_note: string | null
+          verification_status: string
+          verified_at: string | null
+          verified_by: string | null
         }
         Insert: {
           amount: number
           amount_in_kes: number
           amount_in_usd: number
+          archived_at?: string | null
+          badge_rank?: number | null
           confirmed_at?: string | null
           country_code?: string | null
           created_at?: string
@@ -181,6 +249,7 @@ export type Database = {
           email?: string | null
           event_id: string
           id?: string
+          is_archived?: boolean
           is_confirmed?: boolean | null
           message?: string | null
           name: string
@@ -189,11 +258,22 @@ export type Database = {
           payment_reference?: string | null
           payment_type: string
           pledge_duration_days?: number | null
+          possible_duplicate_of?: string | null
+          receipt_sent_at?: string | null
+          reminder_final_sent_at?: string | null
+          reminder_half_sent_at?: string | null
+          thank_you_sent_at?: string | null
+          verification_note?: string | null
+          verification_status?: string
+          verified_at?: string | null
+          verified_by?: string | null
         }
         Update: {
           amount?: number
           amount_in_kes?: number
           amount_in_usd?: number
+          archived_at?: string | null
+          badge_rank?: number | null
           confirmed_at?: string | null
           country_code?: string | null
           created_at?: string
@@ -203,6 +283,7 @@ export type Database = {
           email?: string | null
           event_id?: string
           id?: string
+          is_archived?: boolean
           is_confirmed?: boolean | null
           message?: string | null
           name?: string
@@ -211,6 +292,15 @@ export type Database = {
           payment_reference?: string | null
           payment_type?: string
           pledge_duration_days?: number | null
+          possible_duplicate_of?: string | null
+          receipt_sent_at?: string | null
+          reminder_final_sent_at?: string | null
+          reminder_half_sent_at?: string | null
+          thank_you_sent_at?: string | null
+          verification_note?: string | null
+          verification_status?: string
+          verified_at?: string | null
+          verified_by?: string | null
         }
         Relationships: [
           {
@@ -275,6 +365,8 @@ export type Database = {
           template_payment_confirmed: string | null
           template_payment_reminder: string | null
           template_pledge_created: string | null
+          template_thank_you_all: string | null
+          thank_you_all_sent_at: string | null
           title: string
           updated_at: string
         }
@@ -295,6 +387,8 @@ export type Database = {
           template_payment_confirmed?: string | null
           template_payment_reminder?: string | null
           template_pledge_created?: string | null
+          template_thank_you_all?: string | null
+          thank_you_all_sent_at?: string | null
           title: string
           updated_at?: string
         }
@@ -315,6 +409,8 @@ export type Database = {
           template_payment_confirmed?: string | null
           template_payment_reminder?: string | null
           template_pledge_created?: string | null
+          template_thank_you_all?: string | null
+          thank_you_all_sent_at?: string | null
           title?: string
           updated_at?: string
         }
@@ -519,6 +615,10 @@ export type Database = {
       }
     }
     Functions: {
+      archive_event_fundraising: {
+        Args: { p_event_id: string }
+        Returns: number
+      }
       can_view_public_pledges: {
         Args: { p_event_id: string }
         Returns: boolean
@@ -535,6 +635,23 @@ export type Database = {
         Returns: undefined
       }
       count_active_sessions: { Args: { p_event_id: string }; Returns: number }
+      find_duplicate_payments: {
+        Args: { p_event_id: string }
+        Returns: {
+          amount: number
+          created_at: string
+          currency: string
+          donor_phone: string
+          email: string
+          group_key: string
+          is_confirmed: boolean
+          name: string
+          payment_method: string
+          payment_reference: string
+          pledge_id: string
+          verification_status: string
+        }[]
+      }
       find_my_pledges: {
         Args: { p_event_id: string; p_search_term: string }
         Returns: {
@@ -608,6 +725,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      set_pledge_verification: {
+        Args: { p_note?: string; p_pledge_id: string; p_status: string }
+        Returns: undefined
+      }
       update_pledge_by_admin: {
         Args: {
           p_amount: number
@@ -627,6 +748,10 @@ export type Database = {
       update_session_activity: {
         Args: { p_session_token: string }
         Returns: undefined
+      }
+      validate_payment_reference: {
+        Args: { p_method: string; p_reference: string }
+        Returns: boolean
       }
     }
     Enums: {
