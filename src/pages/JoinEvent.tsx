@@ -93,6 +93,7 @@ export default function JoinEvent() {
           event_id: activeEvent.id,
           session_token: sessionToken,
           attendee_name: result.data.name,
+          attendee_email: result.data.email,
         });
 
       if (sessionError) throw sessionError;
@@ -104,6 +105,13 @@ export default function JoinEvent() {
         attendeeName: result.data.name,
         attendeeEmail: result.data.email,
       }));
+
+      // Pre-fill the pledge form with the details used to log in
+      localStorage.setItem("donor_info", JSON.stringify({
+        name: result.data.name,
+        email: result.data.email,
+      }));
+
 
       toast.success("Welcome to the fundraising event!");
       navigate(`/event/${activeEvent.id}`);
