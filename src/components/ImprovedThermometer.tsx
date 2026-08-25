@@ -557,20 +557,20 @@ export function ImprovedThermometer({
               >
                 <div className="flex items-center justify-start gap-2">
                   <span className={cn(
-                    "text-xs font-semibold block",
+                    "text-base font-bold tabular-nums block",
                     mark.isGoal 
                       ? "text-red-600" 
                       : mark.isPaid
                       ? "text-emerald-600"
                       : mark.isTotal
                       ? "text-blue-600"
-                      : "text-gray-600"
+                      : "text-gray-700"
                   )}>
                     {mark.labelKES}
                   </span>
-                  {mark.isGoal && <Target className="w-3 h-3 text-red-500" />}
-                  {mark.isPaid && <CheckCircle className="w-3 h-3 text-emerald-500" />}
-                  {mark.isTotal && <TrendingUp className="w-3 h-3 text-blue-500" />}
+                  {mark.isGoal && <Target className="w-4 h-4 text-red-500" />}
+                  {mark.isPaid && <CheckCircle className="w-4 h-4 text-emerald-500" />}
+                  {mark.isTotal && <TrendingUp className="w-4 h-4 text-blue-500" />}
                 </div>
               </div>
             ))}
@@ -579,18 +579,18 @@ export function ImprovedThermometer({
       </div>
 
       {/* Legend */}
-      <div className="flex justify-center gap-6 mt-8">
-        <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-gray-200 shadow-sm">
-          <div className="w-3 h-3 bg-emerald-500 rounded-full"></div>
-          <span className="text-sm font-medium text-gray-700">Paid Pledges</span>
+      <div className="flex flex-wrap justify-center gap-4 sm:gap-6 mt-10">
+        <div className="flex items-center gap-2 bg-white px-4 py-2.5 rounded-xl border border-gray-200 shadow-sm">
+          <div className="w-4 h-4 bg-emerald-500 rounded-full"></div>
+          <span className="text-base font-semibold text-gray-700">Paid Pledges</span>
         </div>
-        <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-gray-200 shadow-sm">
-          <div className="w-3 h-3 bg-amber-400 rounded-full"></div>
-          <span className="text-sm font-medium text-gray-700">Unpaid Pledges</span>
+        <div className="flex items-center gap-2 bg-white px-4 py-2.5 rounded-xl border border-gray-200 shadow-sm">
+          <div className="w-4 h-4 bg-amber-400 rounded-full"></div>
+          <span className="text-base font-semibold text-gray-700">Unpaid Pledges</span>
         </div>
-        <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-gray-200 shadow-sm">
-          <div className="w-4 h-1 border-t-2 border-dashed border-red-500"></div>
-          <span className="text-sm font-medium text-gray-700">Goal Target</span>
+        <div className="flex items-center gap-2 bg-white px-4 py-2.5 rounded-xl border border-gray-200 shadow-sm">
+          <div className="w-5 h-1 border-t-2 border-dashed border-red-500"></div>
+          <span className="text-base font-semibold text-gray-700">Goal Target</span>
         </div>
       </div>
 
@@ -603,7 +603,34 @@ export function ImprovedThermometer({
         .animate-float {
           animation: float 2.5s ease-in-out infinite;
         }
+        @keyframes shimmer {
+          0% { background-position: 200% 0; }
+          100% { background-position: -100% 0; }
+        }
+        .animate-shimmer {
+          animation: shimmer 3.2s linear infinite;
+        }
+        @keyframes mercuryPulse {
+          0%, 100% { filter: brightness(1); }
+          50% { filter: brightness(1.25); }
+        }
+        .animate-mercury-pulse {
+          animation: mercuryPulse 2s ease-in-out infinite;
+        }
+        @keyframes goalGlow {
+          0%, 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0.45); }
+          50% { box-shadow: 0 0 34px 8px rgba(16,185,129,0.55); }
+        }
+        .animate-goal-glow {
+          animation: goalGlow 2.2s ease-in-out infinite;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .animate-float, .animate-shimmer, .animate-mercury-pulse, .animate-goal-glow {
+            animation: none;
+          }
+        }
       `}</style>
+
     </div>
   );
 }
