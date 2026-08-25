@@ -258,9 +258,15 @@ const sw: Dict = {
   "pledge.messagePlaceholder": "Ujumbe wako wa kuunga mkono...",
 };
 
-export const translations: Record<Language, Dict> = { en, it, fr, sw };
+export const translations: Record<Language, Dict> = {
+  en: { ...en, ...appTranslations.en },
+  it: { ...it, ...appTranslations.it },
+  fr: { ...fr, ...appTranslations.fr },
+  sw: { ...sw, ...appTranslations.sw },
+};
 
 
 export function translate(lang: Language, key: string): string {
   return translations[lang]?.[key] ?? translations.en[key] ?? key;
 }
+
