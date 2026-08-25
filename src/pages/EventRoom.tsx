@@ -23,17 +23,25 @@ import { toast } from 'sonner';
 import { formatAmountWithKES } from '@/lib/currencyUtils';
 import { useLanguage } from "@/contexts/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { localizedEventText } from "@/lib/eventText";
 
 interface EventDetails {
   id: string;
   title: string;
   description: string;
+  title_it?: string | null;
+  title_fr?: string | null;
+  title_sw?: string | null;
+  description_it?: string | null;
+  description_fr?: string | null;
+  description_sw?: string | null;
   scheduled_at: string;
   duration_minutes: number;
   goal_amount: number;
   is_active: boolean;
   status: string;
 }
+
 
 interface EventPledge {
   id: string;
