@@ -1,4 +1,7 @@
+import { appTranslations } from "./i18nApp";
+
 export type Language = "en" | "it" | "fr" | "sw";
+
 
 export const LANGUAGES: { code: Language; label: string; flag: string }[] = [
   { code: "en", label: "English", flag: "🇬🇧" },
