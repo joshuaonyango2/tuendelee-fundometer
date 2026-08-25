@@ -309,6 +309,20 @@ export default function EventManagement() {
           <TabsContent value="manual" className="space-y-4">
             <ManualPledgeEntry eventId={eventId!} />
           </TabsContent>
+
+          <TabsContent value="reconciliation" className="space-y-4">
+            {isAdminForEvent ? (
+              <ReconciliationView eventId={eventId!} event={event} onSaved={loadEvent} />
+            ) : (
+              <Card>
+                <CardContent className="p-6">
+                  <p className="text-sm text-muted-foreground">Admin sign-in required for reconciliation.</p>
+                  <Button className="mt-4" onClick={() => navigate('/admin/auth')}>Sign in as Admin</Button>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
         </Tabs>
       </div>
     </div>
