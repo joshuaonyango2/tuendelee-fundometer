@@ -107,7 +107,7 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
   }, []);
   const handleSubmit = async (paymentType: 'immediate' | 'pledge') => {
     if (!formData.name || !formData.email || formData.amount <= 0) {
-      toast.error("Please fill in all required fields");
+      toast.error(t("pledge.requiredFields"));
       return;
     }
 
@@ -149,10 +149,10 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
       <CardHeader className="bg-gradient-primary text-white rounded-t-lg">
         <CardTitle className="flex items-center gap-2">
           <Heart className="w-5 h-5" />
-          Make Your Pledge
+          {t("pledge.formTitle")}
         </CardTitle>
         <CardDescription className="text-primary-foreground/90">
-          Support bright students in need of scholarships
+          {t("pledge.formSubtitle")}
         </CardDescription>
       </CardHeader>
       <CardContent className="pt-6">
@@ -232,7 +232,7 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
               onValueChange={(value) => setFormData({ ...formData, paymentMethod: value })}
             >
               <SelectTrigger className="border-primary/20 focus:border-primary">
-                <SelectValue placeholder="Select payment method" />
+                <SelectValue placeholder={t("pledge.selectMethod")} />
               </SelectTrigger>
                 <SelectContent className="z-50 bg-background">
                   {availableMethods.map((method) => (
@@ -254,10 +254,10 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="z-50 bg-background">
-                <SelectItem value="7">7 days</SelectItem>
-                <SelectItem value="14">14 days</SelectItem>
-                <SelectItem value="21">21 days</SelectItem>
-                <SelectItem value="30">30 days (1 month)</SelectItem>
+                <SelectItem value="7">7 {t("pledge.days")}</SelectItem>
+                <SelectItem value="14">14 {t("pledge.days")}</SelectItem>
+                <SelectItem value="21">21 {t("pledge.days")}</SelectItem>
+                <SelectItem value="30">{t("pledge.month")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -287,10 +287,10 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
               {isSubmitting ? (
                 <span className="flex items-center gap-2">
                   <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Processing...
+                  {t("pledge.processing")}
                 </span>
               ) : (
-                "Pay Now"
+                t("pledge.payNow")
               )}
             </Button>
 
@@ -303,12 +303,12 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
               {isSubmitting ? (
                 <span className="flex items-center gap-2">
                   <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Processing...
+                  {t("pledge.processing")}
                 </span>
               ) : (
                 <span className="flex items-center gap-2">
                   <Heart className="w-5 h-5" />
-                  Pledge Now
+                  {t("pledge.pledgeNow")}
                 </span>
               )}
             </Button>

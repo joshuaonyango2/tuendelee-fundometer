@@ -1,4 +1,7 @@
+import { appTranslations } from "./i18nApp";
+
 export type Language = "en" | "it" | "fr" | "sw";
+
 
 export const LANGUAGES: { code: Language; label: string; flag: string }[] = [
   { code: "en", label: "English", flag: "🇬🇧" },
@@ -258,9 +261,15 @@ const sw: Dict = {
   "pledge.messagePlaceholder": "Ujumbe wako wa kuunga mkono...",
 };
 
-export const translations: Record<Language, Dict> = { en, it, fr, sw };
+export const translations: Record<Language, Dict> = {
+  en: { ...en, ...appTranslations.en },
+  it: { ...it, ...appTranslations.it },
+  fr: { ...fr, ...appTranslations.fr },
+  sw: { ...sw, ...appTranslations.sw },
+};
 
 
 export function translate(lang: Language, key: string): string {
   return translations[lang]?.[key] ?? translations.en[key] ?? key;
 }
+

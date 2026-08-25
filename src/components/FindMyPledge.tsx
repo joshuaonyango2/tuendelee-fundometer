@@ -17,6 +17,7 @@ import { Search, CreditCard, Clock, CheckCircle2, ArrowRight, Download } from "l
 import { supabase } from "@/integrations/supabase/client";
 import { PaymentConfirmation } from "./PaymentConfirmation";
 import { PledgeReceipt } from "./PledgeReceipt";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface FindMyPledgeProps {
   eventId: string;
@@ -39,6 +40,7 @@ interface Pledge {
 }
 
 export function FindMyPledge({ eventId }: FindMyPledgeProps) {
+  const { t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [isSearching, setIsSearching] = useState(false);
@@ -160,7 +162,7 @@ export function FindMyPledge({ eventId }: FindMyPledgeProps) {
     setSelectedPaymentMethod(null);
     // Refresh the pledges list
     handleSearch();
-    toast.success("Updated successfully! Thank you for supporting the Tuendelee Foundation. Let's progress together! 🎉");
+    toast.success(`${t("find.updated")} 🎉`);
   };
 
   const formatDate = (dateString: string) => {
@@ -191,7 +193,7 @@ export function FindMyPledge({ eventId }: FindMyPledgeProps) {
       <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg py-3 px-4 shadow-md">
         <p className="text-sm font-bold flex items-center justify-center gap-2">
           <CreditCard className="w-4 h-4" />
-          TO PAY AN EXISTING PLEDGE, CLICK BELOW
+          {t("find.banner")}
         </p>
       </div>
       
@@ -203,15 +205,15 @@ export function FindMyPledge({ eventId }: FindMyPledgeProps) {
             className="gap-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-base py-3 px-6 shadow-lg hover:shadow-xl transition-all duration-200"
           >
             <Search className="w-5 h-5" />
-            Find & Pay My Pledge
+            {t("find.button")}
             <ArrowRight className="w-4 h-4" />
           </Button>
         </DialogTrigger>
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold">Find & Pay Your Pledge</DialogTitle>
+            <DialogTitle className="text-xl font-bold">{t("find.dialogTitle")}</DialogTitle>
             <DialogDescription className="text-base">
-              Search using your email, full name, or phone number to find and complete payment for your existing pledges
+              {t("find.dialogDescription")}
             </DialogDescription>
           </DialogHeader>
 
@@ -221,7 +223,7 @@ export function FindMyPledge({ eventId }: FindMyPledgeProps) {
                 <div className="flex gap-4">
                   <div className="flex-1 space-y-2">
                     <Label htmlFor="search-term" className="text-base font-medium">
-                      Search by Email, Name, or Phone
+                      {t("find.searchLabel")}
                     </Label>
                     <Input
                       id="search-term"
@@ -240,18 +242,18 @@ export function FindMyPledge({ eventId }: FindMyPledgeProps) {
                       size="lg"
                       className="h-12 px-6"
                     >
-                      {isSearching ? "Searching..." : "Search"}
+                      {isSearching ? t("find.searching") : t("find.search")}
                     </Button>
                   </div>
                 </div>
                 <p className="text-sm text-muted-foreground text-center">
-                  Enter the email, name, or phone number you used when making your pledge
+                  {t("find.searchHint")}
                 </p>
               </div>
 
               {pledges.length > 0 && (
                 <div className="space-y-4">
-                  <h3 className="font-semibold text-lg">Your Pledges</h3>
+                  <h3 className="font-semibold text-lg">{t("find.yourPledges")}</h3>
                   {pledges.map((pledge) => {
                     const daysRemaining = getDaysRemaining(pledge.payment_deadline);
                     return (
@@ -263,19 +265,19 @@ export function FindMyPledge({ eventId }: FindMyPledgeProps) {
                                 {formatAmount(pledge.amount, pledge.currency)}
                               </CardTitle>
                               <CardDescription>
-                                Pledged on {formatDate(pledge.created_at)}
+                                {t("find.pledgedOn")} {formatDate(pledge.created_at)}
                               </CardDescription>
                             </div>
                             <Badge variant={pledge.is_confirmed ? "default" : "secondary"} className="text-sm">
                               {pledge.is_confirmed ? (
                                 <span className="flex items-center gap-1">
                                   <CheckCircle2 className="w-4 h-4" />
-                                  Paid
+                                  {t("find.paid")}
                                 </span>
                               ) : (
                                 <span className="flex items-center gap-1">
                                   <Clock className="w-4 h-4" />
-                                  Pending
+                                  {t("find.pending")}
                                 </span>
                               )}
                             </Badge>
@@ -292,9 +294,9 @@ export function FindMyPledge({ eventId }: FindMyPledgeProps) {
                             <>
                               {daysRemaining !== null && (
                                 <p className="text-sm">
-                                  <span className="font-medium">Payment due in:</span>{" "}
+                                  <span className="font-medium">{t("find.dueIn")}</span>{" "}
                                   <span className={daysRemaining <= 3 ? "text-red-600 font-semibold" : "text-orange-600"}>
-                                    {daysRemaining > 0 ? `${daysRemaining} days` : "Overdue"}
+                                    {daysRemaining > 0 ? `${daysRemaining} ${t("find.days")}` : t("find.overdue")}
                                   </span>
                                 </p>
                               )}
@@ -305,7 +307,7 @@ export function FindMyPledge({ eventId }: FindMyPledgeProps) {
                                 size="lg"
                               >
                                 <CreditCard className="w-5 h-5" />
-                                Complete Payment
+                                {t("find.completePayment")}
                               </Button>
                             </>
                           )}
@@ -313,7 +315,7 @@ export function FindMyPledge({ eventId }: FindMyPledgeProps) {
                           {pledge.is_confirmed && (
                             <div className="space-y-3">
                               <p className="text-sm text-green-700 font-medium">
-                                ✓ Thank you for your payment!
+                                ✓ {t("find.thankYouPaid")}
                               </p>
                               <PledgeReceipt pledge={pledge} eventTitle={eventTitle} />
                             </div>
@@ -328,9 +330,9 @@ export function FindMyPledge({ eventId }: FindMyPledgeProps) {
           ) : showPaymentMethodSelector && selectedPledge ? (
             <div className="space-y-6">
               <div>
-                <h3 className="font-semibold text-lg mb-2">Select Payment Method</h3>
+                <h3 className="font-semibold text-lg mb-2">{t("find.selectMethod")}</h3>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Paying: {formatAmount(selectedPledge.amount, selectedPledge.currency)}
+                  {t("find.paying")} {formatAmount(selectedPledge.amount, selectedPledge.currency)}
                 </p>
               </div>
 
@@ -372,14 +374,14 @@ export function FindMyPledge({ eventId }: FindMyPledgeProps) {
                     setSelectedPaymentMethod(null);
                   }}
                 >
-                  Cancel
+                  {t("find.cancel")}
                 </Button>
                 <Button 
                   className="flex-1 h-11"
                   onClick={handleProceedToPayment}
                   disabled={!selectedPaymentMethod}
                 >
-                  Continue to Payment
+                  {t("find.continue")}
                 </Button>
               </div>
             </div>

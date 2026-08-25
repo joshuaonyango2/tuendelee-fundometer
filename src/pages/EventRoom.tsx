@@ -21,6 +21,8 @@ import { formatDistanceToNow } from "date-fns";
 import { currencyService } from "@/services/currencyService";
 import { toast } from 'sonner';
 import { formatAmountWithKES } from '@/lib/currencyUtils';
+import { useLanguage } from "@/contexts/LanguageContext";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 interface EventDetails {
   id: string;
@@ -49,6 +51,7 @@ interface EventPledge {
 export default function EventRoom() {
   const { eventId } = useParams();
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [event, setEvent] = useState<EventDetails | null>(null);
   const [activeUsers, setActiveUsers] = useState(0);
   const [isEventLoading, setIsEventLoading] = useState(true);
@@ -361,6 +364,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-3xl font-bold">{event.title}</CardTitle>
                   <div className="flex items-center gap-2">
+                    <LanguageSwitcher />
                     <HelpDialog />
                     <ConnectionStatus 
                       isConnected={connectionStatus.isConnected}
@@ -371,15 +375,15 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
                         className="bg-green-500 hover:bg-green-600 text-white cursor-pointer"
                         onClick={() => window.open(liveMeeting.join_url || liveMeeting.meeting_url, '_blank', 'noopener,noreferrer')}
                       >
-                        Online
+                        {t("room.online")}
                       </Badge>
                     ) : (
                       <Badge variant="secondary" className="bg-red-500 text-white">
-                        Offline
+                        {t("room.offline")}
                       </Badge>
                     )}
                     <Badge variant={event.is_active ? "default" : "secondary"}>
-                      {event.is_active ? "Live" : "Ended"}
+                      {event.is_active ? t("room.live") : t("room.ended")}
                     </Badge>
                   </div>
                 </div>
@@ -399,7 +403,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
                   <div className="flex items-center gap-2">
                     <Calendar className="h-5 w-5 text-primary" />
                     <div>
-                      <p className="text-sm text-muted-foreground">Date</p>
+                      <p className="text-sm text-muted-foreground">{t("room.date")}</p>
                       <p className="font-semibold">
                         {new Date(event.scheduled_at).toLocaleDateString()}
                       </p>
@@ -408,7 +412,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
                   <div className="flex items-center gap-2">
                     <Clock className="h-5 w-5 text-primary" />
                     <div>
-                      <p className="text-sm text-muted-foreground">Time</p>
+                      <p className="text-sm text-muted-foreground">{t("room.time")}</p>
                       <p className="font-semibold">
                         {new Date(event.scheduled_at).toLocaleTimeString([], { 
                           hour: '2-digit', 
@@ -420,15 +424,15 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
                   <div className="flex items-center gap-2">
                     <Users className="h-5 w-5 text-primary" />
                     <div>
-                      <p className="text-sm text-muted-foreground">Participants</p>
+                      <p className="text-sm text-muted-foreground">{t("room.participants")}</p>
                       <p className="font-semibold">{activeUsers}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <Clock className="h-5 w-5 text-primary" />
                     <div>
-                      <p className="text-sm text-muted-foreground">Duration</p>
-                      <p className="font-semibold">{event.duration_minutes} min</p>
+                      <p className="text-sm text-muted-foreground">{t("room.duration")}</p>
+                      <p className="font-semibold">{event.duration_minutes} {t("room.minutes")}</p>
                     </div>
                   </div>
                 </div>
@@ -445,14 +449,14 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
                           <div className="flex items-center gap-3">
                             <Video className="h-6 w-6 text-white" />
                             <div className="text-left">
-                              <h2 className="font-semibold text-white text-lg">Join Fundraising Meeting</h2>
+                              <h2 className="font-semibold text-white text-lg">{t("room.joinMeeting")}</h2>
                               <p className="text-xs text-white/70">
-                                {liveMeeting.meeting_platforms?.display_name || 'Virtual Meeting'}
+                                {liveMeeting.meeting_platforms?.display_name || t("room.virtualMeeting")}
                               </p>
                             </div>
                           </div>
                           <Badge className="bg-green-500 text-white">
-                            {liveMeeting.status === 'active' ? 'Live Now' : 'Scheduled'}
+                            {liveMeeting.status === 'active' ? t("room.liveNow") : t("room.scheduled")}
                           </Badge>
                         </div>
                          <div className="w-full bg-white/10 rounded p-3 text-left text-xs text-white/90 space-y-2">
@@ -461,25 +465,25 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
                           ) : (
                             <>
                               <div className="flex justify-between">
-                                <span className="font-medium">Meeting ID:</span>
+                                <span className="font-medium">{t("room.meetingId")}:</span>
                                 <span className="font-mono">{liveMeeting.meeting_id}</span>
                               </div>
                               {liveMeeting.passcode && (
                                 <div className="flex justify-between">
-                                  <span className="font-medium">Passcode:</span>
+                                  <span className="font-medium">{t("room.passcode")}:</span>
                                   <span className="font-mono font-semibold">{liveMeeting.passcode}</span>
                                 </div>
                               )}
                               {liveMeeting.start_time && (
                                 <div className="flex justify-between">
-                                  <span className="font-medium">Time:</span>
+                                  <span className="font-medium">{t("room.time")}:</span>
                                   <span>{new Date(liveMeeting.start_time).toLocaleString()}</span>
                                 </div>
                               )}
                             </>
                           )}
                         </div>
-                        <p className="text-xs text-white/80 text-center">Click to open meeting in new tab</p>
+                        <p className="text-xs text-white/80 text-center">{t("room.openNewTab")}</p>
                       </div>
                     </Button>
                   ) : (
@@ -488,11 +492,11 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
                         <div className="flex items-center gap-3">
                           <Video className="h-6 w-6 text-muted-foreground" />
                           <div className="text-left">
-                            <h2 className="font-semibold text-muted-foreground text-lg">Fundraising Room</h2>
-                            <p className="text-xs text-muted-foreground/70">No meeting scheduled yet</p>
+                            <h2 className="font-semibold text-muted-foreground text-lg">{t("room.fundraisingRoom")}</h2>
+                            <p className="text-xs text-muted-foreground/70">{t("room.noMeeting")}</p>
                           </div>
                         </div>
-                        <Badge variant="secondary" className="bg-red-500 text-white">Offline</Badge>
+                        <Badge variant="secondary" className="bg-red-500 text-white">{t("room.offline")}</Badge>
                       </div>
                     </div>
                   )}
@@ -505,7 +509,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Target className="h-6 w-6 text-success" />
-                  Fundraising Progress
+                  {t("room.progress")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -536,7 +540,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
               <AccordionItem value="donations" className="border rounded-lg">
                 <Card className="border-0">
                   <AccordionTrigger className="px-6 py-4 hover:no-underline">
-                    <CardTitle className="text-lg">Recent Donations</CardTitle>
+                    <CardTitle className="text-lg">{t("room.recentDonations")}</CardTitle>
                   </AccordionTrigger>
                   <AccordionContent>
                     <CardContent className="pt-0">
@@ -546,7 +550,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
                         <ErrorFallback error={pledgesError} onRetry={reloadPledges} />
                       ) : realtimePledges.length === 0 ? (
                         <p className="text-center text-muted-foreground py-8">
-                          No donations yet. Be the first to contribute!
+                          {t("room.noDonations")}
                         </p>
                       ) : (
                         <>
@@ -580,7 +584,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
                           {realtimePledges.length > 5 && (
                             <div className="text-center mt-2 pt-2 border-t">
                               <p className="text-xs text-muted-foreground">
-                                Scroll to see all {realtimePledges.length} donations
+                                {t("room.scrollAll")} ({realtimePledges.length})
                               </p>
                             </div>
                           )}
@@ -595,7 +599,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
               {event.is_active ? (
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-lg">Make Your Pledge</CardTitle>
+                    <CardTitle className="text-lg">{t("room.makePledge")}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <PledgeForm onSubmit={handlePledgeSubmit} />
@@ -605,8 +609,8 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
                 <Card>
                   <CardContent className="text-center py-8">
                     <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <h3 className="font-semibold text-lg mb-2">Event Has Ended</h3>
-                    <p className="text-muted-foreground">This fundraising event is no longer accepting pledges.</p>
+                    <h3 className="font-semibold text-lg mb-2">{t("room.eventEnded")}</h3>
+                    <p className="text-muted-foreground">{t("room.eventEndedBody")}</p>
                   </CardContent>
                 </Card>
               )}
@@ -617,7 +621,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
         {/* Leave Event Button */}
         <div className="fixed bottom-4 right-4">
           <Button variant="outline" onClick={handleLeaveEvent}>
-            Leave Event
+            {t("room.leave")}
           </Button>
         </div>
       </div>
@@ -626,9 +630,9 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
       <Dialog open={showPaymentDialog} onOpenChange={setShowPaymentDialog}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>Complete Your Donation</DialogTitle>
+            <DialogTitle>{t("room.completeDonation")}</DialogTitle>
             <DialogDescription>
-              Choose your preferred payment method to complete your contribution.
+              {t("room.completeDonationBody")}
             </DialogDescription>
           </DialogHeader>
           {currentPledge && currentPledgeId && (

@@ -13,6 +13,7 @@ import mpesaLogo from "@/assets/mpesa-logo.png";
 import paypalLogo from "@/assets/paypal-logo.png";
 import benevityLogo from "@/assets/benevity-logo.png";
 import { formatAmountWithKES } from "@/lib/currencyUtils";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface PaymentConfirmationProps {
   pledgeId: string;
@@ -31,6 +32,7 @@ export function PaymentConfirmation({
   onBack,
   onComplete 
 }: PaymentConfirmationProps) {
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({
     phone: '',
     reference: '',
@@ -228,11 +230,11 @@ export function PaymentConfirmation({
           className="w-fit mb-2"
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Back
+          {t("pay.back")}
         </Button>
-        <CardTitle>Confirm Your Payment</CardTitle>
+        <CardTitle>{t("pay.title")}</CardTitle>
         <CardDescription>
-          Please follow the instructions and confirm your payment
+          {t("pay.subtitle")}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -240,7 +242,7 @@ export function PaymentConfirmation({
 
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="phone">Phone Number *</Label>
+            <Label htmlFor="phone">{t("pay.phone")} *</Label>
             <Input
               id="phone"
               type="tel"
@@ -253,7 +255,7 @@ export function PaymentConfirmation({
 
           {paymentMethod.type === 'mpesa' && (
             <div className="space-y-2">
-              <Label htmlFor="mpesaCode">M-Pesa Transaction Code *</Label>
+              <Label htmlFor="mpesaCode">{t("pay.mpesaCode")} *</Label>
               <Input
                 id="mpesaCode"
                 value={formData.mpesaCode}
@@ -266,12 +268,12 @@ export function PaymentConfirmation({
 
           {paymentMethod.type !== 'mpesa' && (
             <div className="space-y-2">
-              <Label htmlFor="reference">Transaction Reference (Optional)</Label>
+              <Label htmlFor="reference">{t("pay.reference")}</Label>
               <Input
                 id="reference"
                 value={formData.reference}
                 onChange={(e) => setFormData({ ...formData, reference: e.target.value })}
-                placeholder="Enter transaction reference"
+                placeholder={t("pay.referencePlaceholder")}
               />
             </div>
           )}
@@ -282,11 +284,11 @@ export function PaymentConfirmation({
             className="w-full"
           >
             {isSubmitting ? (
-              'Confirming...'
+              t("pay.confirming")
             ) : (
               <>
                 <CheckCircle className="mr-2 h-4 w-4" />
-                Confirm Payment
+                {t("pay.confirm")}
               </>
             )}
           </Button>
