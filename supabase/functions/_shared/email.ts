@@ -96,3 +96,11 @@ export function detailsTable(rows: [string, string][]): string {
       .join("")}
   </table>`;
 }
+
+/** Builds a formal "Name <email>" From header from admin-provided values. */
+export function senderAddress(name?: string | null, email?: string | null): string | undefined {
+  const trimmedEmail = (email ?? "").trim();
+  if (!trimmedEmail || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(trimmedEmail)) return undefined;
+  const trimmedName = (name ?? "").trim().replace(/["<>]/g, "");
+  return trimmedName ? `${trimmedName} <${trimmedEmail}>` : trimmedEmail;
+}
