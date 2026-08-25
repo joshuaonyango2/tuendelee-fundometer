@@ -18,6 +18,7 @@ export async function sendEmail(
   to: string,
   subject: string,
   html: string,
+  from?: string,
 ): Promise<SendResult> {
   const lovableKey = Deno.env.get("LOVABLE_API_KEY");
   const resendKey = Deno.env.get("RESEND_API_KEY");
@@ -34,8 +35,9 @@ export async function sendEmail(
       Authorization: `Bearer ${lovableKey}`,
       "X-Connection-Api-Key": resendKey,
     },
-    body: JSON.stringify({ from: FROM_ADDRESS, to: [to], subject, html }),
+    body: JSON.stringify({ from: from || FROM_ADDRESS, to: [to], subject, html }),
   });
+
 
   if (!response.ok) {
     const details = await response.text();
@@ -93,4 +95,12 @@ export function detailsTable(rows: [string, string][]): string {
       )
       .join("")}
   </table>`;
+}
+
+/** Builds a formal "Name <email>" From header from admin-provided values. */
+export function senderAddress(name?: string | null, email?: string | null): string | undefined {
+  const trimmedEmail = (email ?? "").trim();
+  if (!trimmedEmail || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(trimmedEmail)) return undefined;
+  const trimmedName = (name ?? "").trim().replace(/["<>]/g, "");
+  return trimmedName ? `${trimmedName} <${trimmedEmail}>` : trimmedEmail;
 }

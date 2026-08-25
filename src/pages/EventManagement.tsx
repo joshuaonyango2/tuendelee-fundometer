@@ -5,13 +5,15 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { ArrowLeft, Trash2, TrendingUp, Users, FileText, Plus, Video, Languages } from 'lucide-react';
+import { ArrowLeft, Trash2, TrendingUp, Users, FileText, Plus, Video, Languages, Scale } from 'lucide-react';
 import { EventThermometer } from '@/components/admin/EventThermometer';
 import { ParticipantsView } from '@/components/admin/ParticipantsView';
 import { PlatformCredentialsManager } from '@/components/admin/PlatformCredentialsManager';
 import { PledgeReportsView } from '@/components/admin/PledgeReportsView';
 import { ManualPledgeEntry } from '@/components/admin/ManualPledgeEntry';
 import { EventContentEditor } from '@/components/admin/EventContentEditor';
+import { ReconciliationView } from '@/components/admin/ReconciliationView';
+
 
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
@@ -197,11 +199,16 @@ export default function EventManagement() {
               <Plus className="w-4 h-4 mr-2" />
               Add Pledge
             </TabsTrigger>
+            <TabsTrigger value="reconciliation">
+              <Scale className="w-4 h-4 mr-2" />
+              Reconciliation
+            </TabsTrigger>
             <TabsTrigger value="content">
               <Languages className="w-4 h-4 mr-2" />
               Event Text
             </TabsTrigger>
           </TabsList>
+
 
           <TabsContent value="thermometer" className="space-y-4">
             <EventThermometer eventId={eventId!} />
@@ -302,6 +309,20 @@ export default function EventManagement() {
           <TabsContent value="manual" className="space-y-4">
             <ManualPledgeEntry eventId={eventId!} />
           </TabsContent>
+
+          <TabsContent value="reconciliation" className="space-y-4">
+            {isAdminForEvent ? (
+              <ReconciliationView eventId={eventId!} event={event} onSaved={loadEvent} />
+            ) : (
+              <Card>
+                <CardContent className="p-6">
+                  <p className="text-sm text-muted-foreground">Admin sign-in required for reconciliation.</p>
+                  <Button className="mt-4" onClick={() => navigate('/admin/auth')}>Sign in as Admin</Button>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
         </Tabs>
       </div>
     </div>
