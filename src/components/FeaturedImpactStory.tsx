@@ -201,7 +201,8 @@ export function FeaturedImpactStory({ onDonateClick }: FeaturedImpactStoryProps)
           {onDonateClick && (
             <Button size="lg" className="w-full sm:w-auto" onClick={onDonateClick}>
               <Heart className="w-4 h-4 mr-2" />
-              {t("hero.cta")}
+              {t("home.ctaButton")}
+
             </Button>
           )}
         </CardContent>
