@@ -48,8 +48,11 @@ export default function CreateMeetingDialog({
     title: `${eventTitle} - Virtual Meeting`,
     description: "",
     start_time: "",
-    duration_minutes: 60
+    duration_minutes: 60,
+    external_url: "",
+    external_passcode: ""
   });
+
 
   useEffect(() => {
     if (open) {
