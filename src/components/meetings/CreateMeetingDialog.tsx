@@ -417,6 +417,29 @@ export default function CreateMeetingDialog({
                 </div>
 
                 <div className="space-y-2">
+                  <Label htmlFor="external_url">Meeting Link (paste your Zoom / Meet / Teams link)</Label>
+                  <Input
+                    id="external_url"
+                    value={meetingDetails.external_url}
+                    onChange={(e) => setMeetingDetails({ ...meetingDetails, external_url: e.target.value })}
+                    placeholder="https://us02web.zoom.us/j/1234567890?pwd=..."
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Donors will be taken straight to this link in a new tab from the Fundraising Room.
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="external_passcode">Meeting Passcode (optional)</Label>
+                  <Input
+                    id="external_passcode"
+                    value={meetingDetails.external_passcode}
+                    onChange={(e) => setMeetingDetails({ ...meetingDetails, external_passcode: e.target.value })}
+                    placeholder="e.g. 123456"
+                  />
+                </div>
+
+
                   <Label htmlFor="description">Description (Optional)</Label>
                   <Textarea
                     id="description"
