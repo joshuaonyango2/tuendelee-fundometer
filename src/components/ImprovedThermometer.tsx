@@ -184,8 +184,17 @@ export function ImprovedThermometer({
   const getMarkPosition = (valueUSD: number) => (valueUSD / maxCalibration) * 100;
 
   const formatAmount = (amount: number) => {
-    return new Intl.NumberFormat('en-US').format(amount);
+    return new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(Math.round(amount));
   };
+
+  // Compact formatter keeps big numbers from overflowing the cards
+  const formatCompact = (amount: number) => {
+    const n = Math.round(amount);
+    if (Math.abs(n) >= 1_000_000) return `${(n / 1_000_000).toFixed(2)}M`;
+    if (Math.abs(n) >= 100_000) return `${(n / 1_000).toFixed(0)}K`;
+    return new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(n);
+  };
+
 
   const totalPledgedPercentage = goalAmountUSD > 0 ? (totalPledgedUSD / goalAmountUSD) * 100 : 0;
   const paidPercentage = goalAmountUSD > 0 ? (paidAmountUSD / goalAmountUSD) * 100 : 0;
@@ -198,89 +207,117 @@ export function ImprovedThermometer({
   return (
     <div className={cn("w-full max-w-7xl mx-auto py-8 px-4", className)}>
       <p className="sr-only" role="status" aria-live="polite">{progressLabel}</p>
-      {/* Summary Cards - Now 4 cards in 2x2 grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-        {/* Target Goal Card */}
-        <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-2xl p-6 shadow-2xl transform hover:scale-105 transition-transform duration-300">
-          <div className="text-center space-y-3">
-            <div className="flex items-center justify-center gap-3">
-              <Trophy className="w-6 h-6" />
-              <h3 className="text-lg font-bold">Campaign Goal</h3>
-            </div>
-            <p className="text-3xl font-bold">${formatAmount(goalAmountUSD)}</p>
-            <p className="text-purple-100">KSh {formatAmount(goalAmountUSD * exchangeRate)}</p>
-            <div className="pt-3">
-              <p className="text-purple-200 text-sm">Target Amount</p>
-              <p className="text-2xl font-bold">100%</p>
-            </div>
-          </div>
-        </div>
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 sm:gap-6 mb-12">
+        {[
+          {
+            title: 'Campaign Goal',
+            Icon: Trophy,
+            gradient: 'from-purple-500 to-purple-700',
+            usd: goalAmountUSD,
+            kes: goalAmountUSD * exchangeRate,
+            subLabel: 'Target Amount',
+            subValue: '100%',
+            tint: 'text-purple-100',
+          },
+          {
+            title: 'Total Pledged',
+            Icon: Target,
+            gradient: 'from-blue-500 to-blue-700',
+            usd: totalPledgedUSD,
+            kes: totalPledgedKES,
+            subLabel: 'Of Goal',
+            subValue: `${totalPledgedPercentage.toFixed(1)}%`,
+            tint: 'text-blue-100',
+          },
+          {
+            title: 'Paid Pledges',
+            Icon: CheckCircle,
+            gradient: 'from-emerald-500 to-emerald-700',
+            usd: displayPaidUSD,
+            kes: displayPaidKES,
+            subLabel: 'Of Goal',
+            subValue: `${paidPercentage.toFixed(1)}%`,
+            tint: 'text-emerald-100',
+          },
+          {
+            title: 'Still Needed',
+            Icon: ArrowUp,
+            gradient: 'from-orange-500 to-orange-700',
+            usd: remainingAmountUSD,
+            kes: remainingAmountKES,
+            subLabel: 'To Reach Goal',
+            subValue: `${remainingPercentage.toFixed(1)}%`,
+            tint: 'text-orange-100',
+          },
+        ].map(({ title, Icon, gradient, usd, kes, subLabel, subValue, tint }) => (
+          <div
+            key={title}
+            className={cn(
+              'relative overflow-hidden rounded-3xl p-6 text-white shadow-xl ring-1 ring-white/20',
+              'bg-gradient-to-br transition-transform duration-300 hover:-translate-y-1 hover:shadow-2xl',
+              gradient
+            )}
+          >
+            <div className="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-white/10 blur-xl" />
+            <div className="relative flex flex-col items-center text-center">
+              <div className="flex items-center justify-center gap-2 min-w-0">
+                <Icon className="h-6 w-6 shrink-0" />
+                <h3 className="text-xl font-extrabold tracking-tight leading-tight">{title}</h3>
+              </div>
 
-        {/* Total Pledged Card */}
-        <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-2xl p-6 shadow-2xl transform hover:scale-105 transition-transform duration-300">
-          <div className="text-center space-y-3">
-            <div className="flex items-center justify-center gap-3">
-              <Target className="w-6 h-6" />
-              <h3 className="text-lg font-bold">Total Pledged</h3>
-            </div>
-            <p className="text-3xl font-bold">${formatAmount(totalPledgedUSD)}</p>
-            <p className="text-blue-100">KSh {formatAmount(totalPledgedKES)}</p>
-            <div className="pt-3">
-              <p className="text-blue-200 text-sm">Of Goal</p>
-              <p className="text-2xl font-bold">{totalPledgedPercentage.toFixed(1)}%</p>
-            </div>
-          </div>
-        </div>
+              <p className="mt-4 w-full text-[clamp(1.75rem,4.2vw,2.75rem)] font-black leading-none tabular-nums tracking-tight">
+                ${formatCompact(usd)}
+              </p>
+              <p className={cn('mt-2 w-full text-base font-semibold tabular-nums leading-snug', tint)}>
+                KSh {formatCompact(kes)}
+              </p>
 
-        {/* Paid Pledges Card */}
-        <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 text-white rounded-2xl p-6 shadow-2xl transform hover:scale-105 transition-transform duration-300">
-          <div className="text-center space-y-3">
-            <div className="flex items-center justify-center gap-3">
-              <CheckCircle className="w-6 h-6" />
-              <h3 className="text-lg font-bold">Paid Pledges</h3>
-            </div>
-            <p className="text-3xl font-bold">${formatAmount(displayPaidUSD)}</p>
-            <p className="text-emerald-100">KSh {formatAmount(displayPaidKES)}</p>
-            <div className="pt-3">
-              <p className="text-emerald-200 text-sm">Of Goal</p>
-              <p className="text-2xl font-bold">{paidPercentage.toFixed(1)}%</p>
+              <div className="mt-5 w-full border-t border-white/25 pt-4">
+                <p className="text-sm font-medium uppercase tracking-wide text-white/80">{subLabel}</p>
+                <p className="mt-1 text-3xl font-black tabular-nums leading-none">{subValue}</p>
+              </div>
             </div>
           </div>
-        </div>
+        ))}
+      </div>
 
-        {/* Remaining Needed Card */}
-        <div className="bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-2xl p-6 shadow-2xl transform hover:scale-105 transition-transform duration-300">
-          <div className="text-center space-y-3">
-            <div className="flex items-center justify-center gap-3">
-              <ArrowUp className="w-6 h-6" />
-              <h3 className="text-lg font-bold">Still Needed</h3>
-            </div>
-            <p className="text-3xl font-bold">${formatAmount(remainingAmountUSD)}</p>
-            <p className="text-orange-100">KSh {formatAmount(remainingAmountKES)}</p>
-            <div className="pt-3">
-              <p className="text-orange-200 text-sm">To Reach Goal</p>
-              <p className="text-2xl font-bold">{remainingPercentage.toFixed(1)}%</p>
-            </div>
-          </div>
-        </div>
+      {/* Big live progress banner */}
+      <div className="mx-auto mb-10 max-w-3xl rounded-3xl border border-primary/20 bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10 px-6 py-5 text-center shadow-md">
+        <p className="text-base font-semibold uppercase tracking-widest text-muted-foreground">Live Progress</p>
+        <p className="mt-1 text-[clamp(2.25rem,7vw,4rem)] font-black leading-none tabular-nums text-foreground">
+          {totalPledgedPercentage.toFixed(1)}%
+        </p>
+        <p className="mt-2 text-lg font-semibold text-foreground/80">
+          {totalPledgedPercentage >= 100
+            ? '🎉 Goal reached — thank you! Every extra gift goes further.'
+            : totalPledgedPercentage >= 75
+            ? '🔥 So close! Your gift can push the mercury to the top.'
+            : totalPledgedPercentage >= 50
+            ? '💪 Past halfway — add yours and watch it rise.'
+            : totalPledgedPercentage >= 25
+            ? '🚀 Momentum is building — make the level jump.'
+            : '🌟 Be the spark — your pledge lifts the thermometer now.'}
+        </p>
       </div>
 
       {/* Currency Headers */}
-      <div className="flex justify-center items-center gap-16 mb-6">
+      <div className="flex justify-center items-center gap-10 sm:gap-16 mb-6">
         <div className="lg:w-48 text-center">
-          <div className="flex items-center justify-end gap-2 text-blue-600 font-bold">
-            <DollarSign className="w-5 h-5" />
-            <span className="text-lg">US Dollars</span>
+          <div className="flex items-center justify-center lg:justify-end gap-2 text-blue-600 font-bold">
+            <DollarSign className="w-6 h-6" />
+            <span className="text-xl">US Dollars</span>
           </div>
         </div>
-        <div className="w-16"></div>
+        <div className="hidden lg:block w-16" />
         <div className="lg:w-48 text-center">
-          <div className="flex items-center justify-start gap-2 text-green-600 font-bold">
-            <TrendingUp className="w-5 h-5" />
-            <span className="text-lg">Kenya Shillings</span>
+          <div className="flex items-center justify-center lg:justify-start gap-2 text-green-600 font-bold">
+            <TrendingUp className="w-6 h-6" />
+            <span className="text-xl">Kenya Shillings</span>
           </div>
         </div>
       </div>
+
 
       {/* Enhanced Thermometer */}
       <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-16">
@@ -305,22 +342,23 @@ export function ImprovedThermometer({
                 }}
               >
                 <div className="flex items-center justify-end gap-2">
-                  {mark.isGoal && <Target className="w-3 h-3 text-red-500" />}
-                  {mark.isPaid && <CheckCircle className="w-3 h-3 text-emerald-500" />}
-                  {mark.isTotal && <TrendingUp className="w-3 h-3 text-blue-500" />}
+                  {mark.isGoal && <Target className="w-4 h-4 text-red-500" />}
+                  {mark.isPaid && <CheckCircle className="w-4 h-4 text-emerald-500" />}
+                  {mark.isTotal && <TrendingUp className="w-4 h-4 text-blue-500" />}
                   <span className={cn(
-                    "text-xs font-semibold block",
+                    "text-base font-bold tabular-nums block",
                     mark.isGoal 
                       ? "text-red-600" 
                       : mark.isPaid
                       ? "text-emerald-600"
                       : mark.isTotal
                       ? "text-blue-600"
-                      : "text-gray-600"
+                      : "text-gray-700"
                   )}>
                     {mark.labelUSD}
                   </span>
                 </div>
+
               </div>
             ))}
           </div>
@@ -331,7 +369,10 @@ export function ImprovedThermometer({
           <div className="relative">
             {/* Thermometer Tube */}
             <div
-              className="w-14 bg-gradient-to-b from-gray-50 to-gray-100 rounded-full border-2 border-gray-300 shadow-xl overflow-hidden relative h-96 lg:h-[500px]"
+              className={cn(
+                "w-20 bg-gradient-to-b from-white to-gray-100 rounded-full border-[3px] border-gray-300 shadow-2xl overflow-hidden relative h-[420px] lg:h-[560px]",
+                totalPledgedPercentage >= 100 && "animate-goal-glow"
+              )}
               role="progressbar"
               aria-valuenow={Math.round(totalPledgedUSD)}
               aria-valuemin={0}
@@ -341,7 +382,8 @@ export function ImprovedThermometer({
             >
               
               {/* Glass Reflection */}
-              <div className="absolute left-0 top-0 bottom-0 w-3 bg-gradient-to-r from-white/50 to-transparent z-10" />
+              <div className="absolute left-1 top-0 bottom-0 w-4 bg-gradient-to-r from-white/70 to-transparent z-10 rounded-full" />
+              <div className="absolute right-1 top-0 bottom-0 w-2 bg-gradient-to-l from-white/30 to-transparent z-10 rounded-full" />
               
               {/* Empty Tube Above Total */}
               <div 
@@ -352,7 +394,7 @@ export function ImprovedThermometer({
               {/* Unpaid Pledges (Amber) - ON TOP of paid for meniscus effect */}
               {unpaidAmountUSD > 0 && (
                 <div
-                  className="absolute left-0 right-0 bg-gradient-to-b from-amber-400 via-amber-300 to-amber-400 transition-all duration-1000 ease-out z-20"
+                  className="absolute left-0 right-0 bg-gradient-to-b from-amber-400 via-amber-300 to-amber-500 transition-all duration-1000 ease-out z-20 overflow-hidden"
                   style={{ 
                     bottom: `${paidHeight}%`,
                     height: `${unpaidHeight}%`
@@ -361,22 +403,25 @@ export function ImprovedThermometer({
                   {/* Meniscus Curve for Unpaid */}
                   <div className="absolute top-0 left-0 right-0 h-3 bg-amber-300 rounded-b-full" />
                   
-                  {/* Shine Effect */}
-                  <div className="absolute top-0 left-0 right-0 h-1/3 bg-gradient-to-b from-amber-200/40 to-transparent" />
+                  {/* Shine + shimmer */}
+                  <div className="absolute top-0 left-0 right-0 h-1/3 bg-gradient-to-b from-amber-200/50 to-transparent" />
+                  <div className="absolute inset-0 animate-shimmer bg-[linear-gradient(115deg,transparent_35%,rgba(255,255,255,0.55)_50%,transparent_65%)] bg-[length:200%_100%]" />
                 </div>
               )}
 
               {/* Paid Pledges (Emerald) - BASE layer */}
               {paidAmountUSD > 0 && (
                 <div
-                  className="absolute bottom-0 left-0 right-0 bg-gradient-to-b from-emerald-500 via-emerald-400 to-emerald-500 transition-all duration-1000 ease-out z-15 rounded-t-full"
+                  className="absolute bottom-0 left-0 right-0 bg-gradient-to-b from-emerald-500 via-emerald-400 to-emerald-600 transition-all duration-1000 ease-out z-[15] rounded-t-full overflow-hidden"
                   style={{ height: `${paidHeight}%` }}
                 >
                   {/* Meniscus Curve for Paid */}
-                  <div className="absolute top-0 left-0 right-0 h-3 bg-emerald-400 rounded-t-full" />
+                  <div className="absolute top-0 left-0 right-0 h-3 bg-emerald-400 rounded-t-full animate-mercury-pulse" />
                   
-                  {/* Shine Effect */}
-                  <div className="absolute top-0 left-0 right-0 h-1/3 bg-gradient-to-b from-emerald-300/50 to-transparent rounded-t-full" />
+                  {/* Shine + shimmer */}
+                  <div className="absolute top-0 left-0 right-0 h-1/3 bg-gradient-to-b from-emerald-200/60 to-transparent rounded-t-full" />
+                  <div className="absolute inset-0 animate-shimmer bg-[linear-gradient(115deg,transparent_35%,rgba(255,255,255,0.5)_50%,transparent_65%)] bg-[length:200%_100%]" />
+
                   
                   {/* Rising Bubbles */}
                   {paidHeight > 10 && (
@@ -445,34 +490,48 @@ export function ImprovedThermometer({
               />
             </div>
 
+            {/* Live level badge that rides the mercury */}
+            <div
+              className="pointer-events-none absolute left-full ml-3 z-40 transition-all duration-1000 ease-out"
+              style={{ bottom: `calc(${totalHeight}% - 1.25rem)` }}
+            >
+              <div className="flex items-center gap-2 whitespace-nowrap rounded-full bg-foreground px-4 py-2 text-background shadow-xl">
+                <Flame className="h-4 w-4" />
+                <span className="text-base font-black tabular-nums">
+                  ${formatCompact(totalPledgedUSD)}
+                </span>
+              </div>
+            </div>
+
             {/* Thermometer Bulb */}
-            <div className="w-20 h-20 -mt-2 mx-auto rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg border-2 border-white relative overflow-hidden z-30">
-              <div className="absolute inset-0 bg-gradient-to-tr from-emerald-400/30 to-transparent" />
+            <div className="w-24 h-24 -mt-3 mx-auto rounded-full bg-gradient-to-br from-emerald-500 to-emerald-700 shadow-2xl border-4 border-white relative overflow-hidden z-30 animate-mercury-pulse">
+              <div className="absolute inset-0 bg-gradient-to-tr from-emerald-300/40 to-transparent" />
               <div className="absolute inset-0 flex items-center justify-center">
-                <Flame className="w-8 h-8 text-white" />
+                <Flame className="w-10 h-10 text-white" />
               </div>
             </div>
 
             {/* Floating Amount Indicators */}
-            <div className="mt-4 space-y-2 text-center">
+            <div className="mt-5 space-y-3 text-center">
               {paidAmountUSD > 0 && (
-                <div className="bg-emerald-500 text-white px-4 py-2 rounded-full shadow-lg">
+                <div className="bg-emerald-600 text-white px-5 py-2.5 rounded-full shadow-lg">
                   <div className="flex items-center justify-center gap-2">
-                    <CheckCircle className="w-3 h-3" />
-                    <span className="text-sm font-bold">Paid: ${formatAmount(paidAmountUSD)}</span>
+                    <CheckCircle className="w-5 h-5" />
+                    <span className="text-lg font-bold tabular-nums">Paid: ${formatCompact(paidAmountUSD)}</span>
                   </div>
                 </div>
               )}
               
               {unpaidAmountUSD > 0 && (
-                <div className="bg-amber-500 text-white px-4 py-2 rounded-full shadow-lg">
+                <div className="bg-amber-500 text-white px-5 py-2.5 rounded-full shadow-lg">
                   <div className="flex items-center justify-center gap-2">
-                    <Clock className="w-3 h-3" />
-                    <span className="text-sm font-bold">Unpaid: ${formatAmount(unpaidAmountUSD)}</span>
+                    <Clock className="w-5 h-5" />
+                    <span className="text-lg font-bold tabular-nums">Unpaid: ${formatCompact(unpaidAmountUSD)}</span>
                   </div>
                 </div>
               )}
             </div>
+
           </div>
         </div>
 
@@ -498,20 +557,20 @@ export function ImprovedThermometer({
               >
                 <div className="flex items-center justify-start gap-2">
                   <span className={cn(
-                    "text-xs font-semibold block",
+                    "text-base font-bold tabular-nums block",
                     mark.isGoal 
                       ? "text-red-600" 
                       : mark.isPaid
                       ? "text-emerald-600"
                       : mark.isTotal
                       ? "text-blue-600"
-                      : "text-gray-600"
+                      : "text-gray-700"
                   )}>
                     {mark.labelKES}
                   </span>
-                  {mark.isGoal && <Target className="w-3 h-3 text-red-500" />}
-                  {mark.isPaid && <CheckCircle className="w-3 h-3 text-emerald-500" />}
-                  {mark.isTotal && <TrendingUp className="w-3 h-3 text-blue-500" />}
+                  {mark.isGoal && <Target className="w-4 h-4 text-red-500" />}
+                  {mark.isPaid && <CheckCircle className="w-4 h-4 text-emerald-500" />}
+                  {mark.isTotal && <TrendingUp className="w-4 h-4 text-blue-500" />}
                 </div>
               </div>
             ))}
@@ -520,18 +579,18 @@ export function ImprovedThermometer({
       </div>
 
       {/* Legend */}
-      <div className="flex justify-center gap-6 mt-8">
-        <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-gray-200 shadow-sm">
-          <div className="w-3 h-3 bg-emerald-500 rounded-full"></div>
-          <span className="text-sm font-medium text-gray-700">Paid Pledges</span>
+      <div className="flex flex-wrap justify-center gap-4 sm:gap-6 mt-10">
+        <div className="flex items-center gap-2 bg-white px-4 py-2.5 rounded-xl border border-gray-200 shadow-sm">
+          <div className="w-4 h-4 bg-emerald-500 rounded-full"></div>
+          <span className="text-base font-semibold text-gray-700">Paid Pledges</span>
         </div>
-        <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-gray-200 shadow-sm">
-          <div className="w-3 h-3 bg-amber-400 rounded-full"></div>
-          <span className="text-sm font-medium text-gray-700">Unpaid Pledges</span>
+        <div className="flex items-center gap-2 bg-white px-4 py-2.5 rounded-xl border border-gray-200 shadow-sm">
+          <div className="w-4 h-4 bg-amber-400 rounded-full"></div>
+          <span className="text-base font-semibold text-gray-700">Unpaid Pledges</span>
         </div>
-        <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-gray-200 shadow-sm">
-          <div className="w-4 h-1 border-t-2 border-dashed border-red-500"></div>
-          <span className="text-sm font-medium text-gray-700">Goal Target</span>
+        <div className="flex items-center gap-2 bg-white px-4 py-2.5 rounded-xl border border-gray-200 shadow-sm">
+          <div className="w-5 h-1 border-t-2 border-dashed border-red-500"></div>
+          <span className="text-base font-semibold text-gray-700">Goal Target</span>
         </div>
       </div>
 
@@ -544,7 +603,34 @@ export function ImprovedThermometer({
         .animate-float {
           animation: float 2.5s ease-in-out infinite;
         }
+        @keyframes shimmer {
+          0% { background-position: 200% 0; }
+          100% { background-position: -100% 0; }
+        }
+        .animate-shimmer {
+          animation: shimmer 3.2s linear infinite;
+        }
+        @keyframes mercuryPulse {
+          0%, 100% { filter: brightness(1); }
+          50% { filter: brightness(1.25); }
+        }
+        .animate-mercury-pulse {
+          animation: mercuryPulse 2s ease-in-out infinite;
+        }
+        @keyframes goalGlow {
+          0%, 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0.45); }
+          50% { box-shadow: 0 0 34px 8px rgba(16,185,129,0.55); }
+        }
+        .animate-goal-glow {
+          animation: goalGlow 2.2s ease-in-out infinite;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .animate-float, .animate-shimmer, .animate-mercury-pulse, .animate-goal-glow {
+            animation: none;
+          }
+        }
       `}</style>
+
     </div>
   );
 }
