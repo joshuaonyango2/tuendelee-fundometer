@@ -1,10 +1,12 @@
-export type Language = "en" | "it" | "fr";
+export type Language = "en" | "it" | "fr" | "sw";
 
 export const LANGUAGES: { code: Language; label: string; flag: string }[] = [
   { code: "en", label: "English", flag: "🇬🇧" },
   { code: "it", label: "Italiano", flag: "🇮🇹" },
   { code: "fr", label: "Français", flag: "🇫🇷" },
+  { code: "sw", label: "Kiswahili", flag: "🇰🇪" },
 ];
+
 
 type Dict = Record<string, string>;
 
