@@ -162,7 +162,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
       // Load event details
       const { data: eventData, error: eventError } = await supabase
         .from('fundraising_events')
-        .select('id, title, description, scheduled_at, duration_minutes, goal_amount, share_link, is_active, status, created_at, updated_at')
+        .select('id, title, description, title_it, title_fr, title_sw, description_it, description_fr, description_sw, scheduled_at, duration_minutes, goal_amount, share_link, is_active, status, created_at, updated_at')
         .eq('id', eventId)
         .single();
 
