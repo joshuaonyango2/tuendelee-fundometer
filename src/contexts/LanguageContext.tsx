@@ -18,7 +18,7 @@ const STORAGE_KEY = "fundometer-language";
 function readStoredLanguage(): Language {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored === "en" || stored === "it" || stored === "fr") return stored;
+    if (stored === "en" || stored === "it" || stored === "fr" || stored === "sw") return stored;
   } catch {
     // ignore storage errors
   }
