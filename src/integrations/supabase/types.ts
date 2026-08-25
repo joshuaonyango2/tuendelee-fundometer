@@ -314,6 +314,7 @@ export type Database = {
       }
       event_sessions: {
         Row: {
+          attendee_email: string | null
           attendee_name: string | null
           event_id: string
           id: string
@@ -322,6 +323,7 @@ export type Database = {
           session_token: string
         }
         Insert: {
+          attendee_email?: string | null
           attendee_name?: string | null
           event_id: string
           id?: string
@@ -330,6 +332,7 @@ export type Database = {
           session_token: string
         }
         Update: {
+          attendee_email?: string | null
           attendee_name?: string | null
           event_id?: string
           id?: string
