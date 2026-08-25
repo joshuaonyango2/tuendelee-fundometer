@@ -184,8 +184,17 @@ export function ImprovedThermometer({
   const getMarkPosition = (valueUSD: number) => (valueUSD / maxCalibration) * 100;
 
   const formatAmount = (amount: number) => {
-    return new Intl.NumberFormat('en-US').format(amount);
+    return new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(Math.round(amount));
   };
+
+  // Compact formatter keeps big numbers from overflowing the cards
+  const formatCompact = (amount: number) => {
+    const n = Math.round(amount);
+    if (Math.abs(n) >= 1_000_000) return `${(n / 1_000_000).toFixed(2)}M`;
+    if (Math.abs(n) >= 100_000) return `${(n / 1_000).toFixed(0)}K`;
+    return new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(n);
+  };
+
 
   const totalPledgedPercentage = goalAmountUSD > 0 ? (totalPledgedUSD / goalAmountUSD) * 100 : 0;
   const paidPercentage = goalAmountUSD > 0 ? (paidAmountUSD / goalAmountUSD) * 100 : 0;
