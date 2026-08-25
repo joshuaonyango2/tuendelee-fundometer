@@ -197,11 +197,21 @@ export default function EventManagement() {
               <Plus className="w-4 h-4 mr-2" />
               Add Pledge
             </TabsTrigger>
+            <TabsTrigger value="content">
+              <Languages className="w-4 h-4 mr-2" />
+              Event Text
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="thermometer" className="space-y-4">
             <EventThermometer eventId={eventId!} />
           </TabsContent>
+
+          <TabsContent value="content" className="space-y-4">
+            <EventContentEditor eventId={eventId!} event={event} onSaved={loadEvent} />
+          </TabsContent>
+
+
 
           <TabsContent value="meetings" className="space-y-4">
             <Card>
