@@ -337,32 +337,34 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
     );
   }
 
+  const localized = localizedEventText(event, language);
+
   return (
     <div className="min-h-screen bg-gradient-background">
       <Helmet>
-        <title>{`${event.title} | Tuendelee Fundometer`}</title>
+        <title>{`${localized.title} | Tuendelee Fundometer`}</title>
         <meta
           name="description"
           content={
-            event.description
-              ? `${event.description}`.slice(0, 155)
-              : `Follow live fundraising progress for ${event.title} and make your pledge with the Tuendelee Foundation.`
+            localized.description
+              ? `${localized.description}`.slice(0, 155)
+              : `Follow live fundraising progress for ${localized.title} and make your pledge with the Tuendelee Foundation.`
           }
         />
         <link rel="canonical" href={`https://tuendelee-fundometer.lovable.app/event/${event.id}`} />
-        <meta property="og:title" content={`${event.title} | Tuendelee Fundometer`} />
+        <meta property="og:title" content={`${localized.title} | Tuendelee Fundometer`} />
         <meta
           property="og:description"
           content={
-            event.description
-              ? `${event.description}`.slice(0, 155)
-              : `Follow live fundraising progress for ${event.title}.`
+            localized.description
+              ? `${localized.description}`.slice(0, 155)
+              : `Follow live fundraising progress for ${localized.title}.`
           }
         />
         <meta property="og:url" content={`https://tuendelee-fundometer.lovable.app/event/${event.id}`} />
       </Helmet>
       <div className="container mx-auto px-4 py-8">
-        <h1 className="sr-only">{`${event.title} — Fundraising Room`}</h1>
+        <h1 className="sr-only">{`${localized.title} — Fundraising Room`}</h1>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
@@ -370,7 +372,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-3xl font-bold">{event.title}</CardTitle>
+                  <CardTitle className="text-3xl font-bold">{localized.title}</CardTitle>
                   <div className="flex items-center gap-2">
                     <LanguageSwitcher />
                     <HelpDialog />
@@ -395,9 +397,9 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
                     </Badge>
                   </div>
                 </div>
-                {event.description && (
+                {localized.description && (
                   <CardDescription className="text-lg">
-                    {event.description}
+                    {localized.description}
                   </CardDescription>
                 )}
               </CardHeader>
