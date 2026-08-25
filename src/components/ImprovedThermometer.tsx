@@ -369,7 +369,10 @@ export function ImprovedThermometer({
           <div className="relative">
             {/* Thermometer Tube */}
             <div
-              className="w-14 bg-gradient-to-b from-gray-50 to-gray-100 rounded-full border-2 border-gray-300 shadow-xl overflow-hidden relative h-96 lg:h-[500px]"
+              className={cn(
+                "w-20 bg-gradient-to-b from-white to-gray-100 rounded-full border-[3px] border-gray-300 shadow-2xl overflow-hidden relative h-[420px] lg:h-[560px]",
+                totalPledgedPercentage >= 100 && "animate-goal-glow"
+              )}
               role="progressbar"
               aria-valuenow={Math.round(totalPledgedUSD)}
               aria-valuemin={0}
@@ -379,7 +382,8 @@ export function ImprovedThermometer({
             >
               
               {/* Glass Reflection */}
-              <div className="absolute left-0 top-0 bottom-0 w-3 bg-gradient-to-r from-white/50 to-transparent z-10" />
+              <div className="absolute left-1 top-0 bottom-0 w-4 bg-gradient-to-r from-white/70 to-transparent z-10 rounded-full" />
+              <div className="absolute right-1 top-0 bottom-0 w-2 bg-gradient-to-l from-white/30 to-transparent z-10 rounded-full" />
               
               {/* Empty Tube Above Total */}
               <div 
@@ -390,7 +394,7 @@ export function ImprovedThermometer({
               {/* Unpaid Pledges (Amber) - ON TOP of paid for meniscus effect */}
               {unpaidAmountUSD > 0 && (
                 <div
-                  className="absolute left-0 right-0 bg-gradient-to-b from-amber-400 via-amber-300 to-amber-400 transition-all duration-1000 ease-out z-20"
+                  className="absolute left-0 right-0 bg-gradient-to-b from-amber-400 via-amber-300 to-amber-500 transition-all duration-1000 ease-out z-20 overflow-hidden"
                   style={{ 
                     bottom: `${paidHeight}%`,
                     height: `${unpaidHeight}%`
@@ -399,22 +403,25 @@ export function ImprovedThermometer({
                   {/* Meniscus Curve for Unpaid */}
                   <div className="absolute top-0 left-0 right-0 h-3 bg-amber-300 rounded-b-full" />
                   
-                  {/* Shine Effect */}
-                  <div className="absolute top-0 left-0 right-0 h-1/3 bg-gradient-to-b from-amber-200/40 to-transparent" />
+                  {/* Shine + shimmer */}
+                  <div className="absolute top-0 left-0 right-0 h-1/3 bg-gradient-to-b from-amber-200/50 to-transparent" />
+                  <div className="absolute inset-0 animate-shimmer bg-[linear-gradient(115deg,transparent_35%,rgba(255,255,255,0.55)_50%,transparent_65%)] bg-[length:200%_100%]" />
                 </div>
               )}
 
               {/* Paid Pledges (Emerald) - BASE layer */}
               {paidAmountUSD > 0 && (
                 <div
-                  className="absolute bottom-0 left-0 right-0 bg-gradient-to-b from-emerald-500 via-emerald-400 to-emerald-500 transition-all duration-1000 ease-out z-15 rounded-t-full"
+                  className="absolute bottom-0 left-0 right-0 bg-gradient-to-b from-emerald-500 via-emerald-400 to-emerald-600 transition-all duration-1000 ease-out z-[15] rounded-t-full overflow-hidden"
                   style={{ height: `${paidHeight}%` }}
                 >
                   {/* Meniscus Curve for Paid */}
-                  <div className="absolute top-0 left-0 right-0 h-3 bg-emerald-400 rounded-t-full" />
+                  <div className="absolute top-0 left-0 right-0 h-3 bg-emerald-400 rounded-t-full animate-mercury-pulse" />
                   
-                  {/* Shine Effect */}
-                  <div className="absolute top-0 left-0 right-0 h-1/3 bg-gradient-to-b from-emerald-300/50 to-transparent rounded-t-full" />
+                  {/* Shine + shimmer */}
+                  <div className="absolute top-0 left-0 right-0 h-1/3 bg-gradient-to-b from-emerald-200/60 to-transparent rounded-t-full" />
+                  <div className="absolute inset-0 animate-shimmer bg-[linear-gradient(115deg,transparent_35%,rgba(255,255,255,0.5)_50%,transparent_65%)] bg-[length:200%_100%]" />
+
                   
                   {/* Rising Bubbles */}
                   {paidHeight > 10 && (
