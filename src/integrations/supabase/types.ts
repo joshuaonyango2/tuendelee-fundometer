@@ -136,6 +136,123 @@ export type Database = {
         }
         Relationships: []
       }
+      bank_statement_entries: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          description: string | null
+          event_id: string
+          id: string
+          import_id: string
+          match_reason: string | null
+          match_status: string
+          matched_pledge_id: string | null
+          payer_name: string | null
+          reference: string | null
+          txn_date: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          description?: string | null
+          event_id: string
+          id?: string
+          import_id: string
+          match_reason?: string | null
+          match_status?: string
+          matched_pledge_id?: string | null
+          payer_name?: string | null
+          reference?: string | null
+          txn_date?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          description?: string | null
+          event_id?: string
+          id?: string
+          import_id?: string
+          match_reason?: string | null
+          match_status?: string
+          matched_pledge_id?: string | null
+          payer_name?: string | null
+          reference?: string | null
+          txn_date?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bank_statement_entries_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "fundraising_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bank_statement_entries_import_id_fkey"
+            columns: ["import_id"]
+            isOneToOne: false
+            referencedRelation: "bank_statement_imports"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bank_statement_entries_matched_pledge_id_fkey"
+            columns: ["matched_pledge_id"]
+            isOneToOne: false
+            referencedRelation: "event_pledges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bank_statement_imports: {
+        Row: {
+          admin_id: string
+          created_at: string
+          currency: string
+          event_id: string
+          file_name: string
+          id: string
+          row_count: number
+          total_amount: number
+          updated_at: string
+        }
+        Insert: {
+          admin_id: string
+          created_at?: string
+          currency?: string
+          event_id: string
+          file_name: string
+          id?: string
+          row_count?: number
+          total_amount?: number
+          updated_at?: string
+        }
+        Update: {
+          admin_id?: string
+          created_at?: string
+          currency?: string
+          event_id?: string
+          file_name?: string
+          id?: string
+          row_count?: number
+          total_amount?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bank_statement_imports_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "fundraising_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       event_meetings: {
         Row: {
           created_at: string | null
@@ -365,6 +482,7 @@ export type Database = {
           passcode: string
           scheduled_at: string
           sender_email: string | null
+          sender_name: string | null
           sender_phone: string | null
           share_link: string
           status: string | null
@@ -393,6 +511,7 @@ export type Database = {
           passcode: string
           scheduled_at: string
           sender_email?: string | null
+          sender_name?: string | null
           sender_phone?: string | null
           share_link: string
           status?: string | null
@@ -421,6 +540,7 @@ export type Database = {
           passcode?: string
           scheduled_at?: string
           sender_email?: string | null
+          sender_name?: string | null
           sender_phone?: string | null
           share_link?: string
           status?: string | null
@@ -728,6 +848,23 @@ export type Database = {
           payment_type: string
         }[]
       }
+      get_reconciliation_summary: {
+        Args: { p_event_id: string }
+        Returns: {
+          bank_entries: number
+          bank_total: number
+          matched_entries: number
+          matched_total: number
+          paid_not_in_bank_count: number
+          paid_not_in_bank_total: number
+          pending_count: number
+          pending_total: number
+          system_paid_count: number
+          system_paid_total: number
+          unmatched_bank_entries: number
+          unmatched_bank_total: number
+        }[]
+      }
       get_session_by_token: {
         Args: { p_session_token: string }
         Returns: {
@@ -745,6 +882,13 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      reconcile_bank_entries: {
+        Args: { p_event_id: string }
+        Returns: {
+          matched: number
+          unmatched: number
+        }[]
       }
       set_pledge_verification: {
         Args: { p_note?: string; p_pledge_id: string; p_status: string }
