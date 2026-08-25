@@ -1,7 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
+import { Users } from "lucide-react";
+
 import { HeroSection } from "@/components/HeroSection";
 import { HomeHelpDialog } from "@/components/HomeHelpDialog";
 import { FeaturedImpactStory } from "@/components/FeaturedImpactStory";
