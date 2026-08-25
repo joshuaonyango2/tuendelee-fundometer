@@ -355,6 +355,9 @@ export type Database = {
           admin_id: string
           created_at: string
           description: string | null
+          description_fr: string | null
+          description_it: string | null
+          description_sw: string | null
           duration_minutes: number | null
           goal_amount: number
           id: string
@@ -371,12 +374,18 @@ export type Database = {
           template_thank_you_all: string | null
           thank_you_all_sent_at: string | null
           title: string
+          title_fr: string | null
+          title_it: string | null
+          title_sw: string | null
           updated_at: string
         }
         Insert: {
           admin_id: string
           created_at?: string
           description?: string | null
+          description_fr?: string | null
+          description_it?: string | null
+          description_sw?: string | null
           duration_minutes?: number | null
           goal_amount?: number
           id?: string
@@ -393,12 +402,18 @@ export type Database = {
           template_thank_you_all?: string | null
           thank_you_all_sent_at?: string | null
           title: string
+          title_fr?: string | null
+          title_it?: string | null
+          title_sw?: string | null
           updated_at?: string
         }
         Update: {
           admin_id?: string
           created_at?: string
           description?: string | null
+          description_fr?: string | null
+          description_it?: string | null
+          description_sw?: string | null
           duration_minutes?: number | null
           goal_amount?: number
           id?: string
@@ -415,6 +430,9 @@ export type Database = {
           template_thank_you_all?: string | null
           thank_you_all_sent_at?: string | null
           title?: string
+          title_fr?: string | null
+          title_it?: string | null
+          title_sw?: string | null
           updated_at?: string
         }
         Relationships: []
