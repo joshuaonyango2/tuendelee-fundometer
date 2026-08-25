@@ -439,6 +439,7 @@ export default function CreateMeetingDialog({
                   />
                 </div>
 
+                <div className="space-y-2">
 
                   <Label htmlFor="description">Description (Optional)</Label>
                   <Textarea
