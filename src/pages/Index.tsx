@@ -78,80 +78,9 @@ const Index = () => {
         </div>
 
 
-        {/* Security & Data Protection Section */}
-        <div className="mb-16">
-          <div className="text-center mb-8">
-            <Shield className="w-12 h-12 text-success mx-auto mb-4" />
-            <h3 className="text-2xl md:text-3xl font-bold mb-3">
-              {t("security.title")}
-            </h3>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              {t("security.subtitle")}
-            </p>
-          </div>
+        {/* Featured Impact Story (latest uploaded by admin) */}
+        <FeaturedImpactStory onDonateClick={() => navigate("/join")} />
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <Card className="border-success/30 bg-success/5">
-              <CardHeader>
-                <Lock className="w-8 h-8 text-success mb-2" />
-                <CardTitle>{t("security.encryptionTitle")}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription>{t("security.encryptionBody")}</CardDescription>
-              </CardContent>
-            </Card>
-
-            <Card className="border-success/30 bg-success/5">
-              <CardHeader>
-                <CreditCard className="w-8 h-8 text-success mb-2" />
-                <CardTitle>{t("security.paymentTitle")}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription>{t("security.paymentBody")}</CardDescription>
-              </CardContent>
-            </Card>
-
-            <Card className="border-success/30 bg-success/5">
-              <CardHeader>
-                <Database className="w-8 h-8 text-success mb-2" />
-                <CardTitle>{t("security.storageTitle")}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription>{t("security.storageBody")}</CardDescription>
-              </CardContent>
-            </Card>
-
-            <Card className="border-success/30 bg-success/5">
-              <CardHeader>
-                <Shield className="w-8 h-8 text-success mb-2" />
-                <CardTitle>{t("security.privacyTitle")}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription>{t("security.privacyBody")}</CardDescription>
-              </CardContent>
-            </Card>
-
-            <Card className="border-success/30 bg-success/5">
-              <CardHeader>
-                <CheckCircle className="w-8 h-8 text-success mb-2" />
-                <CardTitle>{t("security.trustedTitle")}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription>{t("security.trustedBody")}</CardDescription>
-              </CardContent>
-            </Card>
-
-            <Card className="border-success/30 bg-success/5">
-              <CardHeader>
-                <Users className="w-8 h-8 text-success mb-2" />
-                <CardTitle>{t("security.trackingTitle")}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription>{t("security.trackingBody")}</CardDescription>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
 
         {/* How It Works Section */}
         <div className="mb-12">
