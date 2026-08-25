@@ -7,7 +7,7 @@ import { Users } from "lucide-react";
 import { HeroSection } from "@/components/HeroSection";
 import { HomeHelpDialog } from "@/components/HomeHelpDialog";
 import { FeaturedImpactStory } from "@/components/FeaturedImpactStory";
-import { ImpactStories } from "@/components/ImpactStories";
+
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -36,8 +36,6 @@ const Index = () => {
       {/* Hero Section */}
       <HeroSection />
 
-      {/* Impact Stories (admin-managed video / photo / audio) */}
-      <ImpactStories />
 
       <div className="container mx-auto px-4 pb-8 text-center">
         <Link
