@@ -7,6 +7,7 @@ import {
   formatMoney,
   renderTemplate,
   sendEmail,
+  senderAddress,
 } from "../_shared/email.ts";
 
 const BodySchema = z.object({
@@ -56,7 +57,7 @@ Deno.serve(async (req) => {
 
     const { data: event } = await supabase
       .from("fundraising_events")
-      .select("id, title, template_pledge_created, template_payment_confirmed")
+      .select("id, title, sender_email, sender_name, template_pledge_created, template_payment_confirmed")
       .eq("id", pledge.event_id)
       .maybeSingle();
 
@@ -118,7 +119,12 @@ Deno.serve(async (req) => {
       "Tuendelee Foundation • Nairobi, Kenya",
     );
 
-    const result = await sendEmail(pledge.email, SUBJECTS[kind], html);
+    const result = await sendEmail(
+      pledge.email,
+      SUBJECTS[kind],
+      html,
+      senderAddress(event?.sender_name, event?.sender_email),
+    );
 
     await supabase.from("pledge_notifications").insert({
       pledge_id: pledge.id,

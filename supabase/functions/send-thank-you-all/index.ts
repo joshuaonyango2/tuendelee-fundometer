@@ -7,6 +7,7 @@ import {
   formatMoney,
   renderTemplate,
   sendEmail,
+  senderAddress,
 } from "../_shared/email.ts";
 
 const BodySchema = z.object({
@@ -54,7 +55,7 @@ Deno.serve(async (req) => {
 
     const { data: event } = await admin
       .from("fundraising_events")
-      .select("id, title, admin_id, template_thank_you_all")
+      .select("id, title, admin_id, sender_email, sender_name, template_thank_you_all")
       .eq("id", eventId)
       .maybeSingle();
 
@@ -137,6 +138,7 @@ Deno.serve(async (req) => {
         email,
         subject ?? `Thank you for supporting ${event.title}`,
         html,
+        senderAddress(event.sender_name, event.sender_email),
       );
       if (result.status === "failed") failed += 1;
       else sent += 1;
