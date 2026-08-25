@@ -132,12 +132,15 @@ export default function CreateMeetingDialog({
       return;
     }
 
-    if (!platform.is_connected) {
-      toast.error(`Please connect ${platform.display_name} first`);
-      // Navigate to integrations tab
-      handleClose();
-      const integrationsTab = document.querySelector('[value="integrations"]') as HTMLElement;
-      if (integrationsTab) integrationsTab.click();
+    const externalUrl = meetingDetails.external_url.trim();
+
+    if (externalUrl && !/^https?:\/\/\S+$/i.test(externalUrl)) {
+      toast.error("Please paste a valid meeting link starting with https://");
+      return;
+    }
+
+    if (!externalUrl && !platform.is_connected) {
+      toast.error(`Paste the ${platform.display_name} meeting link, or connect ${platform.display_name} first`);
       return;
     }
 
@@ -146,43 +149,50 @@ export default function CreateMeetingDialog({
     try {
       // Generate meeting details
       const meetingId = generateMeetingId();
-      const passcode = generatePasscode();
+      const passcode = meetingDetails.external_passcode.trim() || generatePasscode();
       const baseUrl = window.location.origin;
-      
+
       // Create meeting URLs based on platform
       let meetingUrl = "";
       let joinUrl = "";
       let hostUrl = "";
 
-      switch (platform.name) {
-        case "zoom":
-          meetingUrl = `${baseUrl}/meeting/zoom/${meetingId}`;
-          joinUrl = `${meetingUrl}?pwd=${passcode}`;
-          hostUrl = `${meetingUrl}?pwd=${passcode}&role=host`;
-          break;
-        
-        case "google_meet":
-          meetingUrl = `${baseUrl}/meeting/meet/${meetingId}`;
-          joinUrl = meetingUrl;
-          hostUrl = meetingUrl;
-          break;
-        
-        case "teams":
-          meetingUrl = `${baseUrl}/meeting/teams/${meetingId}`;
-          joinUrl = meetingUrl;
-          hostUrl = `${meetingUrl}?role=presenter`;
-          break;
-        
-        case "webex":
-          meetingUrl = `${baseUrl}/meeting/webex/${meetingId}`;
-          joinUrl = `${meetingUrl}?pwd=${passcode}`;
-          hostUrl = `${meetingUrl}?pwd=${passcode}&role=host`;
-          break;
-        
-        default:
-          meetingUrl = `${baseUrl}/meeting/${platform.name}/${meetingId}`;
-          joinUrl = meetingUrl;
-          hostUrl = meetingUrl;
+      if (externalUrl) {
+        // Admin pasted the real meeting link (e.g. a Zoom invite link)
+        meetingUrl = externalUrl;
+        joinUrl = externalUrl;
+        hostUrl = externalUrl;
+      } else {
+        switch (platform.name) {
+          case "zoom":
+            meetingUrl = `${baseUrl}/meeting/zoom/${meetingId}`;
+            joinUrl = `${meetingUrl}?pwd=${passcode}`;
+            hostUrl = `${meetingUrl}?pwd=${passcode}&role=host`;
+            break;
+
+          case "google_meet":
+            meetingUrl = `${baseUrl}/meeting/meet/${meetingId}`;
+            joinUrl = meetingUrl;
+            hostUrl = meetingUrl;
+            break;
+
+          case "teams":
+            meetingUrl = `${baseUrl}/meeting/teams/${meetingId}`;
+            joinUrl = meetingUrl;
+            hostUrl = `${meetingUrl}?role=presenter`;
+            break;
+
+          case "webex":
+            meetingUrl = `${baseUrl}/meeting/webex/${meetingId}`;
+            joinUrl = `${meetingUrl}?pwd=${passcode}`;
+            hostUrl = `${meetingUrl}?pwd=${passcode}&role=host`;
+            break;
+
+          default:
+            meetingUrl = `${baseUrl}/meeting/${platform.name}/${meetingId}`;
+            joinUrl = meetingUrl;
+            hostUrl = meetingUrl;
+        }
       }
 
       // Prepare description with meeting details
@@ -193,6 +203,7 @@ export default function CreateMeetingDialog({
       // Save meeting to database
       const { data, error } = await supabase
         .from("event_meetings")
+
         .insert({
           event_id: eventId,
           platform_id: selectedPlatform,
