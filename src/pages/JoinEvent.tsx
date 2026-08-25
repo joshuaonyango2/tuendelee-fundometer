@@ -11,6 +11,8 @@ import { Shield, AlertCircle, Calendar } from "lucide-react";
 import { toast } from "sonner";
 import { z } from 'zod';
 import { format } from "date-fns";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 interface Event {
   id: string;
@@ -21,6 +23,7 @@ interface Event {
 
 export default function JoinEvent() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [activeEvent, setActiveEvent] = useState<Event | null>(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -113,7 +116,7 @@ export default function JoinEvent() {
       }));
 
 
-      toast.success("Welcome to the fundraising event!");
+      toast.success(t("join.welcome"));
       navigate(`/event/${activeEvent.id}`);
     } catch (err: any) {
       setError(err.message || "Failed to join event");
@@ -128,7 +131,7 @@ export default function JoinEvent() {
       <div className="min-h-screen bg-gradient-background flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardContent className="p-8 text-center">
-            <p>Loading event...</p>
+            <p>{t("join.loading")}</p>
           </CardContent>
         </Card>
       </div>
@@ -145,14 +148,14 @@ export default function JoinEvent() {
                 <AlertCircle className="w-8 h-8 text-muted-foreground" />
               </div>
             </div>
-            <CardTitle className="text-2xl">No Active Event</CardTitle>
+            <CardTitle className="text-2xl">{t("join.noEventTitle")}</CardTitle>
             <CardDescription>
-              There are no active fundraising events at the moment. Please check back later.
+              {t("join.noEventBody")}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Button className="w-full" onClick={() => navigate("/")}>
-              Go Home
+              {t("join.goHome")}
             </Button>
           </CardContent>
         </Card>
@@ -179,27 +182,30 @@ export default function JoinEvent() {
       <h1 className="sr-only">Join Fundraising Event</h1>
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
+          <div className="flex justify-end">
+            <LanguageSwitcher />
+          </div>
           <div className="flex justify-center mb-4">
             <div className="p-3 bg-primary/10 rounded-full">
               <Shield className="w-8 h-8 text-primary" />
             </div>
           </div>
-          <CardTitle className="text-2xl">Join {activeEvent.title}</CardTitle>
+          <CardTitle className="text-2xl">{t("join.title")} {activeEvent.title}</CardTitle>
           <CardDescription>
-            {activeEvent.description || "Enter your details to join the event"}
+            {activeEvent.description || t("join.defaultDescription")}
           </CardDescription>
         </CardHeader>
         
         <CardContent>
           <form onSubmit={handleJoin} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Your Name *</Label>
+              <Label htmlFor="name">{t("join.name")} *</Label>
               <Input
                 id="name"
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Enter your full name"
+                placeholder={t("join.namePlaceholder")}
                 required
                 disabled={isSubmitting}
                 autoFocus
@@ -207,18 +213,18 @@ export default function JoinEvent() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email Address *</Label>
+              <Label htmlFor="email">{t("join.email")} *</Label>
               <Input
                 id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="your.email@example.com"
+                placeholder={t("join.emailPlaceholder")}
                 required
                 disabled={isSubmitting}
               />
               <p className="text-xs text-muted-foreground">
-                We'll use this to follow up with you about the event
+                {t("join.emailHint")}
               </p>
             </div>
 
@@ -230,7 +236,7 @@ export default function JoinEvent() {
             )}
 
             <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? "Joining..." : "Join Event"}
+              {isSubmitting ? t("join.submitting") : t("join.submit")}
             </Button>
           </form>
         </CardContent>
