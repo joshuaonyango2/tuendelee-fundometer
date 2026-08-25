@@ -498,7 +498,7 @@ export default function CreateMeetingDialog({
                   </Button>
                   <Button
                     onClick={handleCreateMeeting}
-                    disabled={isCreating || !selectedPlatform || (selectedPlatformData && !selectedPlatformData.is_connected)}
+                    disabled={isCreating || !selectedPlatform || (selectedPlatformData && !selectedPlatformData.is_connected && !meetingDetails.external_url.trim())}
                     className="flex-1"
                   >
                     {isCreating ? "Creating..." : "Create Meeting"}
