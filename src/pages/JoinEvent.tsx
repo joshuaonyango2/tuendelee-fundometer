@@ -12,18 +12,25 @@ import { toast } from "sonner";
 import { z } from 'zod';
 import { format } from "date-fns";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { localizedEventText } from "@/lib/eventText";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 interface Event {
   id: string;
   title: string;
   description: string;
+  title_it?: string | null;
+  title_fr?: string | null;
+  title_sw?: string | null;
+  description_it?: string | null;
+  description_fr?: string | null;
+  description_sw?: string | null;
   scheduled_at: string;
 }
 
 export default function JoinEvent() {
   const navigate = useNavigate();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [activeEvent, setActiveEvent] = useState<Event | null>(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -53,7 +60,7 @@ export default function JoinEvent() {
     try {
       const { data, error } = await supabase
         .from("fundraising_events")
-        .select("id, title, description, scheduled_at")
+        .select("id, title, description, title_it, title_fr, title_sw, description_it, description_fr, description_sw, scheduled_at")
         .eq("is_active", true)
         .maybeSingle();
 
@@ -163,19 +170,22 @@ export default function JoinEvent() {
     );
   }
 
+  const localizedEvent = localizedEventText(activeEvent, language);
+
   return (
+
     <div className="min-h-screen bg-gradient-background flex items-center justify-center p-4">
       <Helmet>
         <title>Join Fundraising Event | Tuendelee Foundation</title>
         <meta
           name="description"
-          content={`Join ${activeEvent.title} with the Tuendelee Foundation — pledge, donate and follow live fundraising progress.`}
+          content={`Join ${localizedEvent.title} with the Tuendelee Foundation — pledge, donate and follow live fundraising progress.`}
         />
         <link rel="canonical" href="https://tuendelee-fundometer.lovable.app/join" />
-        <meta property="og:title" content={`Join ${activeEvent.title} | Tuendelee Foundation`} />
+        <meta property="og:title" content={`Join ${localizedEvent.title} | Tuendelee Foundation`} />
         <meta
           property="og:description"
-          content={activeEvent.description || "Enter your details to join the live fundraising event."}
+          content={localizedEvent.description || "Enter your details to join the live fundraising event."}
         />
         <meta property="og:url" content="https://tuendelee-fundometer.lovable.app/join" />
       </Helmet>
@@ -190,9 +200,9 @@ export default function JoinEvent() {
               <Shield className="w-8 h-8 text-primary" />
             </div>
           </div>
-          <CardTitle className="text-2xl">{t("join.title")} {activeEvent.title}</CardTitle>
+          <CardTitle className="text-2xl">{t("join.title")} {localizedEvent.title}</CardTitle>
           <CardDescription>
-            {activeEvent.description || t("join.defaultDescription")}
+            {localizedEvent.description || t("join.defaultDescription")}
           </CardDescription>
         </CardHeader>
         
