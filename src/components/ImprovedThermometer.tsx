@@ -490,34 +490,48 @@ export function ImprovedThermometer({
               />
             </div>
 
+            {/* Live level badge that rides the mercury */}
+            <div
+              className="pointer-events-none absolute left-full ml-3 z-40 transition-all duration-1000 ease-out"
+              style={{ bottom: `calc(${totalHeight}% - 1.25rem)` }}
+            >
+              <div className="flex items-center gap-2 whitespace-nowrap rounded-full bg-foreground px-4 py-2 text-background shadow-xl">
+                <Flame className="h-4 w-4" />
+                <span className="text-base font-black tabular-nums">
+                  ${formatCompact(totalPledgedUSD)}
+                </span>
+              </div>
+            </div>
+
             {/* Thermometer Bulb */}
-            <div className="w-20 h-20 -mt-2 mx-auto rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg border-2 border-white relative overflow-hidden z-30">
-              <div className="absolute inset-0 bg-gradient-to-tr from-emerald-400/30 to-transparent" />
+            <div className="w-24 h-24 -mt-3 mx-auto rounded-full bg-gradient-to-br from-emerald-500 to-emerald-700 shadow-2xl border-4 border-white relative overflow-hidden z-30 animate-mercury-pulse">
+              <div className="absolute inset-0 bg-gradient-to-tr from-emerald-300/40 to-transparent" />
               <div className="absolute inset-0 flex items-center justify-center">
-                <Flame className="w-8 h-8 text-white" />
+                <Flame className="w-10 h-10 text-white" />
               </div>
             </div>
 
             {/* Floating Amount Indicators */}
-            <div className="mt-4 space-y-2 text-center">
+            <div className="mt-5 space-y-3 text-center">
               {paidAmountUSD > 0 && (
-                <div className="bg-emerald-500 text-white px-4 py-2 rounded-full shadow-lg">
+                <div className="bg-emerald-600 text-white px-5 py-2.5 rounded-full shadow-lg">
                   <div className="flex items-center justify-center gap-2">
-                    <CheckCircle className="w-3 h-3" />
-                    <span className="text-sm font-bold">Paid: ${formatAmount(paidAmountUSD)}</span>
+                    <CheckCircle className="w-5 h-5" />
+                    <span className="text-lg font-bold tabular-nums">Paid: ${formatCompact(paidAmountUSD)}</span>
                   </div>
                 </div>
               )}
               
               {unpaidAmountUSD > 0 && (
-                <div className="bg-amber-500 text-white px-4 py-2 rounded-full shadow-lg">
+                <div className="bg-amber-500 text-white px-5 py-2.5 rounded-full shadow-lg">
                   <div className="flex items-center justify-center gap-2">
-                    <Clock className="w-3 h-3" />
-                    <span className="text-sm font-bold">Unpaid: ${formatAmount(unpaidAmountUSD)}</span>
+                    <Clock className="w-5 h-5" />
+                    <span className="text-lg font-bold tabular-nums">Unpaid: ${formatCompact(unpaidAmountUSD)}</span>
                   </div>
                 </div>
               )}
             </div>
+
           </div>
         </div>
 
