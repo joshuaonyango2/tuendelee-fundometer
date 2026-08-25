@@ -5,13 +5,15 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { ArrowLeft, Trash2, TrendingUp, Users, FileText, Plus, Video, Languages } from 'lucide-react';
+import { ArrowLeft, Trash2, TrendingUp, Users, FileText, Plus, Video, Languages, Scale } from 'lucide-react';
 import { EventThermometer } from '@/components/admin/EventThermometer';
 import { ParticipantsView } from '@/components/admin/ParticipantsView';
 import { PlatformCredentialsManager } from '@/components/admin/PlatformCredentialsManager';
 import { PledgeReportsView } from '@/components/admin/PledgeReportsView';
 import { ManualPledgeEntry } from '@/components/admin/ManualPledgeEntry';
 import { EventContentEditor } from '@/components/admin/EventContentEditor';
+import { ReconciliationView } from '@/components/admin/ReconciliationView';
+
 
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
