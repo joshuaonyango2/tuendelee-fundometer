@@ -1,10 +1,12 @@
-export type Language = "en" | "it" | "fr";
+export type Language = "en" | "it" | "fr" | "sw";
 
 export const LANGUAGES: { code: Language; label: string; flag: string }[] = [
   { code: "en", label: "English", flag: "🇬🇧" },
   { code: "it", label: "Italiano", flag: "🇮🇹" },
   { code: "fr", label: "Français", flag: "🇫🇷" },
+  { code: "sw", label: "Kiswahili", flag: "🇰🇪" },
 ];
+
 
 type Dict = Record<string, string>;
 
@@ -194,7 +196,70 @@ const fr: Dict = {
   "pledge.messagePlaceholder": "Votre message de soutien...",
 };
 
-export const translations: Record<Language, Dict> = { en, it, fr };
+const sw: Dict = {
+  "nav.language": "Lugha",
+
+  "home.title": "Fundometer ya Taasisi ya Tuendelee",
+  "home.heading": "Kuwezesha Akili Bora Kupitia Elimu",
+  "home.subheading":
+    "Saidia wanafunzi wanaostahili kwa masomo ya bure. Kila mchango hubadilisha maisha na kujenga mustakabali bora kwa Kenya.",
+  "home.ctaCardTitle": "Uko Tayari Kuleta Mabadiliko?",
+  "home.ctaButton": "Jisajili Kuweka Ahadi na Kufuatilia Maendeleo",
+  "home.finalCtaText": "Inachukua muda mfupi tu kuleta athari ya kudumu",
+  "home.finalCtaButton": "Anza Kuleta Mabadiliko",
+  "home.finalCtaNote":
+    "Kwa pamoja, tunawezesha wanafunzi wanaostahili kufikia ndoto zao za elimu",
+
+  "impact.sectionTitle": "Hadithi za Athari",
+  "impact.sectionSubtitle":
+    "Ona na sikia mabadiliko ambayo msaada wako unaleta katika maisha ya wanafunzi wetu.",
+  "impact.listen": "Sikiliza hadithi hii",
+  "impact.loading": "Inapakia hadithi za athari...",
+
+  "security.title": "Usalama Wako ni Kipaumbele Chetu",
+  "security.subtitle":
+    "Tunaelewa umuhimu wa kulinda taarifa zako za kibinafsi na za kifedha. Imani yako ni muhimu kwetu.",
+  "security.encryptionTitle": "Uhamishaji wa Data Uliosimbwa",
+  "security.encryptionBody":
+    "Taarifa zako za kibinafsi zinalindwa kwa usimbaji wa SSL/TLS wakati wa kutumwa, teknolojia ile ile inayotumiwa na tovuti salama duniani kote",
+  "security.paymentTitle": "Malipo Salama",
+  "security.paymentBody":
+    "Hatuhifadhi kamwe taarifa za kadi yako ya benki. Malipo yote yanashughulikiwa kupitia watoa huduma wanaoaminika kama M-Pesa, PayPal na uhamisho salama wa benki",
+  "security.storageTitle": "Uhifadhi Salama wa Data",
+  "security.storageBody":
+    "Taarifa zako zinahifadhiwa katika hifadhidata salama na zilizosimbwa, zenye ufikiaji uliodhibitiwa na ukaguzi wa usalama wa mara kwa mara",
+  "security.privacyTitle": "Faragha Imehakikishwa",
+  "security.privacyBody":
+    "Hatutashiriki, kuuza au kusambaza taarifa zako za kibinafsi kwa wengine. Data yako inatumika tu kwa ushiriki katika hafla na kushughulikia michango",
+  "security.trustedTitle": "Imethibitishwa na Inaaminika",
+  "security.trustedBody":
+    "Jukwaa letu limejengwa kwa mbinu bora za usalama na hukaguliwa mara kwa mara ili kuhakikisha viwango vya juu vya ulinzi wa data na uaminifu",
+  "security.trackingTitle": "Ufuatiliaji wa Uwazi",
+  "security.trackingBody":
+    "Ona michango kwa wakati halisi kwa uwazi kamili. Fuatilia jinsi mchango wako unatusaidia kufikia malengo yetu",
+
+  "how.title": "Jinsi Inavyofanya Kazi",
+  "how.step1Title": "Jiunge Papo Hapo",
+  "how.step1Body":
+    "Bofya kitufe cha kujisajili na umeingia. Rahisi hivyo tu. Hakuna fomu ngumu au usajili mrefu.",
+  "how.step2Title": "Toa Mchango Wako",
+  "how.step2Body":
+    "Chagua kulipa sasa kwa athari ya haraka au weka ahadi ya kulipa baadaye. Chagua njia ya malipo unayopendelea - ni rahisi na salama.",
+
+  "help.button": "Unahitaji Msaada? Bofya Hapa!",
+
+  "pledge.name": "Jina Lako",
+  "pledge.email": "Barua Pepe",
+  "pledge.amount": "Kiasi",
+  "pledge.currency": "Sarafu",
+  "pledge.paymentMethod": "Njia ya Malipo",
+  "pledge.duration": "Muda wa Malipo (Kwa Ahadi)",
+  "pledge.message": "Ujumbe (Si Lazima)",
+  "pledge.messagePlaceholder": "Ujumbe wako wa kuunga mkono...",
+};
+
+export const translations: Record<Language, Dict> = { en, it, fr, sw };
+
 
 export function translate(lang: Language, key: string): string {
   return translations[lang]?.[key] ?? translations.en[key] ?? key;
