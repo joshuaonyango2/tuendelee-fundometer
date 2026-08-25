@@ -1,0 +1,1 @@
+GRANT SELECT (title_it, title_fr, title_sw, description_it, description_fr, description_sw) ON public.fundraising_events TO anon;
