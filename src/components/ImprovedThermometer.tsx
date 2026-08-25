@@ -207,89 +207,117 @@ export function ImprovedThermometer({
   return (
     <div className={cn("w-full max-w-7xl mx-auto py-8 px-4", className)}>
       <p className="sr-only" role="status" aria-live="polite">{progressLabel}</p>
-      {/* Summary Cards - Now 4 cards in 2x2 grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-        {/* Target Goal Card */}
-        <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-2xl p-6 shadow-2xl transform hover:scale-105 transition-transform duration-300">
-          <div className="text-center space-y-3">
-            <div className="flex items-center justify-center gap-3">
-              <Trophy className="w-6 h-6" />
-              <h3 className="text-lg font-bold">Campaign Goal</h3>
-            </div>
-            <p className="text-3xl font-bold">${formatAmount(goalAmountUSD)}</p>
-            <p className="text-purple-100">KSh {formatAmount(goalAmountUSD * exchangeRate)}</p>
-            <div className="pt-3">
-              <p className="text-purple-200 text-sm">Target Amount</p>
-              <p className="text-2xl font-bold">100%</p>
-            </div>
-          </div>
-        </div>
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 sm:gap-6 mb-12">
+        {[
+          {
+            title: 'Campaign Goal',
+            Icon: Trophy,
+            gradient: 'from-purple-500 to-purple-700',
+            usd: goalAmountUSD,
+            kes: goalAmountUSD * exchangeRate,
+            subLabel: 'Target Amount',
+            subValue: '100%',
+            tint: 'text-purple-100',
+          },
+          {
+            title: 'Total Pledged',
+            Icon: Target,
+            gradient: 'from-blue-500 to-blue-700',
+            usd: totalPledgedUSD,
+            kes: totalPledgedKES,
+            subLabel: 'Of Goal',
+            subValue: `${totalPledgedPercentage.toFixed(1)}%`,
+            tint: 'text-blue-100',
+          },
+          {
+            title: 'Paid Pledges',
+            Icon: CheckCircle,
+            gradient: 'from-emerald-500 to-emerald-700',
+            usd: displayPaidUSD,
+            kes: displayPaidKES,
+            subLabel: 'Of Goal',
+            subValue: `${paidPercentage.toFixed(1)}%`,
+            tint: 'text-emerald-100',
+          },
+          {
+            title: 'Still Needed',
+            Icon: ArrowUp,
+            gradient: 'from-orange-500 to-orange-700',
+            usd: remainingAmountUSD,
+            kes: remainingAmountKES,
+            subLabel: 'To Reach Goal',
+            subValue: `${remainingPercentage.toFixed(1)}%`,
+            tint: 'text-orange-100',
+          },
+        ].map(({ title, Icon, gradient, usd, kes, subLabel, subValue, tint }) => (
+          <div
+            key={title}
+            className={cn(
+              'relative overflow-hidden rounded-3xl p-6 text-white shadow-xl ring-1 ring-white/20',
+              'bg-gradient-to-br transition-transform duration-300 hover:-translate-y-1 hover:shadow-2xl',
+              gradient
+            )}
+          >
+            <div className="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-white/10 blur-xl" />
+            <div className="relative flex flex-col items-center text-center">
+              <div className="flex items-center justify-center gap-2 min-w-0">
+                <Icon className="h-6 w-6 shrink-0" />
+                <h3 className="text-xl font-extrabold tracking-tight leading-tight">{title}</h3>
+              </div>
 
-        {/* Total Pledged Card */}
-        <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-2xl p-6 shadow-2xl transform hover:scale-105 transition-transform duration-300">
-          <div className="text-center space-y-3">
-            <div className="flex items-center justify-center gap-3">
-              <Target className="w-6 h-6" />
-              <h3 className="text-lg font-bold">Total Pledged</h3>
-            </div>
-            <p className="text-3xl font-bold">${formatAmount(totalPledgedUSD)}</p>
-            <p className="text-blue-100">KSh {formatAmount(totalPledgedKES)}</p>
-            <div className="pt-3">
-              <p className="text-blue-200 text-sm">Of Goal</p>
-              <p className="text-2xl font-bold">{totalPledgedPercentage.toFixed(1)}%</p>
-            </div>
-          </div>
-        </div>
+              <p className="mt-4 w-full text-[clamp(1.75rem,4.2vw,2.75rem)] font-black leading-none tabular-nums tracking-tight">
+                ${formatCompact(usd)}
+              </p>
+              <p className={cn('mt-2 w-full text-base font-semibold tabular-nums leading-snug', tint)}>
+                KSh {formatCompact(kes)}
+              </p>
 
-        {/* Paid Pledges Card */}
-        <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 text-white rounded-2xl p-6 shadow-2xl transform hover:scale-105 transition-transform duration-300">
-          <div className="text-center space-y-3">
-            <div className="flex items-center justify-center gap-3">
-              <CheckCircle className="w-6 h-6" />
-              <h3 className="text-lg font-bold">Paid Pledges</h3>
-            </div>
-            <p className="text-3xl font-bold">${formatAmount(displayPaidUSD)}</p>
-            <p className="text-emerald-100">KSh {formatAmount(displayPaidKES)}</p>
-            <div className="pt-3">
-              <p className="text-emerald-200 text-sm">Of Goal</p>
-              <p className="text-2xl font-bold">{paidPercentage.toFixed(1)}%</p>
+              <div className="mt-5 w-full border-t border-white/25 pt-4">
+                <p className="text-sm font-medium uppercase tracking-wide text-white/80">{subLabel}</p>
+                <p className="mt-1 text-3xl font-black tabular-nums leading-none">{subValue}</p>
+              </div>
             </div>
           </div>
-        </div>
+        ))}
+      </div>
 
-        {/* Remaining Needed Card */}
-        <div className="bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-2xl p-6 shadow-2xl transform hover:scale-105 transition-transform duration-300">
-          <div className="text-center space-y-3">
-            <div className="flex items-center justify-center gap-3">
-              <ArrowUp className="w-6 h-6" />
-              <h3 className="text-lg font-bold">Still Needed</h3>
-            </div>
-            <p className="text-3xl font-bold">${formatAmount(remainingAmountUSD)}</p>
-            <p className="text-orange-100">KSh {formatAmount(remainingAmountKES)}</p>
-            <div className="pt-3">
-              <p className="text-orange-200 text-sm">To Reach Goal</p>
-              <p className="text-2xl font-bold">{remainingPercentage.toFixed(1)}%</p>
-            </div>
-          </div>
-        </div>
+      {/* Big live progress banner */}
+      <div className="mx-auto mb-10 max-w-3xl rounded-3xl border border-primary/20 bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10 px-6 py-5 text-center shadow-md">
+        <p className="text-base font-semibold uppercase tracking-widest text-muted-foreground">Live Progress</p>
+        <p className="mt-1 text-[clamp(2.25rem,7vw,4rem)] font-black leading-none tabular-nums text-foreground">
+          {totalPledgedPercentage.toFixed(1)}%
+        </p>
+        <p className="mt-2 text-lg font-semibold text-foreground/80">
+          {totalPledgedPercentage >= 100
+            ? '🎉 Goal reached — thank you! Every extra gift goes further.'
+            : totalPledgedPercentage >= 75
+            ? '🔥 So close! Your gift can push the mercury to the top.'
+            : totalPledgedPercentage >= 50
+            ? '💪 Past halfway — add yours and watch it rise.'
+            : totalPledgedPercentage >= 25
+            ? '🚀 Momentum is building — make the level jump.'
+            : '🌟 Be the spark — your pledge lifts the thermometer now.'}
+        </p>
       </div>
 
       {/* Currency Headers */}
-      <div className="flex justify-center items-center gap-16 mb-6">
+      <div className="flex justify-center items-center gap-10 sm:gap-16 mb-6">
         <div className="lg:w-48 text-center">
-          <div className="flex items-center justify-end gap-2 text-blue-600 font-bold">
-            <DollarSign className="w-5 h-5" />
-            <span className="text-lg">US Dollars</span>
+          <div className="flex items-center justify-center lg:justify-end gap-2 text-blue-600 font-bold">
+            <DollarSign className="w-6 h-6" />
+            <span className="text-xl">US Dollars</span>
           </div>
         </div>
-        <div className="w-16"></div>
+        <div className="hidden lg:block w-16" />
         <div className="lg:w-48 text-center">
-          <div className="flex items-center justify-start gap-2 text-green-600 font-bold">
-            <TrendingUp className="w-5 h-5" />
-            <span className="text-lg">Kenya Shillings</span>
+          <div className="flex items-center justify-center lg:justify-start gap-2 text-green-600 font-bold">
+            <TrendingUp className="w-6 h-6" />
+            <span className="text-xl">Kenya Shillings</span>
           </div>
         </div>
       </div>
+
 
       {/* Enhanced Thermometer */}
       <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-16">
