@@ -4,10 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { HeroSection } from "@/components/HeroSection";
 import { HomeHelpDialog } from "@/components/HomeHelpDialog";
+import { FeaturedImpactStory } from "@/components/FeaturedImpactStory";
 import { ImpactStories } from "@/components/ImpactStories";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Shield, Users, Lock, CreditCard, Database, CheckCircle } from "lucide-react";
+
 
 const Index = () => {
   const navigate = useNavigate();
