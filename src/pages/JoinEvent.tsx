@@ -170,7 +170,10 @@ export default function JoinEvent() {
     );
   }
 
+  const localizedEvent = localizedEventText(activeEvent, language);
+
   return (
+
     <div className="min-h-screen bg-gradient-background flex items-center justify-center p-4">
       <Helmet>
         <title>Join Fundraising Event | Tuendelee Foundation</title>
