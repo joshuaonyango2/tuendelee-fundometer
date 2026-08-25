@@ -342,22 +342,23 @@ export function ImprovedThermometer({
                 }}
               >
                 <div className="flex items-center justify-end gap-2">
-                  {mark.isGoal && <Target className="w-3 h-3 text-red-500" />}
-                  {mark.isPaid && <CheckCircle className="w-3 h-3 text-emerald-500" />}
-                  {mark.isTotal && <TrendingUp className="w-3 h-3 text-blue-500" />}
+                  {mark.isGoal && <Target className="w-4 h-4 text-red-500" />}
+                  {mark.isPaid && <CheckCircle className="w-4 h-4 text-emerald-500" />}
+                  {mark.isTotal && <TrendingUp className="w-4 h-4 text-blue-500" />}
                   <span className={cn(
-                    "text-xs font-semibold block",
+                    "text-base font-bold tabular-nums block",
                     mark.isGoal 
                       ? "text-red-600" 
                       : mark.isPaid
                       ? "text-emerald-600"
                       : mark.isTotal
                       ? "text-blue-600"
-                      : "text-gray-600"
+                      : "text-gray-700"
                   )}>
                     {mark.labelUSD}
                   </span>
                 </div>
+
               </div>
             ))}
           </div>
