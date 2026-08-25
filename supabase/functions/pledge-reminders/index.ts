@@ -6,6 +6,7 @@ import {
   formatMoney,
   renderTemplate,
   sendEmail,
+  senderAddress,
 } from "../_shared/email.ts";
 
 /**
@@ -69,7 +70,7 @@ Deno.serve(async (req) => {
       if (!events.has(pledge.event_id)) {
         const { data: event } = await supabase
           .from("fundraising_events")
-          .select("title, template_payment_reminder, admin_id")
+          .select("title, template_payment_reminder, admin_id, sender_email, sender_name")
           .eq("id", pledge.event_id)
           .maybeSingle();
         events.set(pledge.event_id, {
@@ -78,6 +79,7 @@ Deno.serve(async (req) => {
             event?.template_payment_reminder ??
             "Reminder: your pledge of ${amount} ${currency} is due on ${deadline}. Pledge reference: ${pledge_id}.",
           admin_id: event?.admin_id ?? "",
+          from: senderAddress(event?.sender_name, event?.sender_email),
         });
       }
       const eventInfo = events.get(pledge.event_id)!;
@@ -116,6 +118,7 @@ Deno.serve(async (req) => {
         pledge.email,
         stage === "final" ? "Your pledge is due tomorrow" : "Halfway to your pledge deadline",
         html,
+        eventInfo.from,
       );
 
       await supabase
