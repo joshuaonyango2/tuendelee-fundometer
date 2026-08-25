@@ -285,12 +285,12 @@ export function ImprovedThermometer({
 
 
       {/* Big live progress banner */}
-      <div className="mx-auto mb-10 max-w-3xl rounded-3xl border border-primary/20 bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10 px-6 py-5 text-center shadow-md">
-        <p className="text-base font-semibold uppercase tracking-widest text-muted-foreground">Live Progress</p>
-        <p className="mt-1 text-[clamp(2.25rem,7vw,4rem)] font-black leading-none tabular-nums text-foreground">
+      <div className="mx-auto mb-10 max-w-3xl rounded-2xl sm:rounded-3xl border border-primary/20 bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10 px-4 sm:px-6 py-4 sm:py-5 text-center shadow-md">
+        <p className="text-xs sm:text-sm font-semibold uppercase tracking-widest text-muted-foreground">Live Progress</p>
+        <p className="mt-1 text-[clamp(1.75rem,5vw,3rem)] font-black leading-none tabular-nums text-foreground">
           {totalPledgedPercentage.toFixed(1)}%
         </p>
-        <p className="mt-2 text-lg font-semibold text-foreground/80">
+        <p className="mt-2 text-sm sm:text-base font-semibold text-foreground/80 leading-tight">
           {totalPledgedPercentage >= 100
             ? '🎉 Goal reached — thank you! Every extra gift goes further.'
             : totalPledgedPercentage >= 75
@@ -302,6 +302,7 @@ export function ImprovedThermometer({
             : '🌟 Be the spark — your pledge lifts the thermometer now.'}
         </p>
       </div>
+
 
       {/* Currency Headers */}
       <div className="flex justify-center items-center gap-10 sm:gap-16 mb-6">
