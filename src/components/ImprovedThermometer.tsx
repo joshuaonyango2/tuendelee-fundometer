@@ -187,13 +187,14 @@ export function ImprovedThermometer({
     return new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(Math.round(amount));
   };
 
-  // Compact formatter keeps big numbers from overflowing the cards
+  // Compact formatter keeps numbers inside cards on every screen width
   const formatCompact = (amount: number) => {
     const n = Math.round(amount);
     if (Math.abs(n) >= 1_000_000) return `${(n / 1_000_000).toFixed(2)}M`;
-    if (Math.abs(n) >= 100_000) return `${(n / 1_000).toFixed(0)}K`;
+    if (Math.abs(n) >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
     return new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(n);
   };
+
 
 
   const totalPledgedPercentage = goalAmountUSD > 0 ? (totalPledgedUSD / goalAmountUSD) * 100 : 0;
