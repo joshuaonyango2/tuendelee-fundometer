@@ -45,7 +45,11 @@ Deno.serve(async (req) => {
     if (error) throw error;
 
     const now = Date.now();
-    const events = new Map<string, { title: string; template: string; admin_id: string }>();
+    const events = new Map<
+      string,
+      { title: string; template: string; admin_id: string; from?: string }
+    >();
+
     let sent = 0;
     const results: Record<string, string> = {};
 
