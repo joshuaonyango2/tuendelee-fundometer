@@ -209,7 +209,7 @@ export function ImprovedThermometer({
     <div className={cn("w-full max-w-7xl mx-auto py-8 px-4", className)}>
       <p className="sr-only" role="status" aria-live="polite">{progressLabel}</p>
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 sm:gap-6 mb-12">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5 mb-12 min-w-0">
         {[
           {
             title: 'Campaign Goal',
@@ -255,33 +255,34 @@ export function ImprovedThermometer({
           <div
             key={title}
             className={cn(
-              'relative overflow-hidden rounded-3xl p-6 text-white shadow-xl ring-1 ring-white/20',
+              'relative overflow-hidden rounded-2xl sm:rounded-3xl p-4 sm:p-5 text-white shadow-xl ring-1 ring-white/20 min-w-0',
               'bg-gradient-to-br transition-transform duration-300 hover:-translate-y-1 hover:shadow-2xl',
               gradient
             )}
           >
-            <div className="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-white/10 blur-xl" />
-            <div className="relative flex flex-col items-center text-center">
-              <div className="flex items-center justify-center gap-2 min-w-0">
-                <Icon className="h-6 w-6 shrink-0" />
-                <h3 className="text-xl font-extrabold tracking-tight leading-tight">{title}</h3>
+            <div className="absolute -right-8 -top-8 h-24 w-24 sm:h-28 sm:w-28 rounded-full bg-white/10 blur-xl" />
+            <div className="relative flex flex-col items-center text-center min-w-0">
+              <div className="flex items-center justify-center gap-1.5 sm:gap-2 min-w-0">
+                <Icon className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
+                <h3 className="text-[clamp(0.8rem,1.4vw,1.125rem)] font-bold tracking-tight leading-tight">{title}</h3>
               </div>
 
-              <p className="mt-4 w-full text-[clamp(1.75rem,4.2vw,2.75rem)] font-black leading-none tabular-nums tracking-tight">
+              <p className="mt-3 sm:mt-4 w-full text-[clamp(1.5rem,3.2vw,2.25rem)] font-black leading-none tabular-nums tracking-tight break-words">
                 ${formatCompact(usd)}
               </p>
-              <p className={cn('mt-2 w-full text-base font-semibold tabular-nums leading-snug', tint)}>
+              <p className={cn('mt-1 sm:mt-2 w-full text-[clamp(0.75rem,1.2vw,0.95rem)] font-semibold tabular-nums leading-snug break-words', tint)}>
                 KSh {formatCompact(kes)}
               </p>
 
-              <div className="mt-5 w-full border-t border-white/25 pt-4">
-                <p className="text-sm font-medium uppercase tracking-wide text-white/80">{subLabel}</p>
-                <p className="mt-1 text-3xl font-black tabular-nums leading-none">{subValue}</p>
+              <div className="mt-4 sm:mt-5 w-full border-t border-white/25 pt-3 sm:pt-4">
+                <p className="text-[clamp(0.65rem,1vw,0.75rem)] font-medium uppercase tracking-wide text-white/80">{subLabel}</p>
+                <p className="mt-1 text-[clamp(1.125rem,2.2vw,1.75rem)] font-black tabular-nums leading-none">{subValue}</p>
               </div>
             </div>
           </div>
         ))}
       </div>
+
 
       {/* Big live progress banner */}
       <div className="mx-auto mb-10 max-w-3xl rounded-3xl border border-primary/20 bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10 px-6 py-5 text-center shadow-md">
