@@ -503,31 +503,50 @@ export function ImprovedThermometer({
           {ticks.map((tick) => (
             <div
               key={tick.percentOfScale}
-              className="absolute left-0 flex -translate-y-1/2 items-center justify-start gap-2"
+              className="absolute left-0 flex -translate-y-1/2 items-center justify-start gap-2 transition-all duration-700 ease-out"
               style={{ bottom: `${tick.percentOfScale}%` }}
             >
               <div
                 className={cn(
-                  'rounded-full',
-                  tick.isQuarter ? 'h-[3px] w-6 bg-emerald-500' : 'h-[2px] w-3 bg-border'
+                  'rounded-full transition-all duration-700 ease-out',
+                  tick.reached
+                    ? 'h-[3px] w-8 bg-emerald-500'
+                    : tick.isQuarter
+                    ? 'h-[3px] w-6 bg-emerald-500/70'
+                    : 'h-[2px] w-3 bg-border',
+                  tick.isNext && 'h-[3px] w-7 animate-tick-beckon bg-blue-500'
                 )}
               />
               <span
                 className={cn(
-                  'tabular-nums leading-none',
+                  'tabular-nums leading-none transition-all duration-700 ease-out',
                   tick.isQuarter
-                    ? 'text-sm sm:text-base font-black text-foreground'
-                    : 'text-[0.7rem] sm:text-sm font-semibold text-muted-foreground'
+                    ? 'text-sm sm:text-base font-black'
+                    : 'text-[0.7rem] sm:text-sm font-semibold',
+                  tick.reached
+                    ? 'scale-[1.06] text-emerald-600 drop-shadow-[0_1px_6px_rgba(16,185,129,0.35)]'
+                    : tick.isQuarter
+                    ? 'text-foreground'
+                    : 'text-muted-foreground',
+                  tick.isNext && 'animate-tick-beckon text-blue-600'
                 )}
               >
                 {tick.labelKES}
               </span>
               {tick.quarterLabel && (
-                <span className="rounded-full bg-purple-100 px-2 py-0.5 text-[0.65rem] font-black text-purple-700">
+                <span
+                  className={cn(
+                    'rounded-full px-2 py-0.5 text-[0.65rem] font-black transition-colors duration-700',
+                    tick.reached
+                      ? 'bg-emerald-600 text-white shadow-sm'
+                      : 'bg-purple-100 text-purple-700'
+                  )}
+                >
                   {tick.quarterLabel}
                 </span>
               )}
             </div>
+
           ))}
         </div>
       </div>
