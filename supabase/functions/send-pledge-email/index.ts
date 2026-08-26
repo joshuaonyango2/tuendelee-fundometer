@@ -58,7 +58,7 @@ Deno.serve(async (req) => {
 
     const { data: eventSession, error: sessionError } = await supabase
       .from("event_sessions")
-      .select("id")
+      .select("id, attendee_email")
       .eq("event_id", pledge.event_id)
       .eq("session_token", sessionToken)
       .gt("last_activity", new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString())
@@ -66,6 +66,9 @@ Deno.serve(async (req) => {
 
     if (sessionError) throw sessionError;
     if (!eventSession) return json({ error: "Invalid or expired event session" }, 403);
+    if (eventSession.attendee_email?.trim().toLowerCase() !== pledge.email.trim().toLowerCase()) {
+      return json({ error: "This pledge does not belong to the event session" }, 403);
+    }
 
     const { data: event } = await supabase
       .from("fundraising_events")
