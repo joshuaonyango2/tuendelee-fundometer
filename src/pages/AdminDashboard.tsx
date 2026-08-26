@@ -346,7 +346,12 @@ export default function AdminDashboard() {
               <Video className="w-4 h-4 mr-2" />
               Impact Stories
             </TabsTrigger>
+            <TabsTrigger value="content">
+              <PenLine className="w-4 h-4 mr-2" />
+              Site Text
+            </TabsTrigger>
           </TabsList>
+
 
           <TabsContent value="events" className="space-y-4">
             {isLoading ? (
