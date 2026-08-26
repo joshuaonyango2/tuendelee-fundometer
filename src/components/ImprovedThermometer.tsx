@@ -369,12 +369,12 @@ export function ImprovedThermometer({
             >
               <span
                 className={cn(
-                  'tabular-nums leading-none transition-all duration-700 ease-out',
+                  'rounded-md bg-card/85 px-1.5 py-0.5 tabular-nums leading-none whitespace-nowrap backdrop-blur-sm transition-all duration-700 ease-out',
                   tick.isQuarter
                     ? 'text-sm sm:text-base font-black'
                     : 'text-[0.7rem] sm:text-sm font-semibold',
                   tick.reached
-                    ? 'scale-[1.06] text-emerald-600 drop-shadow-[0_1px_6px_rgba(16,185,129,0.35)]'
+                    ? 'text-emerald-600'
                     : tick.isQuarter
                     ? 'text-foreground'
                     : 'text-muted-foreground',
@@ -383,6 +383,7 @@ export function ImprovedThermometer({
               >
                 {tick.labelUSD}
               </span>
+
               <div
                 className={cn(
                   'rounded-full transition-all duration-700 ease-out',
