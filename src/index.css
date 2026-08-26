@@ -130,7 +130,35 @@ All colors MUST be HSL.
     @apply border-border;
   }
 
+  html {
+    /* Poppins everywhere, with 14px as the smallest readable step */
+    font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+    -webkit-text-size-adjust: 100%;
+  }
+
   body {
     @apply bg-background text-foreground;
+    font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+    font-size: 1rem;
+    line-height: 1.6;
+    letter-spacing: 0.005em;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+    letter-spacing: -0.01em;
+  }
+}
+
+@layer utilities {
+  /* Nothing in the app renders below 14px — small labels get a readable floor */
+  .text-xs {
+    font-size: 0.875rem;
+    line-height: 1.35rem;
+  }
+
+  .text-sm {
+    font-size: 0.9375rem;
+    line-height: 1.5rem;
   }
 }

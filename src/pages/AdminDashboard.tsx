@@ -8,12 +8,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PaymentMethodsManager } from "@/components/admin/PaymentMethodsManager";
 import { ImpactStoriesManager } from "@/components/admin/ImpactStoriesManager";
+import { SiteContentEditor } from "@/components/admin/SiteContentEditor";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, Calendar, Users, Link2, LogOut, Play, Square, Copy, CheckCircle, Key, Settings, Video } from "lucide-react";
+import { Plus, Calendar, Users, Link2, LogOut, Play, Square, Copy, CheckCircle, Key, Settings, Video, PenLine } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import MeetingIntegrations from "@/components/meetings/MeetingIntegrations";
@@ -325,7 +326,7 @@ export default function AdminDashboard() {
         </div>
 
         <Tabs defaultValue="events" className="space-y-4">
-          <TabsList>
+          <TabsList className="flex-wrap h-auto">
             <TabsTrigger value="events">
               <Calendar className="w-4 h-4 mr-2" />
               Events
@@ -346,7 +347,12 @@ export default function AdminDashboard() {
               <Video className="w-4 h-4 mr-2" />
               Impact Stories
             </TabsTrigger>
+            <TabsTrigger value="content">
+              <PenLine className="w-4 h-4 mr-2" />
+              Site Text
+            </TabsTrigger>
           </TabsList>
+
 
           <TabsContent value="events" className="space-y-4">
             {isLoading ? (
@@ -572,6 +578,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="stories">
             <ImpactStoriesManager />
+          </TabsContent>
+
+          <TabsContent value="content">
+            <SiteContentEditor />
           </TabsContent>
         </Tabs>
       </div>

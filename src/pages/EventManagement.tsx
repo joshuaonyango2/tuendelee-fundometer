@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { ArrowLeft, Trash2, TrendingUp, Users, FileText, Plus, Video, Languages, Scale } from 'lucide-react';
+import { ArrowLeft, Trash2, TrendingUp, Users, FileText, Plus, Video, Languages, Scale, ShieldCheck, BarChart3 } from 'lucide-react';
 import { EventThermometer } from '@/components/admin/EventThermometer';
 import { ParticipantsView } from '@/components/admin/ParticipantsView';
 import { PlatformCredentialsManager } from '@/components/admin/PlatformCredentialsManager';
@@ -13,6 +13,9 @@ import { PledgeReportsView } from '@/components/admin/PledgeReportsView';
 import { ManualPledgeEntry } from '@/components/admin/ManualPledgeEntry';
 import { EventContentEditor } from '@/components/admin/EventContentEditor';
 import { ReconciliationView } from '@/components/admin/ReconciliationView';
+import { PaymentVerificationView } from '@/components/admin/PaymentVerificationView';
+import { PowerBIExport } from '@/components/admin/PowerBIExport';
+
 
 
 import { format } from 'date-fns';
@@ -178,7 +181,7 @@ export default function EventManagement() {
         </div>
 
         <Tabs defaultValue="thermometer" className="space-y-4">
-          <TabsList>
+          <TabsList className="flex-wrap h-auto">
             <TabsTrigger value="thermometer">
               <TrendingUp className="w-4 h-4 mr-2" />
               Thermometer
@@ -195,6 +198,10 @@ export default function EventManagement() {
               <FileText className="w-4 h-4 mr-2" />
               Reports
             </TabsTrigger>
+            <TabsTrigger value="verify">
+              <ShieldCheck className="w-4 h-4 mr-2" />
+              Verify Payments
+            </TabsTrigger>
             <TabsTrigger value="manual">
               <Plus className="w-4 h-4 mr-2" />
               Add Pledge
@@ -203,11 +210,17 @@ export default function EventManagement() {
               <Scale className="w-4 h-4 mr-2" />
               Reconciliation
             </TabsTrigger>
+            <TabsTrigger value="powerbi">
+              <BarChart3 className="w-4 h-4 mr-2" />
+              Power BI
+            </TabsTrigger>
             <TabsTrigger value="content">
               <Languages className="w-4 h-4 mr-2" />
               Event Text
             </TabsTrigger>
           </TabsList>
+
+
 
 
           <TabsContent value="thermometer" className="space-y-4">
@@ -305,6 +318,33 @@ export default function EventManagement() {
               </Card>
             )}
           </TabsContent>
+
+          <TabsContent value="verify" className="space-y-4">
+            {isAdminForEvent ? (
+              <PaymentVerificationView eventId={eventId!} />
+            ) : (
+              <Card>
+                <CardContent className="p-6">
+                  <p className="text-sm text-muted-foreground">Admin sign-in required to verify payments.</p>
+                  <Button className="mt-4" onClick={() => navigate('/admin/auth')}>Sign in as Admin</Button>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
+          <TabsContent value="powerbi" className="space-y-4">
+            {isAdminForEvent ? (
+              <PowerBIExport eventId={eventId!} eventTitle={event?.title} />
+            ) : (
+              <Card>
+                <CardContent className="p-6">
+                  <p className="text-sm text-muted-foreground">Admin sign-in required to export data.</p>
+                  <Button className="mt-4" onClick={() => navigate('/admin/auth')}>Sign in as Admin</Button>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
 
           <TabsContent value="manual" className="space-y-4">
             <ManualPledgeEntry eventId={eventId!} />
