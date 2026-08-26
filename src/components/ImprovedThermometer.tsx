@@ -128,11 +128,15 @@ export function ImprovedThermometer({
     setCelebrationMuted(next);
   };
 
+  /** Animated totals drive the scale so the calibration breathes with each gift. */
+  const displayTotalUSD = displayPaidUSD + displayUnpaidUSD;
+
   /** Scale top: the goal, or a little above the total when the goal is beaten. */
   const maxScale = useMemo(
-    () => Math.max(goalAmountUSD, totalPledgedUSD * 1.1, 1),
-    [goalAmountUSD, totalPledgedUSD]
+    () => Math.max(goalAmountUSD, displayTotalUSD * 1.15, 1),
+    [goalAmountUSD, displayTotalUSD]
   );
+
 
   const formatAmount = (amount: number) =>
     new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(Math.round(amount));
@@ -156,9 +160,9 @@ export function ImprovedThermometer({
     return `KSh ${Math.round(value).toLocaleString()}`;
   };
 
-  /** Bottom-up calibration: a tick every 10% of the scale, bold at the quarters. */
+  /** Bottom-up calibration: a tick every 10% of the live scale, bold at the quarters. */
   const ticks = useMemo(() => {
-    return Array.from({ length: 11 }, (_, i) => {
+    const all = Array.from({ length: 11 }, (_, i) => {
       const percentOfScale = i * 10;
       const valueUSD = (maxScale * percentOfScale) / 100;
       const percentOfGoal = goalAmountUSD > 0 ? (valueUSD / goalAmountUSD) * 100 : 0;
@@ -171,14 +175,20 @@ export function ImprovedThermometer({
         labelKES: formatLabelKES(valueUSD * EXCHANGE_RATE),
         isQuarter,
         quarterLabel: isQuarter ? `${Math.round(percentOfGoal / 25) * 25}%` : null,
+        reached: valueUSD > 0 && valueUSD <= displayTotalUSD,
+        isNext: false,
       };
     });
-  }, [maxScale, goalAmountUSD]);
+    const next = all.find((t) => t.valueUSD > displayTotalUSD);
+    if (next) next.isNext = true;
+    return all;
+  }, [maxScale, goalAmountUSD, displayTotalUSD]);
 
-  const paidHeight = Math.min((paidAmountUSD / maxScale) * 100, 100);
-  const unpaidHeight = Math.min((unpaidAmountUSD / maxScale) * 100, 100 - paidHeight);
+  const paidHeight = Math.min((displayPaidUSD / maxScale) * 100, 100);
+  const unpaidHeight = Math.min((displayUnpaidUSD / maxScale) * 100, 100 - paidHeight);
   const totalHeight = Math.min(paidHeight + unpaidHeight, 100);
   const goalPosition = Math.min((goalAmountUSD / maxScale) * 100, 100);
+
 
   const progressLabel = `Fundraising progress: ${totalPledgedPercentage.toFixed(1)}% of goal. KSh ${formatAmount(
     totalPledgedKES
@@ -322,8 +332,11 @@ export function ImprovedThermometer({
         </p>
       </div>
 
+      {/* Thermometer panel */}
+      <div className="rounded-3xl border border-border/70 bg-gradient-to-b from-card to-muted/40 p-4 sm:p-8 shadow-xl">
       {/* Currency headers */}
       <div className="mx-auto grid max-w-4xl grid-cols-[1fr_auto_1fr] items-end gap-3 sm:gap-6 mb-4">
+
         <div className="flex items-center justify-end gap-2 text-blue-600 font-bold">
           <DollarSign className="h-5 w-5" />
           <span className="text-sm sm:text-lg">US Dollars</span>
@@ -342,27 +355,39 @@ export function ImprovedThermometer({
           {ticks.map((tick) => (
             <div
               key={tick.percentOfScale}
-              className="absolute right-0 flex -translate-y-1/2 items-center justify-end gap-2"
+              className="absolute right-0 flex -translate-y-1/2 items-center justify-end gap-2 transition-all duration-700 ease-out"
               style={{ bottom: `${tick.percentOfScale}%` }}
             >
               <span
                 className={cn(
-                  'tabular-nums leading-none',
+                  'tabular-nums leading-none transition-all duration-700 ease-out',
                   tick.isQuarter
-                    ? 'text-sm sm:text-base font-black text-foreground'
-                    : 'text-[0.7rem] sm:text-sm font-semibold text-muted-foreground'
+                    ? 'text-sm sm:text-base font-black'
+                    : 'text-[0.7rem] sm:text-sm font-semibold',
+                  tick.reached
+                    ? 'scale-[1.06] text-emerald-600 drop-shadow-[0_1px_6px_rgba(16,185,129,0.35)]'
+                    : tick.isQuarter
+                    ? 'text-foreground'
+                    : 'text-muted-foreground',
+                  tick.isNext && 'animate-tick-beckon text-blue-600'
                 )}
               >
                 {tick.labelUSD}
               </span>
               <div
                 className={cn(
-                  'rounded-full',
-                  tick.isQuarter ? 'h-[3px] w-6 bg-blue-500' : 'h-[2px] w-3 bg-border'
+                  'rounded-full transition-all duration-700 ease-out',
+                  tick.reached
+                    ? 'h-[3px] w-8 bg-emerald-500'
+                    : tick.isQuarter
+                    ? 'h-[3px] w-6 bg-blue-500'
+                    : 'h-[2px] w-3 bg-border',
+                  tick.isNext && 'h-[3px] w-7 animate-tick-beckon bg-blue-500'
                 )}
               />
             </div>
           ))}
+
         </div>
 
         {/* Tube */}
@@ -422,27 +447,31 @@ export function ImprovedThermometer({
               </div>
             )}
 
-            {/* Calibration ticks inside the tube */}
-            {ticks.map((tick) => (
-              <div
-                key={tick.percentOfScale}
-                className="absolute left-0 right-0 z-30 flex items-center justify-between px-1"
-                style={{ bottom: `${tick.percentOfScale}%` }}
-              >
+            {/* Calibration ticks inside the tube — they light up as the level passes them */}
+            {ticks.map((tick) => {
+              const bar = cn(
+                'rounded-full transition-all duration-700 ease-out',
+                tick.reached
+                  ? tick.isQuarter
+                    ? 'h-[3px] w-6 bg-white/90'
+                    : 'h-[2px] w-3 bg-white/70'
+                  : tick.isQuarter
+                  ? 'h-[3px] w-5 bg-foreground/70'
+                  : 'h-[2px] w-2.5 bg-foreground/30',
+                tick.isNext && 'animate-tick-beckon'
+              );
+              return (
                 <div
-                  className={cn(
-                    'rounded-full',
-                    tick.isQuarter ? 'h-[3px] w-5 bg-foreground/70' : 'h-[2px] w-2.5 bg-foreground/30'
-                  )}
-                />
-                <div
-                  className={cn(
-                    'rounded-full',
-                    tick.isQuarter ? 'h-[3px] w-5 bg-foreground/70' : 'h-[2px] w-2.5 bg-foreground/30'
-                  )}
-                />
-              </div>
-            ))}
+                  key={tick.percentOfScale}
+                  className="absolute left-0 right-0 z-30 flex items-center justify-between px-1"
+                  style={{ bottom: `${tick.percentOfScale}%` }}
+                >
+                  <div className={bar} />
+                  <div className={bar} />
+                </div>
+              );
+            })}
+
 
             {/* Goal line (purple, matches the Campaign Goal card) */}
             <div
@@ -456,10 +485,15 @@ export function ImprovedThermometer({
             className="pointer-events-none absolute left-full z-40 ml-3 transition-all duration-1000 ease-out"
             style={{ bottom: `calc(${totalHeight}% - 1.25rem)` }}
           >
-            <div className="flex items-center gap-2 whitespace-nowrap rounded-full bg-foreground px-4 py-2 text-background shadow-xl">
-              <Flame className="h-4 w-4" />
-              <span className="text-base font-black tabular-nums">${formatCompact(totalPledgedUSD)}</span>
+            <div className="flex flex-col items-start gap-0.5 whitespace-nowrap rounded-2xl bg-foreground px-4 py-2 text-background shadow-xl ring-1 ring-white/20">
+              <span className="flex items-center gap-1.5 text-base font-black tabular-nums">
+                <Flame className="h-4 w-4" />${formatCompact(displayTotalUSD)}
+              </span>
+              <span className="text-[0.7rem] font-semibold tabular-nums opacity-80">
+                KSh {formatCompact(displayPaidKES + displayUnpaidKES)}
+              </span>
             </div>
+
             {riseAmount !== null && (
               <div className="mt-2 animate-rise-bubble whitespace-nowrap rounded-full bg-emerald-600 px-3 py-1.5 text-sm font-black text-white shadow-lg">
                 +${formatCompact(riseAmount)} just in!
@@ -481,36 +515,58 @@ export function ImprovedThermometer({
           {ticks.map((tick) => (
             <div
               key={tick.percentOfScale}
-              className="absolute left-0 flex -translate-y-1/2 items-center justify-start gap-2"
+              className="absolute left-0 flex -translate-y-1/2 items-center justify-start gap-2 transition-all duration-700 ease-out"
               style={{ bottom: `${tick.percentOfScale}%` }}
             >
               <div
                 className={cn(
-                  'rounded-full',
-                  tick.isQuarter ? 'h-[3px] w-6 bg-emerald-500' : 'h-[2px] w-3 bg-border'
+                  'rounded-full transition-all duration-700 ease-out',
+                  tick.reached
+                    ? 'h-[3px] w-8 bg-emerald-500'
+                    : tick.isQuarter
+                    ? 'h-[3px] w-6 bg-emerald-500/70'
+                    : 'h-[2px] w-3 bg-border',
+                  tick.isNext && 'h-[3px] w-7 animate-tick-beckon bg-blue-500'
                 )}
               />
               <span
                 className={cn(
-                  'tabular-nums leading-none',
+                  'tabular-nums leading-none transition-all duration-700 ease-out',
                   tick.isQuarter
-                    ? 'text-sm sm:text-base font-black text-foreground'
-                    : 'text-[0.7rem] sm:text-sm font-semibold text-muted-foreground'
+                    ? 'text-sm sm:text-base font-black'
+                    : 'text-[0.7rem] sm:text-sm font-semibold',
+                  tick.reached
+                    ? 'scale-[1.06] text-emerald-600 drop-shadow-[0_1px_6px_rgba(16,185,129,0.35)]'
+                    : tick.isQuarter
+                    ? 'text-foreground'
+                    : 'text-muted-foreground',
+                  tick.isNext && 'animate-tick-beckon text-blue-600'
                 )}
               >
                 {tick.labelKES}
               </span>
               {tick.quarterLabel && (
-                <span className="rounded-full bg-purple-100 px-2 py-0.5 text-[0.65rem] font-black text-purple-700">
+                <span
+                  className={cn(
+                    'rounded-full px-2 py-0.5 text-[0.65rem] font-black transition-colors duration-700',
+                    tick.reached
+                      ? 'bg-emerald-600 text-white shadow-sm'
+                      : 'bg-purple-100 text-purple-700'
+                  )}
+                >
                   {tick.quarterLabel}
                 </span>
               )}
             </div>
+
           ))}
         </div>
       </div>
+      </div>
 
       {/* Amount chips */}
+
+
       <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
         {paidAmountUSD > 0 && (
           <div className="flex items-center gap-2 rounded-full bg-emerald-600 px-5 py-2.5 text-white shadow-lg">
@@ -582,10 +638,16 @@ export function ImprovedThermometer({
           100% { transform: scale(1); opacity: 1; }
         }
         .animate-milestone-pop { animation: milestonePop 0.6s ease-out; }
+        @keyframes tickBeckon {
+          0%, 100% { opacity: 0.55; transform: translateX(0); }
+          50% { opacity: 1; transform: translateX(2px); }
+        }
+        .animate-tick-beckon { animation: tickBeckon 1.6s ease-in-out infinite; }
         @media (prefers-reduced-motion: reduce) {
           .animate-float, .animate-shimmer, .animate-mercury-pulse, .animate-goal-glow,
-          .animate-rise-bubble, .animate-milestone-pop { animation: none; }
+          .animate-rise-bubble, .animate-milestone-pop, .animate-tick-beckon { animation: none; }
         }
+
       `}</style>
     </div>
   );
