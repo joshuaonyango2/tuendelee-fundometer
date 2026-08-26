@@ -181,7 +181,7 @@ export default function EventManagement() {
         </div>
 
         <Tabs defaultValue="thermometer" className="space-y-4">
-          <TabsList>
+          <TabsList className="flex-wrap h-auto">
             <TabsTrigger value="thermometer">
               <TrendingUp className="w-4 h-4 mr-2" />
               Thermometer
@@ -198,6 +198,10 @@ export default function EventManagement() {
               <FileText className="w-4 h-4 mr-2" />
               Reports
             </TabsTrigger>
+            <TabsTrigger value="verify">
+              <ShieldCheck className="w-4 h-4 mr-2" />
+              Verify Payments
+            </TabsTrigger>
             <TabsTrigger value="manual">
               <Plus className="w-4 h-4 mr-2" />
               Add Pledge
@@ -206,11 +210,17 @@ export default function EventManagement() {
               <Scale className="w-4 h-4 mr-2" />
               Reconciliation
             </TabsTrigger>
+            <TabsTrigger value="powerbi">
+              <BarChart3 className="w-4 h-4 mr-2" />
+              Power BI
+            </TabsTrigger>
             <TabsTrigger value="content">
               <Languages className="w-4 h-4 mr-2" />
               Event Text
             </TabsTrigger>
           </TabsList>
+
+
 
 
           <TabsContent value="thermometer" className="space-y-4">
