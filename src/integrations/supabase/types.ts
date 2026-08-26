@@ -259,6 +259,42 @@ export type Database = {
           },
         ]
       }
+      celebration_sounds: {
+        Row: {
+          audio_path: string | null
+          created_at: string
+          id: string
+          is_active: boolean
+          label: string | null
+          milestone: number
+          source_type: string
+          updated_at: string
+          youtube_url: string | null
+        }
+        Insert: {
+          audio_path?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          label?: string | null
+          milestone: number
+          source_type?: string
+          updated_at?: string
+          youtube_url?: string | null
+        }
+        Update: {
+          audio_path?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          label?: string | null
+          milestone?: number
+          source_type?: string
+          updated_at?: string
+          youtube_url?: string | null
+        }
+        Relationships: []
+      }
       event_meetings: {
         Row: {
           created_at: string | null
