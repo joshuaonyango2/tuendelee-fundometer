@@ -100,7 +100,9 @@ export default {
 				'md': 'var(--shadow-md)',
 				'lg': 'var(--shadow-lg)',
 				'xl': 'var(--shadow-xl)',
-				'glow': 'var(--shadow-glow)'
+				'glow': 'var(--shadow-glow)',
+				'admin': 'var(--shadow-admin)'
+
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
