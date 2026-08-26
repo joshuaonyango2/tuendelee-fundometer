@@ -160,9 +160,9 @@ export function ImprovedThermometer({
     return `KSh ${Math.round(value).toLocaleString()}`;
   };
 
-  /** Bottom-up calibration: a tick every 10% of the scale, bold at the quarters. */
+  /** Bottom-up calibration: a tick every 10% of the live scale, bold at the quarters. */
   const ticks = useMemo(() => {
-    return Array.from({ length: 11 }, (_, i) => {
+    const all = Array.from({ length: 11 }, (_, i) => {
       const percentOfScale = i * 10;
       const valueUSD = (maxScale * percentOfScale) / 100;
       const percentOfGoal = goalAmountUSD > 0 ? (valueUSD / goalAmountUSD) * 100 : 0;
@@ -175,14 +175,20 @@ export function ImprovedThermometer({
         labelKES: formatLabelKES(valueUSD * EXCHANGE_RATE),
         isQuarter,
         quarterLabel: isQuarter ? `${Math.round(percentOfGoal / 25) * 25}%` : null,
+        reached: valueUSD > 0 && valueUSD <= displayTotalUSD,
+        isNext: false,
       };
     });
-  }, [maxScale, goalAmountUSD]);
+    const next = all.find((t) => t.valueUSD > displayTotalUSD);
+    if (next) next.isNext = true;
+    return all;
+  }, [maxScale, goalAmountUSD, displayTotalUSD]);
 
-  const paidHeight = Math.min((paidAmountUSD / maxScale) * 100, 100);
-  const unpaidHeight = Math.min((unpaidAmountUSD / maxScale) * 100, 100 - paidHeight);
+  const paidHeight = Math.min((displayPaidUSD / maxScale) * 100, 100);
+  const unpaidHeight = Math.min((displayUnpaidUSD / maxScale) * 100, 100 - paidHeight);
   const totalHeight = Math.min(paidHeight + unpaidHeight, 100);
   const goalPosition = Math.min((goalAmountUSD / maxScale) * 100, 100);
+
 
   const progressLabel = `Fundraising progress: ${totalPledgedPercentage.toFixed(1)}% of goal. KSh ${formatAmount(
     totalPledgedKES
