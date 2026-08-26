@@ -52,7 +52,6 @@ export function ImprovedThermometer({
   const [displayPaidKES, setDisplayPaidKES] = useState(0);
   const [displayUnpaidUSD, setDisplayUnpaidUSD] = useState(0);
   const [displayUnpaidKES, setDisplayUnpaidKES] = useState(0);
-  const [muted, setMuted] = useState(false);
   const [milestone, setMilestone] = useState<Milestone | null>(null);
   const [riseAmount, setRiseAmount] = useState<number | null>(null);
   const { play: playCelebrationSound, youtubeEmbed } = useCelebrationSounds();
@@ -64,9 +63,7 @@ export function ImprovedThermometer({
   const totalPledgedUSD = paidAmountUSD + unpaidAmountUSD;
   const totalPledgedKES = paidAmountKES + unpaidAmountKES;
 
-  useEffect(() => {
-    setMuted(isCelebrationMuted());
-  }, []);
+
 
   /** Count-up animation for the headline figures. */
   useEffect(() => {
