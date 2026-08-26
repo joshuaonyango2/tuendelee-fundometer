@@ -190,7 +190,59 @@ export function HelpDialog() {
               </p>
             </AccordionContent>
           </AccordionItem>
+
+          <AccordionItem value="proof-of-payment">
+            <AccordionTrigger className="text-left">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="w-5 h-5 text-primary" />
+                <span>How do I prove that I have paid?</span>
+              </div>
+            </AccordionTrigger>
+            <AccordionContent className="space-y-2 text-sm text-muted-foreground">
+              <p>Two things make your payment easy to verify — do both if you can:</p>
+              <ol className="list-decimal list-inside space-y-1 ml-2">
+                <li>
+                  <strong>Type in your transaction code</strong> on the confirmation screen: the M-Pesa
+                  code from the Safaricom SMS (10 characters, e.g. QA12B3C4D5), the PayPal transaction ID
+                  (17 characters), or the bank/Benevity reference from your slip.
+                </li>
+                <li>
+                  <strong>Upload your evidence</strong> — a screenshot of the M-Pesa message, the bank
+                  slip, or the PayPal receipt (image or PDF, up to 5MB). It is stored privately and only
+                  the fundraising admin can open it.
+                </li>
+              </ol>
+              <p>
+                The system checks the code format straight away and flags a code that was already used, so
+                nobody's payment is ever counted twice. The admin then marks your payment verified, and the
+                thermometer moves your amount from "pledged" to "paid".
+              </p>
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="thermometer-reading">
+            <AccordionTrigger className="text-left">
+              <div className="flex items-center gap-2">
+                <DollarSign className="w-5 h-5 text-primary" />
+                <span>How do I read the thermometer?</span>
+              </div>
+            </AccordionTrigger>
+            <AccordionContent className="space-y-2 text-sm text-muted-foreground">
+              <ul className="list-disc list-inside space-y-1 ml-2">
+                <li><strong>Green</strong> — money already paid and received.</li>
+                <li><strong>Blue</strong> — pledged but not yet paid.</li>
+                <li><strong>Orange</strong> — the amount still needed to reach the goal.</li>
+                <li><strong>Purple dashed line</strong> — the campaign goal.</li>
+              </ul>
+              <p>
+                The scale is marked bottom-up in both US Dollars (left) and Kenya Shillings (right), and it
+                rises live as pledges come in. At a quarter, half, three quarters and the full goal you'll
+                see a celebration — you can mute the sound with the speaker button.
+              </p>
+            </AccordionContent>
+          </AccordionItem>
         </Accordion>
+
 
         <div className="mt-6 p-4 bg-muted rounded-lg">
           <h4 className="font-semibold mb-2 text-sm">Still have questions?</h4>
