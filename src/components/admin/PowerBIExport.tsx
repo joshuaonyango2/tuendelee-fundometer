@@ -186,6 +186,50 @@ export function PowerBIExport({ eventId, eventTitle }: PowerBIExportProps) {
           </div>
         </CardContent>
       </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <CalendarClock className="h-5 w-5 text-primary" />
+            Refresh schedule
+          </CardTitle>
+          <CardDescription>
+            Record how often Power BI should pull this event's data. Set the same cadence inside Power BI
+            (Dataset → Settings → Scheduled refresh) so both sides stay in step.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="sync-frequency">Sync frequency</Label>
+              <select
+                id="sync-frequency"
+                value={syncFrequency}
+                onChange={(e) => setSyncFrequency(e.target.value)}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <option value="manual">Manual only</option>
+                <option value="hourly">Every hour</option>
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+              </select>
+            </div>
+            <div className="space-y-2">
+              <Label>Last recorded sync</Label>
+              <Input readOnly value={lastSyncAt ? format(new Date(lastSyncAt), "PPpp") : "Never"} />
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Button onClick={() => void saveSchedule(false)} disabled={isSavingSchedule}>
+              {isSavingSchedule ? "Saving..." : "Save schedule"}
+            </Button>
+            <Button variant="outline" onClick={() => void saveSchedule(true)} disabled={isSavingSchedule}>
+              Mark synced now
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
+
   );
 }
