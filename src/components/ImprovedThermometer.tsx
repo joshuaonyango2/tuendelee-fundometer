@@ -9,19 +9,16 @@ import {
   DollarSign,
   TrendingUp,
   Trophy,
-  Volume2,
-  VolumeX,
 } from 'lucide-react';
 import {
   celebrateMilestone,
   celebrateRise,
-  isCelebrationMuted,
-  setCelebrationMuted,
   milestoneFor,
   MILESTONE_MESSAGES,
   type Milestone,
 } from '@/lib/celebrate';
 import { useCelebrationSounds } from '@/hooks/useCelebrationSounds';
+
 
 
 interface ImprovedThermometerProps {
