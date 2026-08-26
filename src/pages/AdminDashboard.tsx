@@ -441,37 +441,49 @@ export default function AdminDashboard() {
             ) : (
               <div className="grid gap-4">
                 {events.map((event) => (
-                  <Card key={event.id}>
-                    <CardHeader>
-                      <div className="flex justify-between items-start">
+                  <Card
+                    key={event.id}
+                    className={`overflow-hidden border-l-4 shadow-md transition-shadow hover:shadow-xl ${
+                      event.is_active ? "border-l-success" : "border-l-navy"
+                    }`}
+                  >
+                    <CardHeader className="bg-muted/40 border-b border-border">
+                      <div className="flex flex-wrap justify-between items-start gap-3">
                         <div>
-                          <CardTitle>{event.title}</CardTitle>
+                          <CardTitle className="text-xl">{event.title}</CardTitle>
                           <CardDescription>
                             {format(new Date(event.scheduled_at), "PPpp")}
                           </CardDescription>
                         </div>
-                        <Badge variant={event.is_active ? "default" : "secondary"}>
+                        <Badge
+                          className={
+                            event.is_active
+                              ? "bg-success text-success-foreground"
+                              : "bg-navy text-primary-foreground"
+                          }
+                        >
                           {event.status}
                         </Badge>
                       </div>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-4 pt-6">
                       <p className="text-sm text-muted-foreground">{event.description}</p>
                       
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                          <Label>Goal Amount</Label>
-                          <p className="font-semibold">${event.goal_amount.toLocaleString()}</p>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div className="rounded-xl border border-border bg-muted/30 p-4">
+                          <Label className="text-muted-foreground">Goal Amount</Label>
+                          <p className="text-lg font-bold">${event.goal_amount.toLocaleString()}</p>
                         </div>
-                        <div>
-                          <Label>Duration</Label>
-                          <p className="font-semibold">{event.duration_minutes} minutes</p>
+                        <div className="rounded-xl border border-border bg-muted/30 p-4">
+                          <Label className="text-muted-foreground">Duration</Label>
+                          <p className="text-lg font-bold">{event.duration_minutes} minutes</p>
                         </div>
-                        <div>
-                          <Label>Passcode</Label>
-                          <p className="font-mono font-semibold text-lg">{event.passcode}</p>
+                        <div className="rounded-xl border border-border bg-muted/30 p-4">
+                          <Label className="text-muted-foreground">Passcode</Label>
+                          <p className="font-mono text-lg font-bold tracking-widest text-primary">{event.passcode}</p>
                         </div>
                       </div>
+
 
                       <EventMeetingLinkEditor
                         eventId={event.id}
