@@ -444,27 +444,31 @@ export function ImprovedThermometer({
               </div>
             )}
 
-            {/* Calibration ticks inside the tube */}
-            {ticks.map((tick) => (
-              <div
-                key={tick.percentOfScale}
-                className="absolute left-0 right-0 z-30 flex items-center justify-between px-1"
-                style={{ bottom: `${tick.percentOfScale}%` }}
-              >
+            {/* Calibration ticks inside the tube — they light up as the level passes them */}
+            {ticks.map((tick) => {
+              const bar = cn(
+                'rounded-full transition-all duration-700 ease-out',
+                tick.reached
+                  ? tick.isQuarter
+                    ? 'h-[3px] w-6 bg-white/90'
+                    : 'h-[2px] w-3 bg-white/70'
+                  : tick.isQuarter
+                  ? 'h-[3px] w-5 bg-foreground/70'
+                  : 'h-[2px] w-2.5 bg-foreground/30',
+                tick.isNext && 'animate-tick-beckon'
+              );
+              return (
                 <div
-                  className={cn(
-                    'rounded-full',
-                    tick.isQuarter ? 'h-[3px] w-5 bg-foreground/70' : 'h-[2px] w-2.5 bg-foreground/30'
-                  )}
-                />
-                <div
-                  className={cn(
-                    'rounded-full',
-                    tick.isQuarter ? 'h-[3px] w-5 bg-foreground/70' : 'h-[2px] w-2.5 bg-foreground/30'
-                  )}
-                />
-              </div>
-            ))}
+                  key={tick.percentOfScale}
+                  className="absolute left-0 right-0 z-30 flex items-center justify-between px-1"
+                  style={{ bottom: `${tick.percentOfScale}%` }}
+                >
+                  <div className={bar} />
+                  <div className={bar} />
+                </div>
+              );
+            })}
+
 
             {/* Goal line (purple, matches the Campaign Goal card) */}
             <div
