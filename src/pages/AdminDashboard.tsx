@@ -11,13 +11,15 @@ import { ImpactStoriesManager } from "@/components/admin/ImpactStoriesManager";
 import { SiteContentEditor } from "@/components/admin/SiteContentEditor";
 import { OrgSenderSettings } from "@/components/admin/OrgSenderSettings";
 import { EventMeetingLinkEditor } from "@/components/admin/EventMeetingLinkEditor";
+import { CelebrationSoundsManager } from "@/components/admin/CelebrationSoundsManager";
+
 
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, Calendar, Users, Link2, LogOut, Play, Square, Copy, CheckCircle, Key, Settings, Video, PenLine } from "lucide-react";
+import { Plus, Calendar, Users, Link2, LogOut, Play, Square, Copy, CheckCircle, Key, Settings, Video, PenLine, Music } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import MeetingIntegrations from "@/components/meetings/MeetingIntegrations";
@@ -362,7 +364,12 @@ export default function AdminDashboard() {
               <PenLine className="w-4 h-4 mr-2" />
               Site Text
             </TabsTrigger>
+            <TabsTrigger value="sounds">
+              <Music className="w-4 h-4 mr-2" />
+              Celebration Sounds
+            </TabsTrigger>
           </TabsList>
+
 
 
           <TabsContent value="events" className="space-y-4">
@@ -631,6 +638,12 @@ export default function AdminDashboard() {
             <OrgSenderSettings />
             <SiteContentEditor />
           </TabsContent>
+
+          <TabsContent value="sounds">
+            <CelebrationSoundsManager />
+          </TabsContent>
+
+
 
         </Tabs>
       </div>
