@@ -56,9 +56,11 @@ export function ImprovedThermometer({
   const [muted, setMuted] = useState(false);
   const [milestone, setMilestone] = useState<Milestone | null>(null);
   const [riseAmount, setRiseAmount] = useState<number | null>(null);
+  const { play: playCelebrationSound, youtubeEmbed } = useCelebrationSounds();
 
   const celebratedRef = useRef<Set<Milestone>>(new Set());
   const previousTotalRef = useRef<number | null>(null);
+
 
   const totalPledgedUSD = paidAmountUSD + unpaidAmountUSD;
   const totalPledgedKES = paidAmountKES + unpaidAmountKES;
