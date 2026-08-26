@@ -60,14 +60,33 @@ export default function JoinEvent() {
     try {
       const { data, error } = await supabase
         .from("fundraising_events")
-        .select("id, title, description, title_it, title_fr, title_sw, description_it, description_fr, description_sw, scheduled_at")
+        .select("id, title, description, title_it, title_fr, title_sw, description_it, description_fr, description_sw, scheduled_at, share_link")
         .eq("is_active", true)
-        .order("scheduled_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
+        .order("scheduled_at", { ascending: false });
 
       if (error) throw error;
-      setActiveEvent(data);
+
+      const events = data ?? [];
+      if (events.length === 0) {
+        setActiveEvent(null);
+        return;
+      }
+
+      // Honour a shared link (?event=<share_link>) when present, otherwise pick the
+      // live event closest to now so multiple active events never block joining.
+      const shareLink = new URLSearchParams(window.location.search).get("event");
+      const fromLink = shareLink
+        ? events.find((e: any) => e.share_link === shareLink || e.id === shareLink)
+        : undefined;
+
+      const now = Date.now();
+      const nearest = [...events].sort(
+        (a: any, b: any) =>
+          Math.abs(new Date(a.scheduled_at).getTime() - now) -
+          Math.abs(new Date(b.scheduled_at).getTime() - now)
+      )[0];
+
+      setActiveEvent(fromLink ?? nearest);
     } catch (err: any) {
       console.error("Error loading event:", err);
       toast.error("Failed to load active event");
@@ -75,6 +94,7 @@ export default function JoinEvent() {
       setIsLoading(false);
     }
   };
+
 
   const handleJoin = async (e: React.FormEvent) => {
     e.preventDefault();

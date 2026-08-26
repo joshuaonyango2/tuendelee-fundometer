@@ -20,6 +20,7 @@ import {
   AlertTriangle,
   Clock,
   Scale,
+  ShieldCheck,
 } from 'lucide-react';
 import { Bar, BarChart, CartesianGrid, Cell, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
@@ -146,6 +147,7 @@ export function ReconciliationView({ eventId, event, onSaved }: ReconciliationVi
   const [isLoading, setIsLoading] = useState(true);
   const [isImporting, setIsImporting] = useState(false);
   const [isReconciling, setIsReconciling] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [currency, setCurrency] = useState<string>('KES');
   const [senderEmail, setSenderEmail] = useState<string>(event?.sender_email ?? '');
@@ -298,13 +300,38 @@ export function ReconciliationView({ eventId, event, onSaved }: ReconciliationVi
     }
   };
 
+  const autoVerifyMatched = async (silent = false) => {
+    const { data, error } = await supabase.rpc('auto_verify_reconciled_pledges', { p_event_id: eventId });
+    if (error) throw error;
+    const verified = Number(data ?? 0);
+    if (!silent) {
+      toast.success(
+        verified > 0
+          ? `${verified} matched pledge${verified === 1 ? '' : 's'} verified automatically`
+          : 'All matched pledges were already verified'
+      );
+    }
+    return verified;
+  };
+
   const handleReconcile = async () => {
     setIsReconciling(true);
     try {
       const { data, error } = await supabase.rpc('reconcile_bank_entries', { p_event_id: eventId });
       if (error) throw error;
       const result = Array.isArray(data) ? data[0] : data;
-      toast.success(`Reconciled: ${result?.matched ?? 0} matched, ${result?.unmatched ?? 0} unmatched`);
+
+      let verified = 0;
+      try {
+        verified = await autoVerifyMatched(true);
+      } catch (verifyError) {
+        console.error('Auto-verification failed:', verifyError);
+      }
+
+      toast.success(
+        `Reconciled: ${result?.matched ?? 0} matched, ${result?.unmatched ?? 0} unmatched` +
+          (verified > 0 ? ` • ${verified} pledge(s) auto-verified` : '')
+      );
       await loadData();
     } catch (error: any) {
       console.error('Reconcile failed:', error);
@@ -313,6 +340,20 @@ export function ReconciliationView({ eventId, event, onSaved }: ReconciliationVi
       setIsReconciling(false);
     }
   };
+
+  const handleAutoVerify = async () => {
+    setIsVerifying(true);
+    try {
+      await autoVerifyMatched();
+      await loadData();
+    } catch (error: any) {
+      console.error('Auto-verify failed:', error);
+      toast.error(error?.message ?? 'Failed to verify matched pledges');
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+
 
   const handleClearImports = async () => {
     if (!window.confirm('Remove all imported bank statement data for this event?')) return;
@@ -515,6 +556,10 @@ export function ReconciliationView({ eventId, event, onSaved }: ReconciliationVi
             <Button onClick={handleReconcile} disabled={isReconciling} className="gap-2">
               <RefreshCw className={`h-4 w-4 ${isReconciling ? 'animate-spin' : ''}`} />
               Re-run reconciliation
+            </Button>
+            <Button variant="secondary" onClick={handleAutoVerify} disabled={isVerifying} className="gap-2">
+              <ShieldCheck className="h-4 w-4" />
+              {isVerifying ? 'Verifying...' : 'Auto-verify matched pledges'}
             </Button>
             <Button variant="outline" onClick={exportReconciliation} className="gap-2">
               <Download className="h-4 w-4" />

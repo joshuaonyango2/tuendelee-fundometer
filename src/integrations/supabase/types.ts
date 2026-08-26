@@ -117,6 +117,8 @@ export type Database = {
           created_at: string
           full_name: string | null
           id: string
+          org_email: string | null
+          org_name: string | null
           updated_at: string
           user_id: string
         }
@@ -124,6 +126,8 @@ export type Database = {
           created_at?: string
           full_name?: string | null
           id?: string
+          org_email?: string | null
+          org_name?: string | null
           updated_at?: string
           user_id: string
         }
@@ -131,6 +135,8 @@ export type Database = {
           created_at?: string
           full_name?: string | null
           id?: string
+          org_email?: string | null
+          org_name?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -485,7 +491,11 @@ export type Database = {
           goal_amount: number
           id: string
           is_active: boolean | null
+          meeting_link: string | null
+          meeting_passcode: string | null
           passcode: string
+          powerbi_last_sync_at: string | null
+          powerbi_sync_frequency: string
           scheduled_at: string
           sender_email: string | null
           sender_name: string | null
@@ -514,7 +524,11 @@ export type Database = {
           goal_amount?: number
           id?: string
           is_active?: boolean | null
+          meeting_link?: string | null
+          meeting_passcode?: string | null
           passcode: string
+          powerbi_last_sync_at?: string | null
+          powerbi_sync_frequency?: string
           scheduled_at: string
           sender_email?: string | null
           sender_name?: string | null
@@ -543,7 +557,11 @@ export type Database = {
           goal_amount?: number
           id?: string
           is_active?: boolean | null
+          meeting_link?: string | null
+          meeting_passcode?: string | null
           passcode?: string
+          powerbi_last_sync_at?: string | null
+          powerbi_sync_frequency?: string
           scheduled_at?: string
           sender_email?: string | null
           sender_name?: string | null
@@ -806,6 +824,10 @@ export type Database = {
           p_session_token: string
         }
         Returns: undefined
+      }
+      auto_verify_reconciled_pledges: {
+        Args: { p_event_id: string }
+        Returns: number
       }
       can_view_public_pledges: {
         Args: { p_event_id: string }

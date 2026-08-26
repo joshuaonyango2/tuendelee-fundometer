@@ -8,6 +8,7 @@ import {
   renderTemplate,
   sendEmail,
   senderAddress,
+  resolveSender,
 } from "../_shared/email.ts";
 
 const BodySchema = z.object({
@@ -72,7 +73,7 @@ Deno.serve(async (req) => {
 
     const { data: event } = await supabase
       .from("fundraising_events")
-      .select("id, title, sender_email, sender_name, template_pledge_created, template_payment_confirmed")
+      .select("id, title, admin_id, sender_email, sender_name, template_pledge_created, template_payment_confirmed")
       .eq("id", pledge.event_id)
       .maybeSingle();
 
@@ -138,7 +139,7 @@ Deno.serve(async (req) => {
       pledge.email,
       SUBJECTS[kind],
       html,
-      senderAddress(event?.sender_name, event?.sender_email),
+      await resolveSender(supabase, event),
     );
 
     await supabase.from("pledge_notifications").insert({

@@ -9,6 +9,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PaymentMethodsManager } from "@/components/admin/PaymentMethodsManager";
 import { ImpactStoriesManager } from "@/components/admin/ImpactStoriesManager";
 import { SiteContentEditor } from "@/components/admin/SiteContentEditor";
+import { OrgSenderSettings } from "@/components/admin/OrgSenderSettings";
+import { EventMeetingLinkEditor } from "@/components/admin/EventMeetingLinkEditor";
+
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
@@ -59,7 +62,10 @@ export default function AdminDashboard() {
     duration_minutes: 60,
     goal_amount: 50000,
     currency: "USD" as "USD" | "KES",
+    meeting_link: "",
+    meeting_passcode: "",
   });
+
 
   useEffect(() => {
     // Set up auth state listener FIRST
@@ -147,6 +153,8 @@ export default function AdminDashboard() {
         scheduled_at: newEvent.scheduled_at,
         duration_minutes: newEvent.duration_minutes,
         goal_amount: newEvent.goal_amount,
+        meeting_link: newEvent.meeting_link.trim() || null,
+        meeting_passcode: newEvent.meeting_passcode.trim() || null,
         passcode,
         share_link: shareLink,
       });
@@ -161,8 +169,11 @@ export default function AdminDashboard() {
         duration_minutes: 60,
         goal_amount: 50000,
         currency: "USD",
+        meeting_link: "",
+        meeting_passcode: "",
       });
       loadEvents();
+
     } catch (error: any) {
       toast.error("Failed to create event");
     } finally {
@@ -408,6 +419,15 @@ export default function AdminDashboard() {
                         </div>
                       </div>
 
+                      <EventMeetingLinkEditor
+                        eventId={event.id}
+                        initialLink={(event as any).meeting_link ?? ""}
+                        initialPasscode={(event as any).meeting_passcode ?? ""}
+                        onSaved={loadEvents}
+                      />
+
+
+
                       <div className="flex gap-2">
                         <Button
                           variant="outline"
@@ -556,6 +576,33 @@ export default function AdminDashboard() {
                     </div>
                   </div>
 
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="meeting_link">Meeting link (Zoom, Meet, Teams)</Label>
+                      <Input
+                        id="meeting_link"
+                        type="url"
+                        value={newEvent.meeting_link}
+                        onChange={(e) => setNewEvent({ ...newEvent, meeting_link: e.target.value })}
+                        placeholder="https://zoom.us/j/1234567890"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Paste the link you already created. Every donor who joins will see a button that opens it.
+                      </p>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="meeting_passcode">Meeting passcode (optional)</Label>
+                      <Input
+                        id="meeting_passcode"
+                        value={newEvent.meeting_passcode}
+                        onChange={(e) => setNewEvent({ ...newEvent, meeting_passcode: e.target.value })}
+                        placeholder="e.g. 458291"
+                      />
+                    </div>
+                  </div>
+
+
+
                   <Button type="submit" className="w-full" disabled={isCreating}>
                     {isCreating ? "Creating..." : "Create Event"}
                   </Button>
@@ -580,9 +627,11 @@ export default function AdminDashboard() {
             <ImpactStoriesManager />
           </TabsContent>
 
-          <TabsContent value="content">
+          <TabsContent value="content" className="space-y-4">
+            <OrgSenderSettings />
             <SiteContentEditor />
           </TabsContent>
+
         </Tabs>
       </div>
 

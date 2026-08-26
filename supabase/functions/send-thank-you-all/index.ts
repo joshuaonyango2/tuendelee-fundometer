@@ -8,6 +8,7 @@ import {
   renderTemplate,
   sendEmail,
   senderAddress,
+  resolveSender,
 } from "../_shared/email.ts";
 
 const BodySchema = z.object({
@@ -138,7 +139,7 @@ Deno.serve(async (req) => {
         email,
         subject ?? `Thank you for supporting ${event.title}`,
         html,
-        senderAddress(event.sender_name, event.sender_email),
+        await resolveSender(supabase, event),
       );
       if (result.status === "failed") failed += 1;
       else sent += 1;

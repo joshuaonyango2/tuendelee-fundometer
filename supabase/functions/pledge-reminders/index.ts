@@ -7,6 +7,7 @@ import {
   renderTemplate,
   sendEmail,
   senderAddress,
+  resolveSender,
 } from "../_shared/email.ts";
 
 /**
@@ -83,7 +84,7 @@ Deno.serve(async (req) => {
             event?.template_payment_reminder ??
             "Reminder: your pledge of ${amount} ${currency} is due on ${deadline}. Pledge reference: ${pledge_id}.",
           admin_id: event?.admin_id ?? "",
-          from: senderAddress(event?.sender_name, event?.sender_email),
+          from: await resolveSender(supabase, event),
         });
       }
       const eventInfo = events.get(pledge.event_id)!;

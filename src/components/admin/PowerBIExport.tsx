@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { BarChart3, Download, FileJson, Copy, Database } from "lucide-react";
+import { BarChart3, Download, FileJson, Copy, Database, CalendarClock } from "lucide-react";
 
 interface PowerBIExportProps {
   eventId: string;
@@ -18,6 +18,48 @@ const SUPABASE_HOST = `db.${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.c
 
 export function PowerBIExport({ eventId, eventTitle }: PowerBIExportProps) {
   const [isBusy, setIsBusy] = useState(false);
+  const [syncFrequency, setSyncFrequency] = useState("manual");
+  const [lastSyncAt, setLastSyncAt] = useState<string | null>(null);
+  const [isSavingSchedule, setIsSavingSchedule] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      const { data, error } = await supabase
+        .from("fundraising_events")
+        .select("powerbi_sync_frequency, powerbi_last_sync_at")
+        .eq("id", eventId)
+        .maybeSingle();
+
+      if (error) {
+        console.error("Failed to load Power BI schedule:", error);
+        return;
+      }
+      setSyncFrequency((data as any)?.powerbi_sync_frequency ?? "manual");
+      setLastSyncAt((data as any)?.powerbi_last_sync_at ?? null);
+    })();
+  }, [eventId]);
+
+  const saveSchedule = async (markSynced: boolean) => {
+    setIsSavingSchedule(true);
+    try {
+      const syncedAt = markSynced ? new Date().toISOString() : undefined;
+      const { error } = await supabase
+        .from("fundraising_events")
+        .update({
+          powerbi_sync_frequency: syncFrequency,
+          ...(syncedAt ? { powerbi_last_sync_at: syncedAt } : {}),
+        } as any)
+        .eq("id", eventId);
+
+      if (error) throw error;
+      if (syncedAt) setLastSyncAt(syncedAt);
+      toast.success("Updated successfully");
+    } catch (error: any) {
+      toast.error("Failed to save schedule: " + error.message);
+    } finally {
+      setIsSavingSchedule(false);
+    }
+  };
 
   const loadRows = async () => {
     const { data, error } = await supabase.rpc("get_admin_pledges", { p_event_id: eventId });
@@ -186,6 +228,50 @@ export function PowerBIExport({ eventId, eventTitle }: PowerBIExportProps) {
           </div>
         </CardContent>
       </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <CalendarClock className="h-5 w-5 text-primary" />
+            Refresh schedule
+          </CardTitle>
+          <CardDescription>
+            Record how often Power BI should pull this event's data. Set the same cadence inside Power BI
+            (Dataset → Settings → Scheduled refresh) so both sides stay in step.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="sync-frequency">Sync frequency</Label>
+              <select
+                id="sync-frequency"
+                value={syncFrequency}
+                onChange={(e) => setSyncFrequency(e.target.value)}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <option value="manual">Manual only</option>
+                <option value="hourly">Every hour</option>
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+              </select>
+            </div>
+            <div className="space-y-2">
+              <Label>Last recorded sync</Label>
+              <Input readOnly value={lastSyncAt ? format(new Date(lastSyncAt), "PPpp") : "Never"} />
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Button onClick={() => void saveSchedule(false)} disabled={isSavingSchedule}>
+              {isSavingSchedule ? "Saving..." : "Save schedule"}
+            </Button>
+            <Button variant="outline" onClick={() => void saveSchedule(true)} disabled={isSavingSchedule}>
+              Mark synced now
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
+
   );
 }

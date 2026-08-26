@@ -170,7 +170,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
       // Load event details
       const { data: eventData, error: eventError } = await supabase
         .from('fundraising_events')
-        .select('id, title, description, title_it, title_fr, title_sw, description_it, description_fr, description_sw, scheduled_at, duration_minutes, goal_amount, share_link, is_active, status, created_at, updated_at')
+        .select('id, title, description, title_it, title_fr, title_sw, description_it, description_fr, description_sw, scheduled_at, duration_minutes, goal_amount, share_link, is_active, status, meeting_link, meeting_passcode, created_at, updated_at')
         .eq('id', eventId)
         .single();
 
@@ -194,11 +194,28 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
         .limit(1)
         .maybeSingle();
 
+      const adminLink = (eventData as any)?.meeting_link as string | null;
+
       if (meetingData) {
         setLiveMeeting(meetingData);
+      } else if (adminLink) {
+        // Admin pasted an already-created meeting link on the event itself
+        setLiveMeeting({
+          id: `event-link-${eventId}`,
+          event_id: eventId,
+          meeting_id: '',
+          meeting_url: adminLink,
+          join_url: adminLink,
+          passcode: (eventData as any)?.meeting_passcode ?? null,
+          start_time: (eventData as any)?.scheduled_at ?? null,
+          duration_minutes: (eventData as any)?.duration_minutes ?? null,
+          status: (eventData as any)?.is_active ? 'active' : 'scheduled',
+          meeting_platforms: { name: 'external', display_name: 'Virtual meeting' },
+        } as any);
       } else {
         setLiveMeeting(null);
       }
+
 
       // Count active sessions
       const { data: sessionCount, error: sessionError } = await supabase
@@ -486,10 +503,13 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
                             <div className="whitespace-pre-wrap">{liveMeeting.description}</div>
                           ) : (
                             <>
-                              <div className="flex justify-between">
-                                <span className="font-medium">{t("room.meetingId")}:</span>
-                                <span className="font-mono">{liveMeeting.meeting_id}</span>
-                              </div>
+                              {liveMeeting.meeting_id && (
+                                <div className="flex justify-between">
+                                  <span className="font-medium">{t("room.meetingId")}:</span>
+                                  <span className="font-mono">{liveMeeting.meeting_id}</span>
+                                </div>
+                              )}
+
                               {liveMeeting.passcode && (
                                 <div className="flex justify-between">
                                   <span className="font-medium">{t("room.passcode")}:</span>
