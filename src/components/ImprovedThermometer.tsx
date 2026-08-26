@@ -562,8 +562,10 @@ export function ImprovedThermometer({
           ))}
         </div>
       </div>
+      </div>
 
       {/* Amount chips */}
+
 
       <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
         {paidAmountUSD > 0 && (
