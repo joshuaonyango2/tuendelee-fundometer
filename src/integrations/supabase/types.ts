@@ -342,6 +342,8 @@ export type Database = {
           payment_type: string
           pledge_duration_days: number | null
           possible_duplicate_of: string | null
+          proof_path: string | null
+          proof_uploaded_at: string | null
           receipt_sent_at: string | null
           reminder_final_sent_at: string | null
           reminder_half_sent_at: string | null
@@ -376,6 +378,8 @@ export type Database = {
           payment_type: string
           pledge_duration_days?: number | null
           possible_duplicate_of?: string | null
+          proof_path?: string | null
+          proof_uploaded_at?: string | null
           receipt_sent_at?: string | null
           reminder_final_sent_at?: string | null
           reminder_half_sent_at?: string | null
@@ -410,6 +414,8 @@ export type Database = {
           payment_type?: string
           pledge_duration_days?: number | null
           possible_duplicate_of?: string | null
+          proof_path?: string | null
+          proof_uploaded_at?: string | null
           receipt_sent_at?: string | null
           reminder_final_sent_at?: string | null
           reminder_half_sent_at?: string | null
@@ -715,6 +721,39 @@ export type Database = {
           },
         ]
       }
+      site_content: {
+        Row: {
+          content_key: string
+          created_at: string
+          id: string
+          is_hidden: boolean
+          locale: string
+          sort_order: number
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          content_key: string
+          created_at?: string
+          id?: string
+          is_hidden?: boolean
+          locale?: string
+          sort_order?: number
+          updated_at?: string
+          value?: string
+        }
+        Update: {
+          content_key?: string
+          created_at?: string
+          id?: string
+          is_hidden?: boolean
+          locale?: string
+          sort_order?: number
+          updated_at?: string
+          value?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
@@ -759,6 +798,14 @@ export type Database = {
       archive_event_fundraising: {
         Args: { p_event_id: string }
         Returns: number
+      }
+      attach_payment_proof: {
+        Args: {
+          p_pledge_id: string
+          p_proof_path: string
+          p_session_token: string
+        }
+        Returns: undefined
       }
       can_view_public_pledges: {
         Args: { p_event_id: string }
