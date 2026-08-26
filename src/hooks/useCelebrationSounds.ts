@@ -1,6 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { isCelebrationMuted, type Milestone } from "@/lib/celebrate";
+import {
+  applyCelebrationSettings,
+  isCelebrationMuted,
+  isCelebrationSoundPlaying,
+  playCelebrationAudio,
+  type Milestone,
+} from "@/lib/celebrate";
+import { fetchCelebrationSettings } from "@/lib/celebrationSettings";
 
 export const CELEBRATION_BUCKET = "celebration-sounds";
 
@@ -26,9 +33,9 @@ export function toAutoplayEmbed(url: string): string | null {
 }
 
 /**
- * Loads the admin-configured celebration sounds. Returns a `play` function that
- * reports whether it handled the sound — when it returns false the caller should
- * fall back to the built-in clapping/ululating chime.
+ * Loads the admin-configured celebration sounds and volume/mute settings.
+ * Returns a `play` function that reports whether it handled the sound — when it
+ * returns false the caller should fall back to the built-in ululation + clapping.
  */
 export function useCelebrationSounds() {
   const [sounds, setSounds] = useState<Partial<Record<Milestone, SoundEntry>>>({});
@@ -38,6 +45,9 @@ export function useCelebrationSounds() {
     let cancelled = false;
 
     const load = async () => {
+      const settings = await fetchCelebrationSettings();
+      if (!cancelled) applyCelebrationSettings(settings);
+
       const { data, error } = await supabase
         .from("celebration_sounds")
         .select("milestone, source_type, audio_path, youtube_url")
@@ -69,9 +79,12 @@ export function useCelebrationSounds() {
 
   const play = useCallback(
     (milestone: Milestone) => {
-      if (isCelebrationMuted()) return true; // muted: nothing should play
+      if (isCelebrationMuted()) return true; // muted by the admin: nothing plays
       const entry = sounds[milestone];
       if (!entry) return false;
+
+      // Never stack celebrations on top of each other.
+      if (isCelebrationSoundPlaying() || youtubeEmbed) return true;
 
       if (entry.type === "youtube") {
         setYoutubeEmbed(entry.url);
@@ -79,16 +92,9 @@ export function useCelebrationSounds() {
         return true;
       }
 
-      try {
-        const audio = new Audio(entry.url);
-        audio.volume = 0.9;
-        void audio.play().catch(() => undefined);
-        return true;
-      } catch {
-        return false;
-      }
+      return playCelebrationAudio(entry.url);
     },
-    [sounds]
+    [sounds, youtubeEmbed]
   );
 
   return { play, youtubeEmbed };
