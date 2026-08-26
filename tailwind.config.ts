@@ -46,6 +46,15 @@ export default {
 					foreground: 'hsl(var(--success-foreground))',
 					light: 'hsl(var(--success-light))'
 				},
+				navy: {
+					DEFAULT: 'hsl(var(--brand-navy))',
+					deep: 'hsl(var(--brand-navy-deep))'
+				},
+				gold: {
+					DEFAULT: 'hsl(var(--brand-gold))',
+					foreground: 'hsl(var(--brand-gold-foreground))'
+				},
+
 				destructive: {
 					DEFAULT: 'hsl(var(--destructive))',
 					foreground: 'hsl(var(--destructive-foreground))'
@@ -82,14 +91,18 @@ export default {
 				'gradient-secondary': 'var(--gradient-secondary)',
 				'gradient-success': 'var(--gradient-success)',
 				'gradient-hero': 'var(--gradient-hero)',
-				'gradient-background': 'var(--gradient-background)'
+				'gradient-background': 'var(--gradient-background)',
+				'gradient-admin': 'var(--gradient-admin)'
 			},
+
 			boxShadow: {
 				'sm': 'var(--shadow-sm)',
 				'md': 'var(--shadow-md)',
 				'lg': 'var(--shadow-lg)',
 				'xl': 'var(--shadow-xl)',
-				'glow': 'var(--shadow-glow)'
+				'glow': 'var(--shadow-glow)',
+				'admin': 'var(--shadow-admin)'
+
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

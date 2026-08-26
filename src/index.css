@@ -75,6 +75,14 @@ All colors MUST be HSL.
     --transition-base: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-smooth: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 
+    /* Admin brand — deep navy + gold */
+    --brand-navy: 227 62% 18%;
+    --brand-navy-deep: 227 66% 13%;
+    --brand-gold: 44 74% 52%;
+    --brand-gold-foreground: 227 66% 13%;
+    --gradient-admin: linear-gradient(115deg, hsl(227 66% 13%), hsl(227 62% 22%) 55%, hsl(232 55% 28%));
+    --shadow-admin: 0 18px 40px -22px hsl(227 66% 13% / 0.55);
+
     /* Sidebar */
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5% 26%;
@@ -84,6 +92,7 @@ All colors MUST be HSL.
     --sidebar-accent-foreground: 240 6% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217 91% 60%;
+
   }
 
   .dark {

@@ -315,60 +315,107 @@ export default function AdminDashboard() {
     }
   };
 
+  const activeCount = events.filter((e) => e.is_active).length;
+  const totalGoal = events.reduce((sum, e) => sum + (e.goal_amount || 0), 0);
+
   return (
     <div className="min-h-screen bg-gradient-background">
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-            <p className="text-muted-foreground">Manage your fundraising events</p>
-          </div>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={() => {
-              setShowAccountSettings(true);
-              setNewEmail(user?.email || "");
-            }}>
-              <Settings className="w-4 h-4 mr-2" />
-              Account Settings
-            </Button>
-            <Button variant="outline" size="sm" onClick={handleLogout}>
-              <LogOut className="w-4 h-4 mr-2" />
-              Logout
-            </Button>
+      {/* Navy command bar */}
+      <header className="bg-gradient-admin shadow-admin">
+        <div className="container mx-auto px-4 py-7">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-gold/40 bg-gold/15">
+                <Settings className="h-6 w-6 text-gold" />
+              </div>
+              <div>
+                <h1 className="text-2xl sm:text-3xl font-bold text-primary-foreground">Admin Dashboard</h1>
+                <p className="text-sm text-primary-foreground/70">
+                  Tuendelee Fundometer · manage your fundraising events
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                size="sm"
+                className="bg-gold text-gold-foreground hover:bg-gold/90"
+                onClick={() => {
+                  setShowAccountSettings(true);
+                  setNewEmail(user?.email || "");
+                }}
+              >
+                <Settings className="w-4 h-4 mr-2" />
+                Account Settings
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                className="border-primary-foreground/30 bg-transparent text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"
+                onClick={handleLogout}
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Logout
+              </Button>
+            </div>
           </div>
         </div>
+      </header>
 
-        <Tabs defaultValue="events" className="space-y-4">
-          <TabsList className="flex-wrap h-auto">
-            <TabsTrigger value="events">
+      <div className="container mx-auto px-4 py-8">
+        {/* Overview stats */}
+        <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {[
+            { label: "Events", value: events.length.toString(), hint: "All time", icon: Calendar, accent: "border-l-primary", tint: "bg-primary/10 text-primary" },
+            { label: "Live now", value: activeCount.toString(), hint: "Active events", icon: Play, accent: "border-l-success", tint: "bg-success/10 text-success" },
+            { label: "Combined goal", value: `$${totalGoal.toLocaleString()}`, hint: "Across all events", icon: Users, accent: "border-l-gold", tint: "bg-gold/15 text-gold" },
+          ].map((stat) => (
+            <Card key={stat.label} className={`border-l-4 ${stat.accent} shadow-md transition-shadow hover:shadow-xl`}>
+              <CardContent className="flex items-center gap-4 p-5">
+                <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${stat.tint}`}>
+                  <stat.icon className="h-5 w-5" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-2xl font-bold leading-tight">{stat.value}</p>
+                  <p className="font-semibold">{stat.label}</p>
+                  <p className="text-sm text-muted-foreground">{stat.hint}</p>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        <Tabs defaultValue="events" className="space-y-6">
+          <TabsList className="flex h-auto flex-wrap gap-1 rounded-2xl border border-border bg-muted/60 p-1.5">
+            <TabsTrigger value="events" className="rounded-xl data-[state=active]:bg-navy data-[state=active]:text-primary-foreground data-[state=active]:shadow-md">
               <Calendar className="w-4 h-4 mr-2" />
               Events
             </TabsTrigger>
-            <TabsTrigger value="create">
+            <TabsTrigger value="create" className="rounded-xl data-[state=active]:bg-navy data-[state=active]:text-primary-foreground data-[state=active]:shadow-md">
               <Plus className="w-4 h-4 mr-2" />
               Create Event
             </TabsTrigger>
-            <TabsTrigger value="integrations">
+            <TabsTrigger value="integrations" className="rounded-xl data-[state=active]:bg-navy data-[state=active]:text-primary-foreground data-[state=active]:shadow-md">
               <Video className="w-4 h-4 mr-2" />
               Meeting Platforms
             </TabsTrigger>
-            <TabsTrigger value="payments">
+            <TabsTrigger value="payments" className="rounded-xl data-[state=active]:bg-navy data-[state=active]:text-primary-foreground data-[state=active]:shadow-md">
               <Settings className="w-4 h-4 mr-2" />
               Payment Methods
             </TabsTrigger>
-            <TabsTrigger value="stories">
+            <TabsTrigger value="stories" className="rounded-xl data-[state=active]:bg-navy data-[state=active]:text-primary-foreground data-[state=active]:shadow-md">
               <Video className="w-4 h-4 mr-2" />
               Impact Stories
             </TabsTrigger>
-            <TabsTrigger value="content">
+            <TabsTrigger value="content" className="rounded-xl data-[state=active]:bg-navy data-[state=active]:text-primary-foreground data-[state=active]:shadow-md">
               <PenLine className="w-4 h-4 mr-2" />
               Site Text
             </TabsTrigger>
-            <TabsTrigger value="sounds">
+            <TabsTrigger value="sounds" className="rounded-xl data-[state=active]:bg-navy data-[state=active]:text-primary-foreground data-[state=active]:shadow-md">
               <Music className="w-4 h-4 mr-2" />
               Celebration Sounds
             </TabsTrigger>
           </TabsList>
+
 
 
 
@@ -394,37 +441,49 @@ export default function AdminDashboard() {
             ) : (
               <div className="grid gap-4">
                 {events.map((event) => (
-                  <Card key={event.id}>
-                    <CardHeader>
-                      <div className="flex justify-between items-start">
+                  <Card
+                    key={event.id}
+                    className={`overflow-hidden border-l-4 shadow-md transition-shadow hover:shadow-xl ${
+                      event.is_active ? "border-l-success" : "border-l-navy"
+                    }`}
+                  >
+                    <CardHeader className="bg-muted/40 border-b border-border">
+                      <div className="flex flex-wrap justify-between items-start gap-3">
                         <div>
-                          <CardTitle>{event.title}</CardTitle>
+                          <CardTitle className="text-xl">{event.title}</CardTitle>
                           <CardDescription>
                             {format(new Date(event.scheduled_at), "PPpp")}
                           </CardDescription>
                         </div>
-                        <Badge variant={event.is_active ? "default" : "secondary"}>
+                        <Badge
+                          className={
+                            event.is_active
+                              ? "bg-success text-success-foreground"
+                              : "bg-navy text-primary-foreground"
+                          }
+                        >
                           {event.status}
                         </Badge>
                       </div>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-4 pt-6">
                       <p className="text-sm text-muted-foreground">{event.description}</p>
                       
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                          <Label>Goal Amount</Label>
-                          <p className="font-semibold">${event.goal_amount.toLocaleString()}</p>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div className="rounded-xl border border-border bg-muted/30 p-4">
+                          <Label className="text-muted-foreground">Goal Amount</Label>
+                          <p className="text-lg font-bold">${event.goal_amount.toLocaleString()}</p>
                         </div>
-                        <div>
-                          <Label>Duration</Label>
-                          <p className="font-semibold">{event.duration_minutes} minutes</p>
+                        <div className="rounded-xl border border-border bg-muted/30 p-4">
+                          <Label className="text-muted-foreground">Duration</Label>
+                          <p className="text-lg font-bold">{event.duration_minutes} minutes</p>
                         </div>
-                        <div>
-                          <Label>Passcode</Label>
-                          <p className="font-mono font-semibold text-lg">{event.passcode}</p>
+                        <div className="rounded-xl border border-border bg-muted/30 p-4">
+                          <Label className="text-muted-foreground">Passcode</Label>
+                          <p className="font-mono text-lg font-bold tracking-widest text-primary">{event.passcode}</p>
                         </div>
                       </div>
+
 
                       <EventMeetingLinkEditor
                         eventId={event.id}
