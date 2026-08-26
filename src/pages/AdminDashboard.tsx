@@ -11,6 +11,8 @@ import { ImpactStoriesManager } from "@/components/admin/ImpactStoriesManager";
 import { SiteContentEditor } from "@/components/admin/SiteContentEditor";
 import { OrgSenderSettings } from "@/components/admin/OrgSenderSettings";
 import { EventMeetingLinkEditor } from "@/components/admin/EventMeetingLinkEditor";
+import { CelebrationSoundsManager } from "@/components/admin/CelebrationSoundsManager";
+
 
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
