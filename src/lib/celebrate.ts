@@ -101,11 +101,15 @@ function burstConfetti(milestone: Milestone) {
   }
 }
 
-/** Fire the confetti + sound celebration for a reached milestone. */
-export function celebrateMilestone(milestone: Milestone) {
+/**
+ * Fire the confetti + sound celebration for a reached milestone.
+ * Pass `{ sound: false }` when an admin-configured sound is playing instead.
+ */
+export function celebrateMilestone(milestone: Milestone, options?: { sound?: boolean }) {
   burstConfetti(milestone);
-  playChime(milestone);
+  if (options?.sound !== false) playChime(milestone);
 }
+
 
 /** Small burst used whenever the thermometer rises from a new pledge. */
 export function celebrateRise() {
