@@ -9,6 +9,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PaymentMethodsManager } from "@/components/admin/PaymentMethodsManager";
 import { ImpactStoriesManager } from "@/components/admin/ImpactStoriesManager";
 import { SiteContentEditor } from "@/components/admin/SiteContentEditor";
+import { OrgSenderSettings } from "@/components/admin/OrgSenderSettings";
+import { EventMeetingLinkEditor } from "@/components/admin/EventMeetingLinkEditor";
+
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
