@@ -128,11 +128,15 @@ export function ImprovedThermometer({
     setCelebrationMuted(next);
   };
 
+  /** Animated totals drive the scale so the calibration breathes with each gift. */
+  const displayTotalUSD = displayPaidUSD + displayUnpaidUSD;
+
   /** Scale top: the goal, or a little above the total when the goal is beaten. */
   const maxScale = useMemo(
-    () => Math.max(goalAmountUSD, totalPledgedUSD * 1.1, 1),
-    [goalAmountUSD, totalPledgedUSD]
+    () => Math.max(goalAmountUSD, displayTotalUSD * 1.15, 1),
+    [goalAmountUSD, displayTotalUSD]
   );
+
 
   const formatAmount = (amount: number) =>
     new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(Math.round(amount));
