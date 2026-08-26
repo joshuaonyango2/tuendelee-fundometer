@@ -623,6 +623,19 @@ export function ImprovedThermometer({
         </div>
       </div>
 
+      {/* Admin-configured YouTube celebration sound (audio only) */}
+      {youtubeEmbed && (
+        <iframe
+          title="Celebration sound"
+          src={youtubeEmbed}
+          allow="autoplay"
+          className="pointer-events-none absolute h-px w-px opacity-0"
+          aria-hidden="true"
+        />
+      )}
+
+
+
       <style>{`
         @keyframes float {
           0%, 100% { transform: translateY(0) scale(1); opacity: 0.7; }
