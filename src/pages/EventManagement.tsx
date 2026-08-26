@@ -319,6 +319,33 @@ export default function EventManagement() {
             )}
           </TabsContent>
 
+          <TabsContent value="verify" className="space-y-4">
+            {isAdminForEvent ? (
+              <PaymentVerificationView eventId={eventId!} />
+            ) : (
+              <Card>
+                <CardContent className="p-6">
+                  <p className="text-sm text-muted-foreground">Admin sign-in required to verify payments.</p>
+                  <Button className="mt-4" onClick={() => navigate('/admin/auth')}>Sign in as Admin</Button>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
+          <TabsContent value="powerbi" className="space-y-4">
+            {isAdminForEvent ? (
+              <PowerBIExport eventId={eventId!} eventTitle={event?.title} />
+            ) : (
+              <Card>
+                <CardContent className="p-6">
+                  <p className="text-sm text-muted-foreground">Admin sign-in required to export data.</p>
+                  <Button className="mt-4" onClick={() => navigate('/admin/auth')}>Sign in as Admin</Button>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
+
           <TabsContent value="manual" className="space-y-4">
             <ManualPledgeEntry eventId={eventId!} />
           </TabsContent>
