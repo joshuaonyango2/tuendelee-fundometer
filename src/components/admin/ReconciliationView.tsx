@@ -146,6 +146,7 @@ export function ReconciliationView({ eventId, event, onSaved }: ReconciliationVi
   const [isLoading, setIsLoading] = useState(true);
   const [isImporting, setIsImporting] = useState(false);
   const [isReconciling, setIsReconciling] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [currency, setCurrency] = useState<string>('KES');
   const [senderEmail, setSenderEmail] = useState<string>(event?.sender_email ?? '');
@@ -554,6 +555,10 @@ export function ReconciliationView({ eventId, event, onSaved }: ReconciliationVi
             <Button onClick={handleReconcile} disabled={isReconciling} className="gap-2">
               <RefreshCw className={`h-4 w-4 ${isReconciling ? 'animate-spin' : ''}`} />
               Re-run reconciliation
+            </Button>
+            <Button variant="secondary" onClick={handleAutoVerify} disabled={isVerifying} className="gap-2">
+              <ShieldCheck className="h-4 w-4" />
+              {isVerifying ? 'Verifying...' : 'Auto-verify matched pledges'}
             </Button>
             <Button variant="outline" onClick={exportReconciliation} className="gap-2">
               <Download className="h-4 w-4" />
