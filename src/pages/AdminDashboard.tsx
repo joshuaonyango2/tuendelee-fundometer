@@ -564,6 +564,33 @@ export default function AdminDashboard() {
                     </div>
                   </div>
 
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="meeting_link">Meeting link (Zoom, Meet, Teams)</Label>
+                      <Input
+                        id="meeting_link"
+                        type="url"
+                        value={newEvent.meeting_link}
+                        onChange={(e) => setNewEvent({ ...newEvent, meeting_link: e.target.value })}
+                        placeholder="https://zoom.us/j/1234567890"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Paste the link you already created. Every donor who joins will see a button that opens it.
+                      </p>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="meeting_passcode">Meeting passcode (optional)</Label>
+                      <Input
+                        id="meeting_passcode"
+                        value={newEvent.meeting_passcode}
+                        onChange={(e) => setNewEvent({ ...newEvent, meeting_passcode: e.target.value })}
+                        placeholder="e.g. 458291"
+                      />
+                    </div>
+                  </div>
+
+
+
                   <Button type="submit" className="w-full" disabled={isCreating}>
                     {isCreating ? "Creating..." : "Create Event"}
                   </Button>
