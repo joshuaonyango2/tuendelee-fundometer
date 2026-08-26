@@ -99,6 +99,27 @@ export function PaymentConfirmation({
 
       if (error) throw error;
 
+      // Optional: upload payment proof (receipt/screenshot) to private storage
+      if (proofFile) {
+        const ext = proofFile.name.split('.').pop()?.toLowerCase() || 'jpg';
+        const path = `${pledgeId}/${Date.now()}.${ext}`;
+        const { error: uploadError } = await supabase.storage
+          .from('payment-proofs')
+          .upload(path, proofFile, { upsert: false, contentType: proofFile.type });
+
+        if (uploadError) {
+          console.error('Proof upload failed:', uploadError);
+          toast.error('Payment saved, but the proof upload failed. You can share it later.');
+        } else {
+          const { error: attachError } = await supabase.rpc('attach_payment_proof', {
+            p_pledge_id: pledgeId,
+            p_proof_path: path,
+            p_session_token: sessionToken
+          });
+          if (attachError) console.error('Failed to attach proof:', attachError);
+        }
+      }
+
       const { error: emailError } = await supabase.functions.invoke('send-pledge-email', {
         body: { pledgeId, kind: 'payment_confirmed', sessionToken }
       });
@@ -106,6 +127,7 @@ export function PaymentConfirmation({
       if (emailError) {
         console.error('Failed to send payment confirmation email:', emailError);
       }
+
 
       toast.success('Payment confirmed successfully!');
       onComplete();
