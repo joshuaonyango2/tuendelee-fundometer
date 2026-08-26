@@ -38,7 +38,9 @@ export function PaymentConfirmation({
     reference: '',
     mpesaCode: ''
   });
+  const [proofFile, setProofFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
   
   const { primary: displayAmount, kes: kesConversion } = formatAmountWithKES(amount, currency);
 
