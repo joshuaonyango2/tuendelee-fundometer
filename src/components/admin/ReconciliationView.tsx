@@ -20,6 +20,7 @@ import {
   AlertTriangle,
   Clock,
   Scale,
+  ShieldCheck,
 } from 'lucide-react';
 import { Bar, BarChart, CartesianGrid, Cell, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
