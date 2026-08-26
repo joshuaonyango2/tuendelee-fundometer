@@ -46,6 +46,15 @@ export default {
 					foreground: 'hsl(var(--success-foreground))',
 					light: 'hsl(var(--success-light))'
 				},
+				navy: {
+					DEFAULT: 'hsl(var(--brand-navy))',
+					deep: 'hsl(var(--brand-navy-deep))'
+				},
+				gold: {
+					DEFAULT: 'hsl(var(--brand-gold))',
+					foreground: 'hsl(var(--brand-gold-foreground))'
+				},
+
 				destructive: {
 					DEFAULT: 'hsl(var(--destructive))',
 					foreground: 'hsl(var(--destructive-foreground))'
