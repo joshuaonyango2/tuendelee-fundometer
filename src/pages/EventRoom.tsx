@@ -281,6 +281,18 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
         return;
       }
 
+      const sessionData = localStorage.getItem('event_session');
+      if (sessionData) {
+        const { sessionToken } = JSON.parse(sessionData);
+        const { error: emailError } = await supabase.functions.invoke('send-pledge-email', {
+          body: { pledgeId: generatedId, kind: 'pledge_created', sessionToken }
+        });
+
+        if (emailError) {
+          console.error('Failed to send pledge confirmation email:', emailError);
+        }
+      }
+
       // For immediate payments, go directly to payment confirmation if method is selected
       if (formData.paymentType === 'immediate') {
         if (selectedPaymentMethod) {

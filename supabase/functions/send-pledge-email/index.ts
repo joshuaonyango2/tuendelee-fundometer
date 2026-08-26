@@ -13,6 +13,7 @@ import {
 const BodySchema = z.object({
   pledgeId: z.string().uuid(),
   kind: z.enum(["pledge_created", "payment_confirmed"]),
+  sessionToken: z.string().min(24).max(128),
 });
 
 const SUBJECTS: Record<string, string> = {
@@ -36,7 +37,7 @@ Deno.serve(async (req) => {
     if (!parsed.success) {
       return json({ error: parsed.error.flatten().fieldErrors }, 400);
     }
-    const { pledgeId, kind } = parsed.data;
+    const { pledgeId, kind, sessionToken } = parsed.data;
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
@@ -54,6 +55,20 @@ Deno.serve(async (req) => {
     if (pledgeError) throw pledgeError;
     if (!pledge) return json({ error: "Pledge not found" }, 404);
     if (!pledge.email) return json({ skipped: "Pledge has no email address" });
+
+    const { data: eventSession, error: sessionError } = await supabase
+      .from("event_sessions")
+      .select("id, attendee_email")
+      .eq("event_id", pledge.event_id)
+      .eq("session_token", sessionToken)
+      .gt("last_activity", new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString())
+      .maybeSingle();
+
+    if (sessionError) throw sessionError;
+    if (!eventSession) return json({ error: "Invalid or expired event session" }, 403);
+    if (eventSession.attendee_email?.trim().toLowerCase() !== pledge.email.trim().toLowerCase()) {
+      return json({ error: "This pledge does not belong to the event session" }, 403);
+    }
 
     const { data: event } = await supabase
       .from("fundraising_events")
