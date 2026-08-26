@@ -522,12 +522,19 @@ export function ImprovedThermometer({
 
         {/* KES scale (right) */}
         <div className="relative h-[420px] lg:h-[560px]">
-          {ticks.map((tick) => (
+          {ticks.map((tick) => {
+            /** The riding badge sits on this side — fade the label it would cover. */
+            const behindBadge = Math.abs(tick.percentOfScale - totalHeight) < 7;
+            return (
             <div
               key={tick.percentOfScale}
-              className="absolute left-0 flex -translate-y-1/2 items-center justify-start gap-2 transition-all duration-700 ease-out"
+              className={cn(
+                'absolute left-0 flex -translate-y-1/2 items-center justify-start gap-2 transition-all duration-700 ease-out',
+                behindBadge && 'opacity-0'
+              )}
               style={{ bottom: `${tick.percentOfScale}%` }}
             >
+
               <div
                 className={cn(
                   'rounded-full transition-all duration-700 ease-out',
