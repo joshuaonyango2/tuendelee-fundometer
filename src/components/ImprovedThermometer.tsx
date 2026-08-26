@@ -307,20 +307,11 @@ export function ImprovedThermometer({
       )}
 
       {/* Live progress banner */}
-      <div className="mx-auto mb-8 max-w-3xl rounded-2xl sm:rounded-3xl border border-primary/20 bg-gradient-to-r from-purple-500/10 via-blue-500/10 to-emerald-500/10 px-4 sm:px-6 py-4 sm:py-5 text-center shadow-md">
-        <div className="flex items-center justify-center gap-3">
-          <p className="text-xs sm:text-sm font-semibold uppercase tracking-widest text-muted-foreground">
-            Live Progress
-          </p>
-          <button
-            type="button"
-            onClick={toggleMuted}
-            aria-label={muted ? 'Turn celebration sounds on' : 'Turn celebration sounds off'}
-            className="rounded-full border border-border bg-background p-1.5 text-muted-foreground transition-colors hover:text-foreground"
-          >
-            {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-          </button>
-        </div>
+      <div className="mx-auto mb-8 max-w-3xl rounded-2xl sm:rounded-3xl border border-primary/20 bg-gradient-to-r from-purple-500/10 via-blue-500/10 to-emerald-500/10 px-4 sm:px-6 py-5 sm:py-6 text-center shadow-md">
+        <p className="text-sm sm:text-base font-bold uppercase tracking-[0.18em] text-muted-foreground">
+          Live Progress
+        </p>
+
         <p className="mt-1 text-[clamp(1.75rem,5vw,3rem)] font-black leading-none tabular-nums text-foreground">
           {totalPledgedPercentage.toFixed(1)}%
         </p>
