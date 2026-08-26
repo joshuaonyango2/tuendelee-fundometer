@@ -637,6 +637,12 @@ export default function AdminDashboard() {
             <SiteContentEditor />
           </TabsContent>
 
+          <TabsContent value="sounds">
+            <CelebrationSoundsManager />
+          </TabsContent>
+
+
+
         </Tabs>
       </div>
 
