@@ -13,10 +13,24 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
+import { Slider } from "@/components/ui/slider";
 import { CELEBRATION_BUCKET, toAutoplayEmbed } from "@/hooks/useCelebrationSounds";
-import { MILESTONES, type Milestone } from "@/lib/celebrate";
+import {
+  applyCelebrationSettings,
+  MILESTONES,
+  playCelebrationAudio,
+  playDefaultCelebration,
+  stopCelebrationSound,
+  type Milestone,
+} from "@/lib/celebrate";
+import {
+  DEFAULT_CELEBRATION_SETTINGS,
+  fetchCelebrationSettings,
+  saveCelebrationSettings,
+  type CelebrationSettings,
+} from "@/lib/celebrationSettings";
 import { toast } from "sonner";
-import { Music, Play, Save, Trash2, Upload, Youtube } from "lucide-react";
+import { Music, Play, Save, Square, Trash2, Upload, Volume2, VolumeX, Youtube } from "lucide-react";
 
 interface SoundRow {
   id: string;
@@ -43,6 +57,8 @@ export function CelebrationSoundsManager() {
   const [drafts, setDrafts] = useState<Record<number, { source_type: string; youtube_url: string; label: string; is_active: boolean }>>({});
   const [busy, setBusy] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
+  const [settings, setSettings] = useState<CelebrationSettings>(DEFAULT_CELEBRATION_SETTINGS);
+  const [savingSettings, setSavingSettings] = useState(false);
 
   const load = async () => {
     const { data, error } = await supabase
@@ -76,7 +92,33 @@ export function CelebrationSoundsManager() {
 
   useEffect(() => {
     void load();
+    void fetchCelebrationSettings().then((s) => {
+      setSettings(s);
+      applyCelebrationSettings(s);
+    });
+    return () => stopCelebrationSound();
   }, []);
+
+  const updateSettings = (patch: Partial<CelebrationSettings>) => {
+    setSettings((prev) => {
+      const next = { ...prev, ...patch };
+      applyCelebrationSettings(next);
+      return next;
+    });
+  };
+
+  const handleSaveSettings = async () => {
+    setSavingSettings(true);
+    try {
+      await saveCelebrationSettings(settings);
+      applyCelebrationSettings(settings);
+      toast.success("Updated successfully");
+    } catch {
+      toast.error("Could not save the celebration settings");
+    } finally {
+      setSavingSettings(false);
+    }
+  };
 
   const upsert = async (milestone: Milestone, patch: Record<string, unknown>) => {
     const draft = drafts[milestone];
@@ -155,17 +197,25 @@ export function CelebrationSoundsManager() {
   };
 
   const handlePreview = async (milestone: Milestone) => {
+    stopCelebrationSound();
+    if (settings.muted) {
+      toast.info("Celebration sounds are muted — unmute above to hear the preview");
+      return;
+    }
     const row = rows[milestone];
-    if (!row) return;
+    if (!row || (row.source_type === "upload" && !row.audio_path)) {
+      playDefaultCelebration(milestone);
+      return;
+    }
     if (row.source_type === "youtube" && row.youtube_url) {
       window.open(row.youtube_url, "_blank", "noopener,noreferrer");
       return;
     }
-    if (!row.audio_path) return;
     const { data } = await supabase.storage
       .from(CELEBRATION_BUCKET)
-      .createSignedUrl(row.audio_path, 300);
-    if (data?.signedUrl) void new Audio(data.signedUrl).play().catch(() => undefined);
+      .createSignedUrl(row.audio_path as string, 300);
+    if (data?.signedUrl) playCelebrationAudio(data.signedUrl);
+    else toast.error("Could not load that audio file");
   };
 
   const handleRemove = async (milestone: Milestone) => {
@@ -178,7 +228,7 @@ export function CelebrationSoundsManager() {
       }
       const { error } = await supabase.from("celebration_sounds").delete().eq("id", row.id);
       if (error) throw error;
-      toast.success("Removed — the default clapping and ululating will play");
+      toast.success("Removed — the default ululation and clapping will play");
       await load();
     } catch {
       toast.error("Could not remove this sound");
@@ -196,10 +246,72 @@ export function CelebrationSoundsManager() {
         </CardTitle>
         <CardDescription>
           Choose the sound that plays when the thermometer hits each level. Upload your own audio or
-          paste a YouTube link. If a level has no sound, the default clapping and ululating plays.
+          paste a YouTube link. If a level has no sound, the default ululation mixed with clapping plays.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-5">
+        {/* Admin-only playback controls */}
+        <div className="rounded-xl border border-border bg-muted/40 p-4 space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h4 className="font-bold flex items-center gap-2">
+                {settings.muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+                Playback controls
+              </h4>
+              <p className="text-sm text-muted-foreground">
+                Only you (the admin) control this. Donors cannot mute or change the volume.
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Label htmlFor="celebration-mute" className="text-sm">
+                {settings.muted ? "Muted" : "Sound on"}
+              </Label>
+              <Switch
+                id="celebration-mute"
+                checked={!settings.muted}
+                onCheckedChange={(on) => updateSettings({ muted: !on })}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="celebration-volume">
+              Celebration volume — {Math.round(settings.volume * 100)}%
+            </Label>
+            <Slider
+              id="celebration-volume"
+              value={[Math.round(settings.volume * 100)]}
+              min={0}
+              max={100}
+              step={5}
+              disabled={settings.muted}
+              onValueChange={([v]) => updateSettings({ volume: v / 100 })}
+            />
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <Button onClick={handleSaveSettings} disabled={savingSettings}>
+              <Save className="mr-2 h-4 w-4" /> Save settings
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => {
+                stopCelebrationSound();
+                if (settings.muted) {
+                  toast.info("Celebration sounds are muted — unmute to hear the preview");
+                  return;
+                }
+                playDefaultCelebration(100);
+              }}
+            >
+              <Play className="mr-2 h-4 w-4" /> Preview default ululation &amp; clapping
+            </Button>
+            <Button variant="ghost" onClick={() => stopCelebrationSound()}>
+              <Square className="mr-2 h-4 w-4" /> Stop
+            </Button>
+          </div>
+        </div>
+
         {loading ? (
           <p className="text-sm text-muted-foreground">Loading celebration sounds…</p>
         ) : (
@@ -307,15 +419,16 @@ export function CelebrationSoundsManager() {
                   <Button onClick={() => handleSave(milestone)} disabled={isBusy}>
                     <Save className="mr-2 h-4 w-4" /> Save
                   </Button>
+                  <Button variant="outline" onClick={() => handlePreview(milestone)} disabled={isBusy}>
+                    <Play className="mr-2 h-4 w-4" /> Preview sound
+                  </Button>
+                  <Button variant="ghost" onClick={() => stopCelebrationSound()}>
+                    <Square className="mr-2 h-4 w-4" /> Stop
+                  </Button>
                   {row && (
-                    <>
-                      <Button variant="outline" onClick={() => handlePreview(milestone)} disabled={isBusy}>
-                        <Play className="mr-2 h-4 w-4" /> Preview
-                      </Button>
-                      <Button variant="destructive" onClick={() => handleRemove(milestone)} disabled={isBusy}>
-                        <Trash2 className="mr-2 h-4 w-4" /> Use default
-                      </Button>
-                    </>
+                    <Button variant="destructive" onClick={() => handleRemove(milestone)} disabled={isBusy}>
+                      <Trash2 className="mr-2 h-4 w-4" /> Use default
+                    </Button>
                   )}
                 </div>
               </div>
