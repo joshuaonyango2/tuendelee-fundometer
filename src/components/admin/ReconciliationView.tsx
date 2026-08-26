@@ -298,13 +298,38 @@ export function ReconciliationView({ eventId, event, onSaved }: ReconciliationVi
     }
   };
 
+  const autoVerifyMatched = async (silent = false) => {
+    const { data, error } = await supabase.rpc('auto_verify_reconciled_pledges', { p_event_id: eventId });
+    if (error) throw error;
+    const verified = Number(data ?? 0);
+    if (!silent) {
+      toast.success(
+        verified > 0
+          ? `${verified} matched pledge${verified === 1 ? '' : 's'} verified automatically`
+          : 'All matched pledges were already verified'
+      );
+    }
+    return verified;
+  };
+
   const handleReconcile = async () => {
     setIsReconciling(true);
     try {
       const { data, error } = await supabase.rpc('reconcile_bank_entries', { p_event_id: eventId });
       if (error) throw error;
       const result = Array.isArray(data) ? data[0] : data;
-      toast.success(`Reconciled: ${result?.matched ?? 0} matched, ${result?.unmatched ?? 0} unmatched`);
+
+      let verified = 0;
+      try {
+        verified = await autoVerifyMatched(true);
+      } catch (verifyError) {
+        console.error('Auto-verification failed:', verifyError);
+      }
+
+      toast.success(
+        `Reconciled: ${result?.matched ?? 0} matched, ${result?.unmatched ?? 0} unmatched` +
+          (verified > 0 ? ` • ${verified} pledge(s) auto-verified` : '')
+      );
       await loadData();
     } catch (error: any) {
       console.error('Reconcile failed:', error);
@@ -313,6 +338,20 @@ export function ReconciliationView({ eventId, event, onSaved }: ReconciliationVi
       setIsReconciling(false);
     }
   };
+
+  const handleAutoVerify = async () => {
+    setIsVerifying(true);
+    try {
+      await autoVerifyMatched();
+      await loadData();
+    } catch (error: any) {
+      console.error('Auto-verify failed:', error);
+      toast.error(error?.message ?? 'Failed to verify matched pledges');
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+
 
   const handleClearImports = async () => {
     if (!window.confirm('Remove all imported bank statement data for this event?')) return;
