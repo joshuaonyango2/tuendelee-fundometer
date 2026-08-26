@@ -104,3 +104,28 @@ export function senderAddress(name?: string | null, email?: string | null): stri
   const trimmedName = (name ?? "").trim().replace(/["<>]/g, "");
   return trimmedName ? `${trimmedName} <${trimmedEmail}>` : trimmedEmail;
 }
+
+/**
+ * Resolves the From header for an event: the event's own sender address when set,
+ * otherwise the organisation-wide official address stored on the admin profile.
+ * This keeps outgoing mail on the Tuendelee organisational address even when an
+ * individual admin account changes.
+ */
+export async function resolveSender(
+  // deno-lint-ignore no-explicit-any
+  supabase: any,
+  event?: { sender_name?: string | null; sender_email?: string | null; admin_id?: string | null } | null,
+): Promise<string | undefined> {
+  const eventSender = senderAddress(event?.sender_name, event?.sender_email);
+  if (eventSender) return eventSender;
+
+  if (!event?.admin_id) return undefined;
+  const { data: profile } = await supabase
+    .from("admin_profiles")
+    .select("org_name, org_email")
+    .eq("user_id", event.admin_id)
+    .maybeSingle();
+
+  return senderAddress(profile?.org_name ?? event?.sender_name, profile?.org_email);
+}
+
