@@ -8,6 +8,7 @@ import {
   renderTemplate,
   sendEmail,
   senderAddress,
+  resolveSender,
 } from "../_shared/email.ts";
 
 const BodySchema = z.object({
@@ -63,7 +64,7 @@ Deno.serve(async (req) => {
       return json({ error: "Not authorized for this event" }, 403);
     }
 
-    const from = senderAddress(event.sender_name, event.sender_email);
+    const from = await resolveSender(supabase, event);
 
     const { data: pledges, error } = await admin
       .from("event_pledges")
