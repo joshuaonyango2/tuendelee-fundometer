@@ -310,6 +310,30 @@ export function PaymentConfirmation({
             </div>
           )}
 
+          <div className="space-y-2">
+            <Label htmlFor="proof">Upload payment proof (optional)</Label>
+            <Input
+              id="proof"
+              type="file"
+              accept="image/*,application/pdf"
+              onChange={(e) => {
+                const file = e.target.files?.[0] ?? null;
+                if (file && file.size > 5 * 1024 * 1024) {
+                  toast.error('File too large. Maximum size is 5MB.');
+                  e.target.value = '';
+                  return;
+                }
+                setProofFile(file);
+              }}
+            />
+            <p className="text-xs text-muted-foreground">
+              Attach your M-Pesa message screenshot, bank slip or PayPal receipt (image or PDF, max 5MB).
+              Your proof is stored privately and only visible to the fundraising admin.
+            </p>
+          </div>
+
+
+
           <Button
             onClick={handleSubmit}
             disabled={isSubmitting}
