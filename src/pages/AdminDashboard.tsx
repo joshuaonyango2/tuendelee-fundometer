@@ -627,9 +627,11 @@ export default function AdminDashboard() {
             <ImpactStoriesManager />
           </TabsContent>
 
-          <TabsContent value="content">
+          <TabsContent value="content" className="space-y-4">
+            <OrgSenderSettings />
             <SiteContentEditor />
           </TabsContent>
+
         </Tabs>
       </div>
 
