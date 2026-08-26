@@ -285,7 +285,63 @@ export function HomeHelpDialog() {
                 </AccordionContent>
               </AccordionItem>
 
+              {/* Proof of payment & verification */}
+              <AccordionItem value="proof-verification">
+                <AccordionTrigger className="text-left">
+                  <div className="flex items-center gap-2">
+                    <Shield className="w-5 h-5 text-emerald-600" />
+                    <span className="font-semibold text-base">Proving & Verifying Your Payment</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="space-y-3 text-base">
+                  <p>After you send the money, confirm it in the app so it is counted once and only once:</p>
+                  <ol className="list-decimal list-inside space-y-1 ml-2">
+                    <li>Open <strong>Find My Pledge</strong> and search with your name, email or phone number.</li>
+                    <li>Choose the method you actually used (you can change it if you paid differently).</li>
+                    <li>
+                      Enter your <strong>transaction code</strong>: the M-Pesa code from the Safaricom SMS
+                      (10 characters), the PayPal transaction ID (17 characters), or your bank/Benevity
+                      reference.
+                    </li>
+                    <li>
+                      <strong>Upload your receipt or screenshot</strong> (image or PDF, up to 5MB). It is kept
+                      private — only the fundraising admin can open it.
+                    </li>
+                  </ol>
+                  <p className="text-sm text-muted-foreground">
+                    The system validates the code format instantly and warns if that code was already used, so
+                    duplicate or double payments are caught. The admin then verifies it, you receive a receipt
+                    by email, and the thermometer moves your amount from pledged (blue) to paid (green).
+                  </p>
+                </AccordionContent>
+              </AccordionItem>
+
+              {/* Impact stories & channel */}
+              <AccordionItem value="impact-media">
+                <AccordionTrigger className="text-left">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-5 h-5 text-purple-500" />
+                    <span className="font-semibold text-base">Watching Impact Stories & Our Videos</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="space-y-3 text-base">
+                  <p>
+                    The homepage plays the newest impact story uploaded by the foundation — a video, a photo
+                    or a photo with a voice note you can listen to.
+                  </p>
+                  <p>
+                    On the <strong>Impact Stories</strong> page you can also browse our YouTube channel and
+                    pick any video you want to watch, then pledge straight from the same page.
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Everything you read here — texts, stories and translations (English, Italian, French,
+                    Kiswahili) — is managed by the foundation's admin, so the content is always current.
+                  </p>
+                </AccordionContent>
+              </AccordionItem>
+
               {/* Security & Privacy */}
+
               <AccordionItem value="security">
                 <AccordionTrigger className="text-left">
                   <div className="flex items-center gap-2">
