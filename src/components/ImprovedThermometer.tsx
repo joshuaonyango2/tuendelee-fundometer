@@ -343,21 +343,22 @@ export function ImprovedThermometer({
       {/* Thermometer panel */}
       <div className="rounded-3xl border border-border/70 bg-gradient-to-b from-card to-muted/40 p-4 sm:p-8 shadow-xl">
       {/* Currency headers */}
-      <div className="mx-auto grid max-w-4xl grid-cols-[1fr_auto_1fr] items-end gap-3 sm:gap-6 mb-4">
+      <div className="mx-auto grid max-w-4xl grid-cols-[1fr_auto_1fr] items-end gap-3 sm:gap-8 mb-8 sm:mb-10">
 
         <div className="flex items-center justify-end gap-2 text-blue-600 font-bold">
-          <DollarSign className="h-5 w-5" />
-          <span className="text-sm sm:text-lg">US Dollars</span>
+          <DollarSign className="h-5 w-5 shrink-0" />
+          <span className="text-sm sm:text-lg whitespace-nowrap">US Dollars</span>
         </div>
         <div className="w-20" />
         <div className="flex items-center justify-start gap-2 text-emerald-600 font-bold">
-          <TrendingUp className="h-5 w-5" />
-          <span className="text-sm sm:text-lg">Kenya Shillings</span>
+          <TrendingUp className="h-5 w-5 shrink-0" />
+          <span className="text-sm sm:text-lg whitespace-nowrap">Kenya Shillings</span>
         </div>
       </div>
 
       {/* Thermometer with aligned bottom-up calibration */}
-      <div className="mx-auto grid max-w-4xl grid-cols-[1fr_auto_1fr] gap-3 sm:gap-6">
+      <div className="mx-auto mt-2 grid max-w-4xl grid-cols-[1fr_auto_1fr] gap-3 sm:gap-8">
+
         {/* USD scale (left) */}
         <div className="relative h-[420px] lg:h-[560px]">
           {ticks.map((tick) => (
