@@ -362,7 +362,12 @@ export default function AdminDashboard() {
               <PenLine className="w-4 h-4 mr-2" />
               Site Text
             </TabsTrigger>
+            <TabsTrigger value="sounds">
+              <Music className="w-4 h-4 mr-2" />
+              Celebration Sounds
+            </TabsTrigger>
           </TabsList>
+
 
 
           <TabsContent value="events" className="space-y-4">
