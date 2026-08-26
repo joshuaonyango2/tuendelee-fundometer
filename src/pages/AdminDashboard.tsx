@@ -59,7 +59,10 @@ export default function AdminDashboard() {
     duration_minutes: 60,
     goal_amount: 50000,
     currency: "USD" as "USD" | "KES",
+    meeting_link: "",
+    meeting_passcode: "",
   });
+
 
   useEffect(() => {
     // Set up auth state listener FIRST
