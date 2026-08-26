@@ -315,15 +315,42 @@ export function PaymentConfirmation({
             <Input
               id="proof"
               type="file"
-              accept="image/*,application/pdf"
+              accept="image/png,image/jpeg,image/jpg,image/webp,image/heic,application/pdf"
               onChange={(e) => {
                 const file = e.target.files?.[0] ?? null;
-                if (file && file.size > 5 * 1024 * 1024) {
-                  toast.error('File too large. Maximum size is 5MB.');
-                  e.target.value = '';
+                if (!file) {
+                  setProofFile(null);
                   return;
                 }
+
+                const allowed = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/heic', 'application/pdf'];
+                const looksAllowed =
+                  allowed.includes(file.type) ||
+                  /\.(png|jpe?g|webp|heic|pdf)$/i.test(file.name);
+
+                if (!looksAllowed) {
+                  toast.error('Unsupported file. Upload a photo (PNG/JPG/WEBP/HEIC) or a PDF receipt.');
+                  e.target.value = '';
+                  setProofFile(null);
+                  return;
+                }
+
+                if (file.size > 5 * 1024 * 1024) {
+                  toast.error('File too large. Maximum size is 5MB.');
+                  e.target.value = '';
+                  setProofFile(null);
+                  return;
+                }
+
+                if (file.size < 1024) {
+                  toast.error('That file looks empty. Please upload the full receipt or screenshot.');
+                  e.target.value = '';
+                  setProofFile(null);
+                  return;
+                }
+
                 setProofFile(file);
+                toast.success(`${file.name} attached`);
               }}
             />
             <p className="text-xs text-muted-foreground">
@@ -331,6 +358,7 @@ export function PaymentConfirmation({
               Your proof is stored privately and only visible to the fundraising admin.
             </p>
           </div>
+
 
 
 
