@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ImpactStories } from "@/components/ImpactStories";
+import { YouTubeChannelPicker } from "@/components/YouTubeChannelPicker";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { GraduationCap, HeartHandshake, Briefcase, ArrowRight } from "lucide-react";
 
@@ -104,6 +105,10 @@ export default function ImpactStoriesPage() {
             </Card>
           ))}
         </div>
+      </section>
+
+      <section className="container mx-auto px-4 pb-12">
+        <YouTubeChannelPicker />
       </section>
 
       <ImpactStories />
