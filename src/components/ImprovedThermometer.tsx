@@ -127,11 +127,6 @@ export function ImprovedThermometer({
   }, [totalPledgedPercentage]);
 
 
-  const toggleMuted = () => {
-    const next = !muted;
-    setMuted(next);
-    setCelebrationMuted(next);
-  };
 
   /** Animated totals drive the scale so the calibration breathes with each gift. */
   const displayTotalUSD = displayPaidUSD + displayUnpaidUSD;
