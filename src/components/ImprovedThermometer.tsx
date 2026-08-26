@@ -632,10 +632,16 @@ export function ImprovedThermometer({
           100% { transform: scale(1); opacity: 1; }
         }
         .animate-milestone-pop { animation: milestonePop 0.6s ease-out; }
+        @keyframes tickBeckon {
+          0%, 100% { opacity: 0.55; transform: translateX(0); }
+          50% { opacity: 1; transform: translateX(2px); }
+        }
+        .animate-tick-beckon { animation: tickBeckon 1.6s ease-in-out infinite; }
         @media (prefers-reduced-motion: reduce) {
           .animate-float, .animate-shimmer, .animate-mercury-pulse, .animate-goal-glow,
-          .animate-rise-bubble, .animate-milestone-pop { animation: none; }
+          .animate-rise-bubble, .animate-milestone-pop, .animate-tick-beckon { animation: none; }
         }
+
       `}</style>
     </div>
   );
