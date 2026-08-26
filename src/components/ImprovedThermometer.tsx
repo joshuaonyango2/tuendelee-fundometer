@@ -117,10 +117,14 @@ export function ImprovedThermometer({
     if (!reached || celebratedRef.current.has(reached)) return;
     celebratedRef.current.add(reached);
     setMilestone(reached);
-    celebrateMilestone(reached);
+    // Admin-configured sound wins; otherwise fall back to the built-in cheer.
+    const handledByAdminSound = playCelebrationSound(reached);
+    celebrateMilestone(reached, { sound: !handledByAdminSound });
     const timeout = setTimeout(() => setMilestone(null), 9000);
     return () => clearTimeout(timeout);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [totalPledgedPercentage]);
+
 
   const toggleMuted = () => {
     const next = !muted;
