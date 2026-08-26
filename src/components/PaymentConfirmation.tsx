@@ -97,6 +97,14 @@ export function PaymentConfirmation({
 
       if (error) throw error;
 
+      const { error: emailError } = await supabase.functions.invoke('send-pledge-email', {
+        body: { pledgeId, kind: 'payment_confirmed', sessionToken }
+      });
+
+      if (emailError) {
+        console.error('Failed to send payment confirmation email:', emailError);
+      }
+
       toast.success('Payment confirmed successfully!');
       onComplete();
     } catch (error: any) {

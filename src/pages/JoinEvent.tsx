@@ -62,6 +62,8 @@ export default function JoinEvent() {
         .from("fundraising_events")
         .select("id, title, description, title_it, title_fr, title_sw, description_it, description_fr, description_sw, scheduled_at")
         .eq("is_active", true)
+        .order("scheduled_at", { ascending: false })
+        .limit(1)
         .maybeSingle();
 
       if (error) throw error;
