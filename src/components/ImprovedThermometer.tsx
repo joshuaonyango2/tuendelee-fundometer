@@ -21,6 +21,8 @@ import {
   MILESTONE_MESSAGES,
   type Milestone,
 } from '@/lib/celebrate';
+import { useCelebrationSounds } from '@/hooks/useCelebrationSounds';
+
 
 interface ImprovedThermometerProps {
   paidAmountUSD: number;
