@@ -879,6 +879,30 @@ export type Database = {
           payment_type: string
         }[]
       }
+      get_pledge_evidence: {
+        Args: { p_event_id: string }
+        Returns: {
+          amount: number
+          amount_in_usd: number
+          confirmed_at: string
+          created_at: string
+          currency: string
+          donor_phone: string
+          email: string
+          id: string
+          is_confirmed: boolean
+          name: string
+          payment_method: string
+          payment_reference: string
+          possible_duplicate_of: string
+          proof_path: string
+          proof_uploaded_at: string
+          reference_valid: boolean
+          verification_note: string
+          verification_status: string
+          verified_at: string
+        }[]
+      }
       get_public_pledges: {
         Args: { p_event_id: string }
         Returns: {
