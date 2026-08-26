@@ -503,10 +503,13 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
                             <div className="whitespace-pre-wrap">{liveMeeting.description}</div>
                           ) : (
                             <>
-                              <div className="flex justify-between">
-                                <span className="font-medium">{t("room.meetingId")}:</span>
-                                <span className="font-mono">{liveMeeting.meeting_id}</span>
-                              </div>
+                              {liveMeeting.meeting_id && (
+                                <div className="flex justify-between">
+                                  <span className="font-medium">{t("room.meetingId")}:</span>
+                                  <span className="font-mono">{liveMeeting.meeting_id}</span>
+                                </div>
+                              )}
+
                               {liveMeeting.passcode && (
                                 <div className="flex justify-between">
                                   <span className="font-medium">{t("room.passcode")}:</span>
