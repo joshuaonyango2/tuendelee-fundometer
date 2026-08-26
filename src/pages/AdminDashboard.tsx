@@ -416,6 +416,15 @@ export default function AdminDashboard() {
                         </div>
                       </div>
 
+                      <EventMeetingLinkEditor
+                        eventId={event.id}
+                        initialLink={(event as any).meeting_link ?? ""}
+                        initialPasscode={(event as any).meeting_passcode ?? ""}
+                        onSaved={loadEvents}
+                      />
+
+
+
                       <div className="flex gap-2">
                         <Button
                           variant="outline"
