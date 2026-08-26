@@ -150,6 +150,8 @@ export default function AdminDashboard() {
         scheduled_at: newEvent.scheduled_at,
         duration_minutes: newEvent.duration_minutes,
         goal_amount: newEvent.goal_amount,
+        meeting_link: newEvent.meeting_link.trim() || null,
+        meeting_passcode: newEvent.meeting_passcode.trim() || null,
         passcode,
         share_link: shareLink,
       });
@@ -164,8 +166,11 @@ export default function AdminDashboard() {
         duration_minutes: 60,
         goal_amount: 50000,
         currency: "USD",
+        meeting_link: "",
+        meeting_passcode: "",
       });
       loadEvents();
+
     } catch (error: any) {
       toast.error("Failed to create event");
     } finally {
