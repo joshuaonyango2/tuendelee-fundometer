@@ -38,7 +38,9 @@ export function PaymentConfirmation({
     reference: '',
     mpesaCode: ''
   });
+  const [proofFile, setProofFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
   
   const { primary: displayAmount, kes: kesConversion } = formatAmountWithKES(amount, currency);
 
@@ -97,6 +99,27 @@ export function PaymentConfirmation({
 
       if (error) throw error;
 
+      // Optional: upload payment proof (receipt/screenshot) to private storage
+      if (proofFile) {
+        const ext = proofFile.name.split('.').pop()?.toLowerCase() || 'jpg';
+        const path = `${pledgeId}/${Date.now()}.${ext}`;
+        const { error: uploadError } = await supabase.storage
+          .from('payment-proofs')
+          .upload(path, proofFile, { upsert: false, contentType: proofFile.type });
+
+        if (uploadError) {
+          console.error('Proof upload failed:', uploadError);
+          toast.error('Payment saved, but the proof upload failed. You can share it later.');
+        } else {
+          const { error: attachError } = await supabase.rpc('attach_payment_proof', {
+            p_pledge_id: pledgeId,
+            p_proof_path: path,
+            p_session_token: sessionToken
+          });
+          if (attachError) console.error('Failed to attach proof:', attachError);
+        }
+      }
+
       const { error: emailError } = await supabase.functions.invoke('send-pledge-email', {
         body: { pledgeId, kind: 'payment_confirmed', sessionToken }
       });
@@ -104,6 +127,7 @@ export function PaymentConfirmation({
       if (emailError) {
         console.error('Failed to send payment confirmation email:', emailError);
       }
+
 
       toast.success('Payment confirmed successfully!');
       onComplete();
@@ -285,6 +309,30 @@ export function PaymentConfirmation({
               />
             </div>
           )}
+
+          <div className="space-y-2">
+            <Label htmlFor="proof">Upload payment proof (optional)</Label>
+            <Input
+              id="proof"
+              type="file"
+              accept="image/*,application/pdf"
+              onChange={(e) => {
+                const file = e.target.files?.[0] ?? null;
+                if (file && file.size > 5 * 1024 * 1024) {
+                  toast.error('File too large. Maximum size is 5MB.');
+                  e.target.value = '';
+                  return;
+                }
+                setProofFile(file);
+              }}
+            />
+            <p className="text-xs text-muted-foreground">
+              Attach your M-Pesa message screenshot, bank slip or PayPal receipt (image or PDF, max 5MB).
+              Your proof is stored privately and only visible to the fundraising admin.
+            </p>
+          </div>
+
+
 
           <Button
             onClick={handleSubmit}
