@@ -492,17 +492,18 @@ export function ImprovedThermometer({
 
           {/* Live level badge riding the mercury */}
           <div
-            className="pointer-events-none absolute left-full z-40 ml-3 transition-all duration-1000 ease-out"
+            className="pointer-events-none absolute left-full z-40 ml-4 transition-all duration-1000 ease-out"
             style={{ bottom: `calc(${totalHeight}% - 1.25rem)` }}
           >
-            <div className="flex flex-col items-start gap-0.5 whitespace-nowrap rounded-2xl bg-foreground px-4 py-2 text-background shadow-xl ring-1 ring-white/20">
-              <span className="flex items-center gap-1.5 text-base font-black tabular-nums">
-                <Flame className="h-4 w-4" />${formatCompact(displayTotalUSD)}
+            <div className="flex flex-col items-start gap-0.5 whitespace-nowrap rounded-2xl bg-foreground px-3.5 py-2 text-background shadow-2xl ring-2 ring-background">
+              <span className="flex items-center gap-1.5 text-sm sm:text-base font-black tabular-nums leading-none">
+                <Flame className="h-4 w-4 shrink-0" />${formatCompact(displayTotalUSD)}
               </span>
-              <span className="text-[0.7rem] font-semibold tabular-nums opacity-80">
+              <span className="text-[0.7rem] font-semibold tabular-nums leading-none opacity-80">
                 KSh {formatCompact(displayPaidKES + displayUnpaidKES)}
               </span>
             </div>
+
 
             {riseAmount !== null && (
               <div className="mt-2 animate-rise-bubble whitespace-nowrap rounded-full bg-emerald-600 px-3 py-1.5 text-sm font-black text-white shadow-lg">
