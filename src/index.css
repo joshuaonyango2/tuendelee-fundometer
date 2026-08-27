@@ -75,13 +75,14 @@ All colors MUST be HSL.
     --transition-base: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-smooth: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 
-    /* Admin brand — deep navy + gold */
-    --brand-navy: 227 62% 18%;
-    --brand-navy-deep: 227 66% 13%;
-    --brand-gold: 44 74% 52%;
-    --brand-gold-foreground: 227 66% 13%;
-    --gradient-admin: linear-gradient(115deg, hsl(227 66% 13%), hsl(227 62% 22%) 55%, hsl(232 55% 28%));
-    --shadow-admin: 0 18px 40px -22px hsl(227 66% 13% / 0.55);
+    /* Admin brand — Tuendelee organisation blue (logo #0570A6) */
+    --brand-navy: 201 94% 27%;
+    --brand-navy-deep: 201 94% 20%;
+    --brand-gold: 199 85% 62%;
+    --brand-gold-foreground: 201 94% 16%;
+    --gradient-admin: linear-gradient(115deg, hsl(201 94% 18%), hsl(201 94% 27%) 55%, hsl(199 80% 38%));
+    --shadow-admin: 0 18px 40px -22px hsl(201 94% 18% / 0.55);
+
 
     /* Sidebar */
     --sidebar-background: 0 0% 98%;
