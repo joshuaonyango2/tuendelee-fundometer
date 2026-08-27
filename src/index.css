@@ -12,11 +12,12 @@ All colors MUST be HSL.
     --background: 0 0% 100%;
     --foreground: 222 47% 11%;
 
-    /* Trust Blue - Primary Brand Color */
-    --primary: 217 91% 60%;
+    /* Tuendelee organisation blue — Primary Brand Color (logo #0570A6) */
+    --primary: 201 94% 33%;
     --primary-foreground: 0 0% 100%;
-    --primary-dark: 217 91% 45%;
-    --primary-light: 217 91% 75%;
+    --primary-dark: 201 94% 24%;
+    --primary-light: 199 85% 62%;
+
 
     /* Coral - Engagement & CTAs */
     --secondary: 14 89% 64%;
