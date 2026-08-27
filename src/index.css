@@ -35,8 +35,9 @@ All colors MUST be HSL.
     --muted-foreground: 215 16% 47%;
 
     /* Accent */
-    --accent: 217 91% 95%;
-    --accent-foreground: 217 91% 20%;
+    --accent: 201 80% 94%;
+    --accent-foreground: 201 94% 20%;
+
 
     /* Card */
     --card: 0 0% 100%;
