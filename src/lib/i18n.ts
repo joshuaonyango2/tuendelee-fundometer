@@ -264,11 +264,137 @@ const sw: Dict = {
   "pledge.messagePlaceholder": "Ujumbe wako wa kuunga mkono...",
 };
 
+const es: Dict = {
+  "nav.language": "Idioma",
+
+  "home.title": "Fundómetro de la Fundación Tuendelee",
+  "home.heading": "Impulsando mentes brillantes a través de la educación",
+  "home.subheading":
+    "Apoya a estudiantes que lo merecen con becas. Cada aportación transforma vidas y construye un futuro mejor para Kenia.",
+  "home.ctaCardTitle": "¿Listo para marcar la diferencia?",
+  "home.ctaButton": "Regístrate para prometer y seguir el progreso",
+  "home.finalCtaText": "Solo toma unos instantes generar un impacto duradero",
+  "home.finalCtaButton": "Empieza a marcar la diferencia",
+  "home.finalCtaNote":
+    "Juntos ayudamos a estudiantes merecedores a cumplir sus sueños educativos",
+
+  "impact.sectionTitle": "Historias de impacto",
+  "impact.sectionSubtitle":
+    "Ve y escucha la diferencia que tu apoyo genera en la vida de nuestros estudiantes.",
+  "impact.listen": "Escucha esta historia",
+  "impact.loading": "Cargando historias de impacto...",
+
+  "security.title": "Tu seguridad es nuestra prioridad",
+  "security.subtitle":
+    "Sabemos lo importante que es proteger tu información personal y financiera. Tu confianza nos importa.",
+  "security.encryptionTitle": "Transferencia de datos cifrada",
+  "security.encryptionBody":
+    "Tu información personal se protege con cifrado SSL/TLS durante la transmisión, la misma tecnología que usan los sitios seguros de todo el mundo",
+  "security.paymentTitle": "Pagos procesados con seguridad",
+  "security.paymentBody":
+    "Nunca guardamos los datos de tu tarjeta. Todos los pagos se procesan mediante proveedores de confianza como M-Pesa, PayPal y transferencias bancarias seguras",
+  "security.storageTitle": "Almacenamiento protegido",
+  "security.storageBody":
+    "Tu información se guarda en bases de datos cifradas y seguras, con acceso restringido y auditorías periódicas",
+  "security.privacyTitle": "Privacidad garantizada",
+  "security.privacyBody":
+    "Nunca compartiremos, venderemos ni distribuiremos tus datos personales a terceros. Solo se usan para participar en el evento y procesar donaciones",
+  "security.trustedTitle": "Verificado y confiable",
+  "security.trustedBody":
+    "Nuestra plataforma se construye con buenas prácticas de seguridad y se audita con regularidad para garantizar los máximos estándares de protección",
+  "security.trackingTitle": "Seguimiento transparente",
+  "security.trackingBody":
+    "Consulta las aportaciones en tiempo real con total transparencia. Sigue cómo tu donación nos acerca a nuestras metas de becas",
+
+  "how.title": "Cómo funciona",
+  "how.step1Title": "Únete al instante",
+  "how.step1Body":
+    "Haz clic en el botón de registro y listo. Así de sencillo, sin formularios complicados.",
+  "how.step2Title": "Haz tu aportación",
+  "how.step2Body":
+    "Elige pagar ahora para un impacto inmediato o prometer pagar más tarde. Elige tu método de pago preferido: flexible y seguro.",
+
+  "help.button": "¿Necesitas ayuda? ¡Haz clic aquí!",
+
+  "pledge.name": "Tu nombre",
+  "pledge.email": "Correo electrónico",
+  "pledge.amount": "Importe",
+  "pledge.currency": "Moneda",
+  "pledge.paymentMethod": "Método de pago",
+  "pledge.duration": "Plazo de pago (para promesas)",
+  "pledge.message": "Mensaje (opcional)",
+  "pledge.messagePlaceholder": "Tu mensaje de apoyo...",
+};
+
+const de: Dict = {
+  "nav.language": "Sprache",
+
+  "home.title": "Tuendelee Foundation Fundometer",
+  "home.heading": "Kluge Köpfe durch Bildung stärken",
+  "home.subheading":
+    "Unterstütze begabte Studierende mit Stipendien. Jeder Beitrag verändert Leben und baut eine bessere Zukunft für Kenia.",
+  "home.ctaCardTitle": "Bereit, etwas zu bewegen?",
+  "home.ctaButton": "Registrieren, zusagen und Fortschritt verfolgen",
+  "home.finalCtaText": "Es dauert nur einen Moment, um dauerhaft zu helfen",
+  "home.finalCtaButton": "Jetzt etwas bewegen",
+  "home.finalCtaNote":
+    "Gemeinsam helfen wir begabten Studierenden, ihre Bildungsträume zu erreichen",
+
+  "impact.sectionTitle": "Wirkungsgeschichten",
+  "impact.sectionSubtitle":
+    "Sieh und höre, welchen Unterschied deine Unterstützung im Leben unserer Studierenden macht.",
+  "impact.listen": "Diese Geschichte anhören",
+  "impact.loading": "Wirkungsgeschichten werden geladen...",
+
+  "security.title": "Deine Sicherheit hat Priorität",
+  "security.subtitle":
+    "Wir wissen, wie wichtig der Schutz deiner persönlichen und finanziellen Daten ist. Dein Vertrauen zählt.",
+  "security.encryptionTitle": "Verschlüsselte Datenübertragung",
+  "security.encryptionBody":
+    "Deine Daten werden bei der Übertragung mit SSL/TLS verschlüsselt – dieselbe Technologie, die sichere Websites weltweit nutzen",
+  "security.paymentTitle": "Sichere Zahlungsabwicklung",
+  "security.paymentBody":
+    "Wir speichern keine Kartendaten. Alle Zahlungen laufen über vertrauenswürdige Anbieter wie M-Pesa, PayPal und sichere Banküberweisungen",
+  "security.storageTitle": "Geschützte Datenspeicherung",
+  "security.storageBody":
+    "Deine Daten liegen in sicheren, verschlüsselten Datenbanken mit eingeschränktem Zugriff und regelmäßigen Prüfungen",
+  "security.privacyTitle": "Datenschutz garantiert",
+  "security.privacyBody":
+    "Wir geben deine persönlichen Daten niemals an Dritte weiter oder verkaufen sie. Sie dienen nur der Teilnahme am Event und der Spendenabwicklung",
+  "security.trustedTitle": "Geprüft und vertrauenswürdig",
+  "security.trustedBody":
+    "Unsere Plattform folgt bewährten Sicherheitsstandards und wird regelmäßig überprüft, um höchsten Datenschutz zu gewährleisten",
+  "security.trackingTitle": "Transparente Nachverfolgung",
+  "security.trackingBody":
+    "Sieh Beiträge in Echtzeit mit voller Transparenz. Verfolge, wie deine Spende uns dem Stipendienziel näherbringt",
+
+  "how.title": "So funktioniert es",
+  "how.step1Title": "Sofort beitreten",
+  "how.step1Body":
+    "Klicke auf die Anmeldeschaltfläche und du bist dabei. So einfach – ohne komplizierte Formulare.",
+  "how.step2Title": "Deinen Beitrag leisten",
+  "how.step2Body":
+    "Zahle jetzt für sofortige Wirkung oder sage eine Zahlung für später zu. Wähle deine bevorzugte Zahlungsart – flexibel und sicher.",
+
+  "help.button": "Brauchst du Hilfe? Hier klicken!",
+
+  "pledge.name": "Dein Name",
+  "pledge.email": "E-Mail-Adresse",
+  "pledge.amount": "Betrag",
+  "pledge.currency": "Währung",
+  "pledge.paymentMethod": "Zahlungsart",
+  "pledge.duration": "Zahlungsfrist (für Zusagen)",
+  "pledge.message": "Nachricht (optional)",
+  "pledge.messagePlaceholder": "Deine Unterstützungsnachricht...",
+};
+
 export const translations: Record<Language, Dict> = {
   en: { ...en, ...appTranslations.en },
   it: { ...it, ...appTranslations.it },
   fr: { ...fr, ...appTranslations.fr },
   sw: { ...sw, ...appTranslations.sw },
+  es: { ...es, ...appTranslations.es },
+  de: { ...de, ...appTranslations.de },
 };
 
 
