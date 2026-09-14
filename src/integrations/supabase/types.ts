@@ -520,6 +520,8 @@ export type Database = {
           admin_id: string
           created_at: string
           description: string | null
+          description_de: string | null
+          description_es: string | null
           description_fr: string | null
           description_it: string | null
           description_sw: string | null
@@ -544,6 +546,8 @@ export type Database = {
           template_thank_you_all: string | null
           thank_you_all_sent_at: string | null
           title: string
+          title_de: string | null
+          title_es: string | null
           title_fr: string | null
           title_it: string | null
           title_sw: string | null
@@ -553,6 +557,8 @@ export type Database = {
           admin_id: string
           created_at?: string
           description?: string | null
+          description_de?: string | null
+          description_es?: string | null
           description_fr?: string | null
           description_it?: string | null
           description_sw?: string | null
@@ -577,6 +583,8 @@ export type Database = {
           template_thank_you_all?: string | null
           thank_you_all_sent_at?: string | null
           title: string
+          title_de?: string | null
+          title_es?: string | null
           title_fr?: string | null
           title_it?: string | null
           title_sw?: string | null
@@ -586,6 +594,8 @@ export type Database = {
           admin_id?: string
           created_at?: string
           description?: string | null
+          description_de?: string | null
+          description_es?: string | null
           description_fr?: string | null
           description_it?: string | null
           description_sw?: string | null
@@ -610,6 +620,8 @@ export type Database = {
           template_thank_you_all?: string | null
           thank_you_all_sent_at?: string | null
           title?: string
+          title_de?: string | null
+          title_es?: string | null
           title_fr?: string | null
           title_it?: string | null
           title_sw?: string | null
