@@ -1,13 +1,16 @@
 import { appTranslations } from "./i18nApp";
 
-export type Language = "en" | "it" | "fr" | "sw";
+export type Language = "en" | "it" | "fr" | "sw" | "es" | "de";
 
+export const LANGUAGE_CODES: Language[] = ["en", "it", "fr", "sw", "es", "de"];
 
-export const LANGUAGES: { code: Language; label: string; flag: string }[] = [
-  { code: "en", label: "English", flag: "🇬🇧" },
-  { code: "it", label: "Italiano", flag: "🇮🇹" },
-  { code: "fr", label: "Français", flag: "🇫🇷" },
-  { code: "sw", label: "Kiswahili", flag: "🇰🇪" },
+export const LANGUAGES: { code: Language; label: string; short: string }[] = [
+  { code: "en", label: "English", short: "EN" },
+  { code: "it", label: "Italiano", short: "IT" },
+  { code: "fr", label: "Français", short: "FR" },
+  { code: "sw", label: "Kiswahili", short: "SW" },
+  { code: "es", label: "Español", short: "ES" },
+  { code: "de", label: "Deutsch", short: "DE" },
 ];
 
 
