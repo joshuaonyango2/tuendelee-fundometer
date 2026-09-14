@@ -157,6 +157,26 @@ All colors MUST be HSL.
     letter-spacing: 0.005em;
   }
 
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    background-image: url('./assets/tuendelee-watermark.png');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: min(46rem, 58vw) auto;
+    opacity: 0.055;
+  }
+
+  @media (max-width: 640px) {
+    body::after {
+      background-size: 88vw auto;
+      opacity: 0.05;
+    }
+  }
+
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif;
     letter-spacing: -0.01em;
