@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import { Language, translate } from "@/lib/i18n";
+import { Language, LANGUAGE_CODES, translate } from "@/lib/i18n";
 
 interface LanguageContextValue {
   language: Language;
@@ -18,7 +18,7 @@ const STORAGE_KEY = "fundometer-language";
 function readStoredLanguage(): Language {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored === "en" || stored === "it" || stored === "fr" || stored === "sw") return stored;
+    if (stored && (LANGUAGE_CODES as string[]).includes(stored)) return stored as Language;
   } catch {
     // ignore storage errors
   }

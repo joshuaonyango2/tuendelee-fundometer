@@ -16,10 +16,12 @@ interface EventContentEditorProps {
 }
 
 const LANGS = [
-  { code: 'en', label: 'English (original)', titleKey: 'title', descKey: 'description' },
-  { code: 'it', label: 'Italiano', titleKey: 'title_it', descKey: 'description_it' },
-  { code: 'fr', label: 'Français', titleKey: 'title_fr', descKey: 'description_fr' },
-  { code: 'sw', label: 'Kiswahili', titleKey: 'title_sw', descKey: 'description_sw' },
+  { code: 'en', label: 'EN — English (original)', titleKey: 'title', descKey: 'description' },
+  { code: 'it', label: 'IT — Italiano', titleKey: 'title_it', descKey: 'description_it' },
+  { code: 'fr', label: 'FR — Français', titleKey: 'title_fr', descKey: 'description_fr' },
+  { code: 'sw', label: 'SW — Kiswahili', titleKey: 'title_sw', descKey: 'description_sw' },
+  { code: 'es', label: 'ES — Español', titleKey: 'title_es', descKey: 'description_es' },
+  { code: 'de', label: 'DE — Deutsch', titleKey: 'title_de', descKey: 'description_de' },
 ] as const;
 
 export function EventContentEditor({ eventId, event, onSaved }: EventContentEditorProps) {

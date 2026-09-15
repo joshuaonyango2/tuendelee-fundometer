@@ -23,8 +23,8 @@ export function LanguageSwitcher({ className }: { className?: string }) {
           aria-label={t("nav.language")}
         >
           <Globe className="w-4 h-4 mr-2" />
-          <span aria-hidden="true" className="mr-1">{current.flag}</span>
-          {current.label}
+          <span className="mr-1 font-semibold">{current.short}</span>
+          <span className="hidden sm:inline">{current.label}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="bg-popover z-50">
@@ -34,7 +34,9 @@ export function LanguageSwitcher({ className }: { className?: string }) {
             onClick={() => setLanguage(lang.code as Language)}
             className={lang.code === language ? "font-semibold" : undefined}
           >
-            <span aria-hidden="true" className="mr-2">{lang.flag}</span>
+            <span className="mr-2 w-7 text-xs font-semibold text-muted-foreground">
+              {lang.short}
+            </span>
             {lang.label}
           </DropdownMenuItem>
         ))}

@@ -50,7 +50,7 @@ export const SITE_CONTENT_KEYS: { key: string; label: string; hint: string }[] =
   },
 ];
 
-export const SITE_CONTENT_LOCALES = ["en", "it", "fr", "sw"] as const;
+export const SITE_CONTENT_LOCALES = ["en", "it", "fr", "sw", "es", "de"] as const;
 export type SiteContentLocale = (typeof SITE_CONTENT_LOCALES)[number];
 
 /** Fetch every visible row and index it as key -> locale -> value. */
