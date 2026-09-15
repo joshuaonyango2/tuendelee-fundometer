@@ -229,7 +229,11 @@ export default function JoinEvent() {
           </div>
           <CardTitle className="text-2xl">{t("join.title")} {localizedEvent.title}</CardTitle>
           <CardDescription>
-            {localizedEvent.description || t("join.defaultDescription")}
+            {localizedEvent.description ? (
+              <Linkify text={localizedEvent.description} className="whitespace-pre-line" />
+            ) : (
+              t("join.defaultDescription")
+            )}
           </CardDescription>
         </CardHeader>
         

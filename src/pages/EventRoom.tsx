@@ -433,7 +433,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
                 </div>
                 {localized.description && (
                   <CardDescription className="text-lg">
-                    {localized.description}
+                    <Linkify text={localized.description} className="whitespace-pre-line" />
                   </CardDescription>
                 )}
               </CardHeader>
