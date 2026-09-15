@@ -24,6 +24,7 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import MeetingIntegrations from "@/components/meetings/MeetingIntegrations";
 import CreateMeetingDialog from "@/components/meetings/CreateMeetingDialog";
+import { Linkify } from "@/components/Linkify";
 
 interface FundraisingEvent {
   id: string;

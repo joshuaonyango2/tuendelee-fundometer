@@ -24,6 +24,7 @@ import { formatAmountWithKES } from '@/lib/currencyUtils';
 import { useLanguage } from "@/contexts/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { localizedEventText } from "@/lib/eventText";
+import { Linkify } from "@/components/Linkify";
 
 interface EventDetails {
   id: string;

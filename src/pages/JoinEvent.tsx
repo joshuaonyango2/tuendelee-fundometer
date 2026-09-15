@@ -14,6 +14,7 @@ import { format } from "date-fns";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { localizedEventText } from "@/lib/eventText";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { Linkify } from "@/components/Linkify";
 
 interface Event {
   id: string;
