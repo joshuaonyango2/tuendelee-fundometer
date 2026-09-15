@@ -24,6 +24,7 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import MeetingIntegrations from "@/components/meetings/MeetingIntegrations";
 import CreateMeetingDialog from "@/components/meetings/CreateMeetingDialog";
+import { Linkify } from "@/components/Linkify";
 
 interface FundraisingEvent {
   id: string;
@@ -467,7 +468,9 @@ export default function AdminDashboard() {
                       </div>
                     </CardHeader>
                     <CardContent className="space-y-4 pt-6">
-                      <p className="text-sm text-muted-foreground">{event.description}</p>
+                      <p className="text-sm text-muted-foreground">
+                        <Linkify text={event.description} className="whitespace-pre-line" />
+                      </p>
                       
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <div className="rounded-xl border border-border bg-muted/30 p-4">

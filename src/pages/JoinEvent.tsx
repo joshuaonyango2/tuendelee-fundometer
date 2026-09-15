@@ -14,6 +14,7 @@ import { format } from "date-fns";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { localizedEventText } from "@/lib/eventText";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { Linkify } from "@/components/Linkify";
 
 interface Event {
   id: string;
@@ -22,9 +23,13 @@ interface Event {
   title_it?: string | null;
   title_fr?: string | null;
   title_sw?: string | null;
+  title_es?: string | null;
+  title_de?: string | null;
   description_it?: string | null;
   description_fr?: string | null;
   description_sw?: string | null;
+  description_es?: string | null;
+  description_de?: string | null;
   scheduled_at: string;
 }
 
@@ -60,7 +65,7 @@ export default function JoinEvent() {
     try {
       const { data, error } = await supabase
         .from("fundraising_events")
-        .select("id, title, description, title_it, title_fr, title_sw, description_it, description_fr, description_sw, scheduled_at, share_link")
+        .select("id, title, description, title_it, title_fr, title_sw, title_es, title_de, description_it, description_fr, description_sw, description_es, description_de, scheduled_at, share_link")
         .eq("is_active", true)
         .order("scheduled_at", { ascending: false });
 
@@ -224,7 +229,11 @@ export default function JoinEvent() {
           </div>
           <CardTitle className="text-2xl">{t("join.title")} {localizedEvent.title}</CardTitle>
           <CardDescription>
-            {localizedEvent.description || t("join.defaultDescription")}
+            {localizedEvent.description ? (
+              <Linkify text={localizedEvent.description} className="whitespace-pre-line" />
+            ) : (
+              t("join.defaultDescription")
+            )}
           </CardDescription>
         </CardHeader>
         

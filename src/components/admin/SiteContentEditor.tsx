@@ -24,10 +24,12 @@ import {
 } from "@/lib/siteContent";
 
 const LOCALE_LABELS: Record<string, string> = {
-  en: "English",
-  it: "Italiano",
-  fr: "Français",
-  sw: "Kiswahili",
+  en: "EN — English",
+  it: "IT — Italiano",
+  fr: "FR — Français",
+  sw: "SW — Kiswahili",
+  es: "ES — Español",
+  de: "DE — Deutsch",
 };
 
 const emptyForm = {

@@ -6,10 +6,18 @@ export interface LocalizableEvent {
   title_it?: string | null;
   title_fr?: string | null;
   title_sw?: string | null;
+  title_es?: string | null;
+  title_de?: string | null;
   description_it?: string | null;
   description_fr?: string | null;
   description_sw?: string | null;
+  description_es?: string | null;
+  description_de?: string | null;
 }
+
+/** Columns holding the admin-authored text, per language. */
+export const EVENT_TEXT_COLUMNS =
+  "title, description, title_it, title_fr, title_sw, title_es, title_de, description_it, description_fr, description_sw, description_es, description_de";
 
 const pick = (value?: string | null, fallback?: string | null) => {
   const trimmed = (value ?? "").trim();
@@ -23,26 +31,17 @@ const pick = (value?: string | null, fallback?: string | null) => {
 export function localizedEventText(event: LocalizableEvent | null | undefined, language: Language) {
   if (!event) return { title: "", description: "" };
 
-  switch (language) {
-    case "it":
-      return {
-        title: pick(event.title_it, event.title),
-        description: pick(event.description_it, event.description),
-      };
-    case "fr":
-      return {
-        title: pick(event.title_fr, event.title),
-        description: pick(event.description_fr, event.description),
-      };
-    case "sw":
-      return {
-        title: pick(event.title_sw, event.title),
-        description: pick(event.description_sw, event.description),
-      };
-    default:
-      return {
-        title: pick(event.title),
-        description: pick(event.description),
-      };
-  }
+  const map: Partial<Record<Language, { title?: string | null; description?: string | null }>> = {
+    it: { title: event.title_it, description: event.description_it },
+    fr: { title: event.title_fr, description: event.description_fr },
+    sw: { title: event.title_sw, description: event.description_sw },
+    es: { title: event.title_es, description: event.description_es },
+    de: { title: event.title_de, description: event.description_de },
+  };
+
+  const localized = map[language];
+  return {
+    title: pick(localized?.title, event.title),
+    description: pick(localized?.description, event.description),
+  };
 }
