@@ -295,6 +295,41 @@ export type Database = {
         }
         Relationships: []
       }
+      event_custom_texts: {
+        Row: {
+          created_at: string
+          event_id: string
+          id: string
+          text_key: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          id?: string
+          text_key: string
+          updated_at?: string
+          value: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          id?: string
+          text_key?: string
+          updated_at?: string
+          value?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_custom_texts_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "fundraising_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       event_meetings: {
         Row: {
           created_at: string | null

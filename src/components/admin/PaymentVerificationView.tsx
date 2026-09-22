@@ -27,6 +27,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { formatAmountWithKES } from "@/lib/currencyUtils";
+import { useEventTexts } from "@/hooks/useEventTexts";
 
 interface EvidenceRow {
   id: string;
@@ -59,14 +60,8 @@ const STATUS_META: Record<string, { label: string; variant: "default" | "seconda
   rejected: { label: "Rejected", variant: "destructive" },
 };
 
-const REFERENCE_RULES = [
-  "M-Pesa: 10 characters, letters and numbers (e.g. QA12B3C4D5).",
-  "PayPal: 17 characters, letters and numbers.",
-  "Bank transfer: 6–40 characters, letters, numbers or slashes.",
-  "Benevity: the donation ID from your company portal (4–60 characters).",
-];
-
 export function PaymentVerificationView({ eventId }: { eventId: string }) {
+  const { text } = useEventTexts(eventId);
   const [rows, setRows] = useState<EvidenceRow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -159,11 +154,10 @@ export function PaymentVerificationView({ eventId }: { eventId: string }) {
             <div>
               <CardTitle className="flex items-center gap-2">
                 <ShieldCheck className="h-5 w-5 text-success" />
-                Verify transaction evidence
+                {text("verify.title")}
               </CardTitle>
               <CardDescription>
-                Check each donor's transaction code and uploaded receipt, then mark the payment verified
-                or rejected. Donors keep their pledge record either way — nothing is counted twice.
+                {text("verify.description")}
               </CardDescription>
             </div>
             <Button variant="outline" onClick={() => void load()}>
@@ -191,16 +185,16 @@ export function PaymentVerificationView({ eventId }: { eventId: string }) {
           <div className="rounded-xl bg-accent p-4">
             <p className="flex items-center gap-2 font-semibold text-accent-foreground">
               <ShieldAlert className="h-4 w-4" />
-              How references are checked automatically
+              {text("verify.rulesTitle")}
             </p>
             <ul className="mt-2 list-inside list-disc space-y-1 text-sm text-accent-foreground">
-              {REFERENCE_RULES.map((rule) => (
-                <li key={rule}>{rule}</li>
-              ))}
-              <li>
-                Any reference already used on this event is flagged as a possible duplicate so the same
-                payment is never counted twice.
-              </li>
+              {text("verify.rules")
+                .split("\n")
+                .map((rule) => rule.trim())
+                .filter(Boolean)
+                .map((rule) => (
+                  <li key={rule}>{rule}</li>
+                ))}
             </ul>
           </div>
 
