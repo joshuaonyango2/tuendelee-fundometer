@@ -12,6 +12,8 @@ import { PlatformCredentialsManager } from '@/components/admin/PlatformCredentia
 import { PledgeReportsView } from '@/components/admin/PledgeReportsView';
 import { ManualPledgeEntry } from '@/components/admin/ManualPledgeEntry';
 import { EventContentEditor } from '@/components/admin/EventContentEditor';
+import { EventTextsEditor } from '@/components/admin/EventTextsEditor';
+import { useEventTexts } from '@/hooks/useEventTexts';
 import { ReconciliationView } from '@/components/admin/ReconciliationView';
 import { PaymentVerificationView } from '@/components/admin/PaymentVerificationView';
 import { PowerBIExport } from '@/components/admin/PowerBIExport';
@@ -40,6 +42,7 @@ export default function EventManagement() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isAdminForEvent, setIsAdminForEvent] = useState<boolean | null>(null);
   const [meetings, setMeetings] = useState<any[]>([]);
+  const { text } = useEventTexts(eventId);
 
   useEffect(() => {
     if (!eventId) return;
@@ -229,6 +232,7 @@ export default function EventManagement() {
 
           <TabsContent value="content" className="space-y-4">
             <EventContentEditor eventId={eventId!} event={event} onSaved={loadEvent} />
+            <EventTextsEditor eventId={eventId!} onSaved={loadEvent} />
           </TabsContent>
 
 
@@ -237,11 +241,11 @@ export default function EventManagement() {
             <Card>
               <CardContent className="p-6">
                 <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-semibold">Your Scheduled Meetings</h3>
+                  <h3 className="text-lg font-semibold">{text("meetings.title")}</h3>
                   <PlatformCredentialsManager />
                 </div>
                 {meetings.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No meetings scheduled yet.</p>
+                  <p className="text-sm text-muted-foreground">{text("meetings.empty")}</p>
                 ) : (
                   <div className="space-y-4">
                     {meetings.map((meeting) => (
