@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { BarChart3, Download, FileJson, Copy, Database, CalendarClock } from "lucide-react";
+import { useEventTexts } from "@/hooks/useEventTexts";
 
 interface PowerBIExportProps {
   eventId: string;
@@ -17,6 +18,7 @@ interface PowerBIExportProps {
 const SUPABASE_HOST = `db.${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co`;
 
 export function PowerBIExport({ eventId, eventTitle }: PowerBIExportProps) {
+  const { text } = useEventTexts(eventId);
   const [isBusy, setIsBusy] = useState(false);
   const [syncFrequency, setSyncFrequency] = useState("manual");
   const [lastSyncAt, setLastSyncAt] = useState<string | null>(null);
@@ -164,7 +166,7 @@ export function PowerBIExport({ eventId, eventTitle }: PowerBIExportProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Database className="h-5 w-5 text-primary" />
-            Live connection (auto-refreshing dashboards)
+            {text("powerbi.liveTitle")}
           </CardTitle>
           <CardDescription>
             In Power BI Desktop choose <strong>Get Data → PostgreSQL database</strong> and use the details
@@ -233,7 +235,7 @@ export function PowerBIExport({ eventId, eventTitle }: PowerBIExportProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <CalendarClock className="h-5 w-5 text-primary" />
-            Refresh schedule
+            {text("powerbi.scheduleTitle")}
           </CardTitle>
           <CardDescription>
             Record how often Power BI should pull this event's data. Set the same cadence inside Power BI

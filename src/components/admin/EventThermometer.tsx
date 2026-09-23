@@ -4,12 +4,14 @@ import { ImprovedThermometer } from '@/components/ImprovedThermometer';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { currencyService } from '@/services/currencyService';
+import { useEventTexts } from '@/hooks/useEventTexts';
 
 interface EventThermometerProps {
   eventId: string;
 }
 
 export function EventThermometer({ eventId }: EventThermometerProps) {
+  const { text } = useEventTexts(eventId);
   const [paidUSD, setPaidUSD] = useState(0);
   const [paidKES, setPaidKES] = useState(0);
   const [unpaidUSD, setUnpaidUSD] = useState(0);
@@ -122,7 +124,7 @@ export function EventThermometer({ eventId }: EventThermometerProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Fundraising Progress</CardTitle>
+        <CardTitle>{text("thermometer.title")}</CardTitle>
       </CardHeader>
       <CardContent>
         <ImprovedThermometer 

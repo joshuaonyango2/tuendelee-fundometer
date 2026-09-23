@@ -9,12 +9,14 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Plus } from 'lucide-react';
 import { z } from 'zod';
+import { useEventTexts } from '@/hooks/useEventTexts';
 
 interface ManualPledgeEntryProps {
   eventId: string;
 }
 
 export function ManualPledgeEntry({ eventId }: ManualPledgeEntryProps) {
+  const { text } = useEventTexts(eventId);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -125,10 +127,10 @@ export function ManualPledgeEntry({ eventId }: ManualPledgeEntryProps) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Plus className="w-5 h-5" />
-          Manual Pledge Entry
+          {text("manual.title")}
         </CardTitle>
         <CardDescription>
-          Add pledges manually on behalf of donors
+          {text("manual.description")}
         </CardDescription>
       </CardHeader>
       <CardContent>
