@@ -25,6 +25,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { localizedEventText } from "@/lib/eventText";
 import { Linkify } from "@/components/Linkify";
+import { useEventTexts } from "@/hooks/useEventTexts";
 
 interface EventDetails {
   id: string;
@@ -65,6 +66,8 @@ export default function EventRoom() {
   const { eventId } = useParams();
   const navigate = useNavigate();
   const { t, language } = useLanguage();
+  const { custom } = useEventTexts(eventId);
+  const et = (key: string) => custom(key) ?? t(key);
   const [event, setEvent] = useState<EventDetails | null>(null);
   const [activeUsers, setActiveUsers] = useState(0);
   const [isEventLoading, setIsEventLoading] = useState(true);
@@ -556,7 +559,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Target className="h-6 w-6 text-success" />
-                  {t("room.progress")}
+                  {et("room.progress")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -587,7 +590,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
               <AccordionItem value="donations" className="border rounded-lg">
                 <Card className="border-0">
                   <AccordionTrigger className="px-6 py-4 hover:no-underline">
-                    <CardTitle className="text-lg">{t("room.recentDonations")}</CardTitle>
+                    <CardTitle className="text-lg">{et("room.recentDonations")}</CardTitle>
                   </AccordionTrigger>
                   <AccordionContent>
                     <CardContent className="pt-0">
@@ -597,7 +600,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
                         <ErrorFallback error={pledgesError} onRetry={reloadPledges} />
                       ) : realtimePledges.length === 0 ? (
                         <p className="text-center text-muted-foreground py-8">
-                          {t("room.noDonations")}
+                          {et("room.noDonations")}
                         </p>
                       ) : (
                         <>
@@ -646,7 +649,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
               {event.is_active ? (
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-lg">{t("room.makePledge")}</CardTitle>
+                    <CardTitle className="text-lg">{et("room.makePledge")}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <PledgeForm onSubmit={handlePledgeSubmit} />
@@ -656,8 +659,8 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
                 <Card>
                   <CardContent className="text-center py-8">
                     <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <h3 className="font-semibold text-lg mb-2">{t("room.eventEnded")}</h3>
-                    <p className="text-muted-foreground">{t("room.eventEndedBody")}</p>
+                    <h3 className="font-semibold text-lg mb-2">{et("room.eventEnded")}</h3>
+                    <p className="text-muted-foreground">{et("room.eventEndedBody")}</p>
                   </CardContent>
                 </Card>
               )}

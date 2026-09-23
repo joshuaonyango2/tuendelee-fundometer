@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { Users } from 'lucide-react';
+import { useEventTexts } from '@/hooks/useEventTexts';
 
 interface Participant {
   attendee_name: string;
@@ -19,6 +20,7 @@ interface ParticipantsViewProps {
 }
 
 export function ParticipantsView({ eventId }: ParticipantsViewProps) {
+  const { text } = useEventTexts(eventId);
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -110,7 +112,7 @@ export function ParticipantsView({ eventId }: ParticipantsViewProps) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Users className="w-5 h-5" />
-          Event Participants
+          {text("participants.title")}
         </CardTitle>
       </CardHeader>
       <CardContent>

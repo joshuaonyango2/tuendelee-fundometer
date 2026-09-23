@@ -11,6 +11,7 @@ import { Download, CheckCircle, XCircle } from 'lucide-react';
 import { PledgeEditor } from './PledgeEditor';
 import { formatAmountWithKES } from '@/lib/currencyUtils';
 import { PledgeSearch } from './PledgeSearch';
+import { useEventTexts } from '@/hooks/useEventTexts';
 
 interface Pledge {
   id: string;
@@ -35,6 +36,7 @@ interface PledgeReportsViewProps {
 }
 
 export function PledgeReportsView({ eventId }: PledgeReportsViewProps) {
+  const { text } = useEventTexts(eventId);
   const [pledges, setPledges] = useState<Pledge[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filterPaymentMethod, setFilterPaymentMethod] = useState<string>('all');
@@ -227,7 +229,7 @@ export function PledgeReportsView({ eventId }: PledgeReportsViewProps) {
     <Card>
       <CardHeader>
         <div className="flex justify-between items-start mb-4">
-          <CardTitle>Pledge Reports</CardTitle>
+          <CardTitle>{text("reports.title")}</CardTitle>
           <div className="flex gap-2">
             <Button
               variant="outline"

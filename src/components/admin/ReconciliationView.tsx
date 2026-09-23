@@ -22,6 +22,7 @@ import {
   Scale,
   ShieldCheck,
 } from 'lucide-react';
+import { useEventTexts } from '@/hooks/useEventTexts';
 import { Bar, BarChart, CartesianGrid, Cell, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 interface ReconciliationViewProps {
@@ -140,6 +141,7 @@ function parseDate(raw: string): string | null {
 }
 
 export function ReconciliationView({ eventId, event, onSaved }: ReconciliationViewProps) {
+  const { text } = useEventTexts(eventId);
   const fileRef = useRef<HTMLInputElement>(null);
   const [entries, setEntries] = useState<BankEntry[]>([]);
   const [pledges, setPledges] = useState<AdminPledge[]>([]);
@@ -482,11 +484,10 @@ export function ReconciliationView({ eventId, event, onSaved }: ReconciliationVi
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Mail className="h-5 w-5" />
-            Official sending email
+            {text("recon.senderTitle")}
           </CardTitle>
           <CardDescription>
-            All system emails (pledge confirmations, reminders, receipts and follow-ups) will be sent from this
-            organisational address.
+            {text("recon.senderDescription")}
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
@@ -519,12 +520,10 @@ export function ReconciliationView({ eventId, event, onSaved }: ReconciliationVi
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Building2 className="h-5 w-5" />
-            Upload bank / M-Pesa statement
+            {text("recon.uploadTitle")}
           </CardTitle>
           <CardDescription>
-            Upload the CSV exported from your bank or M-Pesa account. Columns are detected automatically (date,
-            reference/receipt, payer name, description, amount). The system then compares every deposit against the
-            pledges recorded here.
+            {text("recon.uploadDescription")}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -596,7 +595,7 @@ export function ReconciliationView({ eventId, event, onSaved }: ReconciliationVi
 
           <Card>
             <CardHeader>
-              <CardTitle>Reconciliation overview</CardTitle>
+              <CardTitle>{text("recon.overviewTitle")}</CardTitle>
               <CardDescription>
                 Bank deposits {summary ? money(Number(summary.bank_total)) : '-'} vs system-confirmed{' '}
                 {summary ? money(Number(summary.system_paid_total)) : '-'}
@@ -622,7 +621,7 @@ export function ReconciliationView({ eventId, event, onSaved }: ReconciliationVi
 
           <Card>
             <CardHeader>
-              <CardTitle>Follow-up email</CardTitle>
+              <CardTitle>{text("recon.followupTitle")}</CardTitle>
               <CardDescription>
                 Use ${'{name}'}, ${'{amount}'}, ${'{currency}'}, ${'{event_title}'} and ${'{reference}'} as
                 placeholders.
