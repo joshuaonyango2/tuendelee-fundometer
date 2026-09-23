@@ -137,11 +137,10 @@ export function PowerBIExport({ eventId, eventTitle }: PowerBIExportProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <BarChart3 className="h-5 w-5 text-primary" />
-            Power BI &amp; Excel visualisation
+            {text("powerbi.exportTitle")}
           </CardTitle>
           <CardDescription>
-            Export this event's pledge and payment data, or connect Power BI straight to the database for
-            dashboards that refresh on their own.
+            {text("powerbi.exportDescription")}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
