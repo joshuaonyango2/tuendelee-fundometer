@@ -106,7 +106,10 @@ export function EventThermometer({ eventId }: EventThermometerProps) {
       )
       .subscribe();
 
+    const interval = setInterval(() => loadPledgeData(), 5000);
+
     return () => {
+      clearInterval(interval);
       supabase.removeChannel(channel);
     };
   }, [eventId]);

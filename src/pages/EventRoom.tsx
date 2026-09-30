@@ -255,9 +255,10 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
       
       // Calculate payment deadline if it's a pledge
       let paymentDeadline = null;
-      if (formData.paymentType === 'pledge' && formData.pledgeDurationDays) {
+      if (formData.paymentType === 'pledge' && formData.pledgeDurationDays !== undefined) {
         const deadline = new Date();
         deadline.setDate(deadline.getDate() + formData.pledgeDurationDays);
+        if (formData.pledgeDurationDays === 0) deadline.setHours(23, 59, 0, 0);
         paymentDeadline = deadline.toISOString();
       }
       
@@ -333,7 +334,11 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
           setShowPaymentDialog(true);
         }
       } else {
-        toast.success(`Pledge created! Payment due in ${formData.pledgeDurationDays} days`);
+        toast.success(
+          formData.pledgeDurationDays === 0
+            ? 'Pledge created! Payment due today'
+            : `Pledge created! Payment due in ${formData.pledgeDurationDays} days`
+        );
       }
     } catch (error) {
       console.error('Error processing pledge:', error);
