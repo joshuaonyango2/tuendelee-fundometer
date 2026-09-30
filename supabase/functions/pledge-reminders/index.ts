@@ -36,7 +36,7 @@ Deno.serve(async (req) => {
     const { data: pledges, error } = await supabase
       .from("event_pledges")
       .select(
-        "id, event_id, name, email, amount, currency, created_at, payment_deadline, pledge_duration_days, is_confirmed, is_archived, reminder_half_sent_at, reminder_final_sent_at",
+        "id, event_id, name, email, amount, currency, created_at, payment_deadline, pledge_duration_days, is_confirmed, is_archived, reminder_half_sent_at, reminder_final_sent_at, preferred_language",
       )
       .eq("is_confirmed", false)
       .eq("is_archived", false)
