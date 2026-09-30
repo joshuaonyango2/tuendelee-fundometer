@@ -76,7 +76,7 @@ Deno.serve(async (req) => {
 
     let query = admin
       .from("event_pledges")
-      .select("id, name, email, amount, currency, is_confirmed, badge_rank")
+      .select("id, name, email, amount, currency, is_confirmed, badge_rank, preferred_language")
       .eq("event_id", eventId)
       .not("email", "is", null);
 
@@ -140,6 +140,7 @@ Deno.serve(async (req) => {
         subject ?? `Thank you for supporting ${event.title}`,
         html,
         await resolveSender(supabase, event),
+        pledge.preferred_language,
       );
       if (result.status === "failed") failed += 1;
       else sent += 1;

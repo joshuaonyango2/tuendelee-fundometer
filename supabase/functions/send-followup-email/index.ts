@@ -68,7 +68,7 @@ Deno.serve(async (req) => {
 
     const { data: pledges, error } = await admin
       .from("event_pledges")
-      .select("id, name, email, amount, currency, payment_method, payment_reference, is_confirmed")
+      .select("id, name, email, amount, currency, payment_method, payment_reference, is_confirmed, preferred_language")
       .eq("event_id", eventId)
       .in("id", pledgeIds)
       .not("email", "is", null);
@@ -108,7 +108,7 @@ Deno.serve(async (req) => {
           : undefined,
       );
 
-      const result = await sendEmail(email, subject, html, from);
+      const result = await sendEmail(email, subject, html, from, pledge.preferred_language);
       if (result.status === "failed") failed += 1;
       else sent += 1;
 

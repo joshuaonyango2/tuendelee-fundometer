@@ -124,6 +124,7 @@ Deno.serve(async (req) => {
         stage === "final" ? "Your pledge is due tomorrow" : "Halfway to your pledge deadline",
         html,
         eventInfo.from,
+        pledge.preferred_language,
       );
 
       await supabase

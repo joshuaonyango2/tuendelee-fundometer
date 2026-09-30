@@ -48,7 +48,7 @@ Deno.serve(async (req) => {
     const { data: pledge, error: pledgeError } = await supabase
       .from("event_pledges")
       .select(
-        "id, event_id, name, email, amount, currency, payment_type, payment_method, payment_reference, payment_deadline, verification_status, badge_rank, is_confirmed",
+        "id, event_id, name, email, amount, currency, payment_type, payment_method, payment_reference, payment_deadline, verification_status, badge_rank, is_confirmed, preferred_language",
       )
       .eq("id", pledgeId)
       .maybeSingle();
@@ -140,6 +140,7 @@ Deno.serve(async (req) => {
       SUBJECTS[kind],
       html,
       await resolveSender(supabase, event),
+      pledge.preferred_language,
     );
 
     await supabase.from("pledge_notifications").insert({
