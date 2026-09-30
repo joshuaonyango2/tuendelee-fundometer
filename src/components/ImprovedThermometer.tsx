@@ -1,5 +1,5 @@
 import { T } from "@/components/T";
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 import {
   Target,
@@ -32,14 +32,6 @@ interface ImprovedThermometerProps {
 }
 
 const EXCHANGE_RATE = 128;
-
-/** Palette shared with the four summary cards so the tube always matches them. */
-const COLORS = {
-  goal: 'purple',
-  pledged: 'blue',
-  paid: 'emerald',
-  needed: 'orange',
-} as const;
 
 export function ImprovedThermometer({
   paidAmountUSD,
@@ -94,8 +86,10 @@ export function ImprovedThermometer({
   const totalPledgedPercentage = goalAmountUSD > 0 ? (totalPledgedUSD / goalAmountUSD) * 100 : 0;
   const paidPercentage = goalAmountUSD > 0 ? (paidAmountUSD / goalAmountUSD) * 100 : 0;
   const remainingPercentage = Math.max(0, 100 - totalPledgedPercentage);
-  const remainingAmountUSD = Math.max(0, goalAmountUSD - totalPledgedUSD);
-  const remainingAmountKES = Math.max(0, goalAmountUSD * EXCHANGE_RATE - totalPledgedKES);
+  const displayTotalUSD = displayPaidUSD + displayUnpaidUSD;
+  const displayTotalKES = displayPaidKES + displayUnpaidKES;
+  const displayRemainingUSD = Math.max(0, goalAmountUSD - displayTotalUSD);
+  const displayRemainingKES = displayRemainingUSD * EXCHANGE_RATE;
 
   /** React to live rises: floating "+$X" bubble and a small confetti pop. */
   useEffect(() => {
@@ -126,14 +120,8 @@ export function ImprovedThermometer({
 
 
 
-  /** Animated totals drive the scale so the calibration breathes with each gift. */
-  const displayTotalUSD = displayPaidUSD + displayUnpaidUSD;
-
-  /** Scale top: the goal, or a little above the total when the goal is beaten. */
-  const maxScale = useMemo(
-    () => Math.max(goalAmountUSD, displayTotalUSD * 1.15, 1),
-    [goalAmountUSD, displayTotalUSD]
-  );
+  /** Keep the four goal markers fixed at their actual goal values, even after overfunding. */
+  const maxScale = Math.max(goalAmountUSD, totalPledgedUSD > goalAmountUSD ? totalPledgedUSD * 1.15 : goalAmountUSD, 1);
 
 
   const formatAmount = (amount: number) =>
@@ -158,29 +146,18 @@ export function ImprovedThermometer({
     return `KSh ${Math.round(value).toLocaleString()}`;
   };
 
-  /** Bottom-up calibration: a tick every 10% of the live scale, bold at the quarters. */
-  const ticks = useMemo(() => {
-    const all = Array.from({ length: 11 }, (_, i) => {
-      const percentOfScale = i * 10;
-      const valueUSD = (maxScale * percentOfScale) / 100;
-      const percentOfGoal = goalAmountUSD > 0 ? (valueUSD / goalAmountUSD) * 100 : 0;
-      const isQuarter = [25, 50, 75, 100].some((q) => Math.abs(percentOfGoal - q) < 3.5);
-      return {
-        percentOfScale,
-        valueUSD,
-        valueKES: valueUSD * EXCHANGE_RATE,
-        labelUSD: formatLabelUSD(valueUSD),
-        labelKES: formatLabelKES(valueUSD * EXCHANGE_RATE),
-        isQuarter,
-        quarterLabel: isQuarter ? `${Math.round(percentOfGoal / 25) * 25}%` : null,
-        reached: valueUSD > 0 && valueUSD <= displayTotalUSD,
-        isNext: false,
-      };
-    });
-    const next = all.find((t) => t.valueUSD > displayTotalUSD);
-    if (next) next.isNext = true;
-    return all;
-  }, [maxScale, goalAmountUSD, displayTotalUSD]);
+  const ticks = [0, 25, 50, 75, 100].map((percentOfGoal) => {
+    const valueUSD = goalAmountUSD * percentOfGoal / 100;
+    return {
+      percentOfScale: valueUSD / maxScale * 100,
+      labelUSD: formatLabelUSD(valueUSD),
+      labelKES: formatLabelKES(valueUSD * EXCHANGE_RATE),
+      quarterLabel: percentOfGoal ? `${percentOfGoal}%` : null,
+      isQuarter: percentOfGoal > 0,
+      reached: percentOfGoal > 0 && valueUSD <= displayTotalUSD,
+      isNext: percentOfGoal > 0 && displayTotalUSD < valueUSD && displayTotalUSD >= valueUSD - goalAmountUSD / 4,
+    };
+  });
 
   const paidHeight = Math.min((displayPaidUSD / maxScale) * 100, 100);
   const unpaidHeight = Math.min((displayUnpaidUSD / maxScale) * 100, 100 - paidHeight);
@@ -192,48 +169,48 @@ export function ImprovedThermometer({
     totalPledgedKES
   )} pledged of a KSh ${formatAmount(goalAmountUSD * EXCHANGE_RATE)} goal (KSh ${formatAmount(
     paidAmountKES
-  )} paid). KSh ${formatAmount(remainingAmountKES)} still needed.`;
+  )} paid). KSh ${formatAmount(Math.max(0, goalAmountUSD - totalPledgedUSD) * EXCHANGE_RATE)} still needed.`;
 
   const cards = [
     {
       title: 'Campaign Goal',
       Icon: Trophy,
-      gradient: 'from-purple-500 to-purple-700',
+      gradient: 'from-brand-navy to-brand-navy-deep',
       usd: goalAmountUSD,
       kes: goalAmountUSD * EXCHANGE_RATE,
       subLabel: 'Target Amount',
       subValue: '100%',
-      tint: 'text-purple-100',
+      tint: 'text-primary-foreground/80',
     },
     {
       title: 'Total Pledged',
       Icon: Target,
-      gradient: 'from-blue-500 to-blue-700',
+      gradient: 'from-primary to-primary-dark',
       usd: displayPaidUSD + displayUnpaidUSD,
       kes: displayPaidKES + displayUnpaidKES,
       subLabel: 'Of Goal',
       subValue: `${totalPledgedPercentage.toFixed(1)}%`,
-      tint: 'text-blue-100',
+      tint: 'text-primary-foreground/80',
     },
     {
       title: 'Paid Pledges',
       Icon: CheckCircle,
-      gradient: 'from-emerald-500 to-emerald-700',
+      gradient: 'from-success to-success-light',
       usd: displayPaidUSD,
       kes: displayPaidKES,
       subLabel: 'Of Goal',
       subValue: `${paidPercentage.toFixed(1)}%`,
-      tint: 'text-emerald-100',
+      tint: 'text-success-foreground/80',
     },
     {
       title: 'Still Needed',
       Icon: ArrowUp,
-      gradient: 'from-orange-500 to-orange-700',
-      usd: remainingAmountUSD,
-      kes: remainingAmountKES,
+      gradient: 'from-secondary to-secondary-dark',
+      usd: displayRemainingUSD,
+      kes: displayRemainingKES,
       subLabel: 'To Reach Goal',
       subValue: `${remainingPercentage.toFixed(1)}%`,
-      tint: 'text-orange-100',
+      tint: 'text-secondary-foreground/80',
     },
   ];
 
@@ -480,8 +457,8 @@ export function ImprovedThermometer({
               <span className="flex items-center gap-1.5 text-sm sm:text-base font-black tabular-nums leading-none">
                 <Flame className="h-4 w-4 shrink-0" />${formatCompact(displayTotalUSD)}
               </span>
-              <span className="text-[0.7rem] font-semibold tabular-nums leading-none opacity-80">
-                KSh {formatCompact(displayPaidKES + displayUnpaidKES)}
+                  <span className="text-[0.7rem] font-semibold tabular-nums leading-none opacity-80">
+                KSh {formatCompact(displayTotalKES)}
               </span>
             </div>
 
