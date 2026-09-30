@@ -197,6 +197,22 @@ export function useRealtimePledges({ eventId, enableOptimistic = true }: UseReal
     loadPledges();
   }, [loadPledges]);
 
+  // Automatic background refresh so new pledges appear without anyone reloading the page
+  useEffect(() => {
+    if (!eventId) return;
+    const silentRefresh = async () => {
+      const { data, error } = await supabase.rpc('get_public_pledges', { p_event_id: eventId });
+      if (!error && data) setServerItems(data);
+    };
+    const interval = setInterval(silentRefresh, 5000);
+    const onFocus = () => { void silentRefresh(); };
+    window.addEventListener('focus', onFocus);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', onFocus);
+    };
+  }, [eventId, setServerItems]);
+
   return {
     pledges,
     recentPledges,

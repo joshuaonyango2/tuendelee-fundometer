@@ -66,6 +66,7 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
     pledgeDurationDays: 7,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [customDuration, setCustomDuration] = useState(false);
   const [availableMethods, setAvailableMethods] = useState<{ value: string; label: string }[]>([]);
 
   useEffect(() => {
@@ -111,8 +112,9 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
       return;
     }
 
-    if (paymentType === 'pledge' && (!formData.pledgeDurationDays || formData.pledgeDurationDays < 1 || formData.pledgeDurationDays > 30)) {
-      toast.error("Please select a valid payment duration (1-30 days)");
+    const days = formData.pledgeDurationDays;
+    if (paymentType === 'pledge' && (days === undefined || isNaN(days) || days < 0 || days > 90 || (customDuration && days < 1))) {
+      toast.error("Please choose when you will pay (today, or 1–90 days)");
       return;
     }
 
@@ -247,19 +249,39 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
           <div className="space-y-2">
             <Label htmlFor="duration">{t("pledge.duration")}</Label>
             <Select
-              value={formData.pledgeDurationDays?.toString() || "7"}
-              onValueChange={(value) => setFormData({ ...formData, pledgeDurationDays: parseInt(value) })}
+              value={customDuration ? "custom" : (formData.pledgeDurationDays?.toString() ?? "7")}
+              onValueChange={(value) => {
+                if (value === "custom") {
+                  setCustomDuration(true);
+                } else {
+                  setCustomDuration(false);
+                  setFormData({ ...formData, pledgeDurationDays: parseInt(value) });
+                }
+              }}
             >
               <SelectTrigger className="border-primary/20 focus:border-primary">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="z-50 bg-background">
+                <SelectItem value="0">Today (pay now)</SelectItem>
                 <SelectItem value="7">7 {t("pledge.days")}</SelectItem>
                 <SelectItem value="14">14 {t("pledge.days")}</SelectItem>
                 <SelectItem value="21">21 {t("pledge.days")}</SelectItem>
                 <SelectItem value="30">{t("pledge.month")}</SelectItem>
+                <SelectItem value="custom">Choose my own number of days</SelectItem>
               </SelectContent>
             </Select>
+            {customDuration && (
+              <Input
+                type="number"
+                min={1}
+                max={90}
+                placeholder="Number of days (1–90)"
+                value={formData.pledgeDurationDays || ""}
+                onChange={(e) => setFormData({ ...formData, pledgeDurationDays: parseInt(e.target.value) || 0 })}
+                className="border-primary/20 focus:border-primary"
+              />
+            )}
           </div>
 
           <div className="space-y-2">

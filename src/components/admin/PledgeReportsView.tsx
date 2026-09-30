@@ -79,7 +79,10 @@ export function PledgeReportsView({ eventId }: PledgeReportsViewProps) {
       )
       .subscribe();
 
+    const interval = setInterval(() => loadPledges(), 5000);
+
     return () => {
+      clearInterval(interval);
       supabase.removeChannel(channel);
     };
   }, [eventId]);
