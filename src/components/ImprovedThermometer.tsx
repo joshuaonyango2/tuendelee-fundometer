@@ -120,8 +120,8 @@ export function ImprovedThermometer({
 
 
 
-  /** Keep the four goal markers fixed at their actual goal values, even after overfunding. */
-  const maxScale = Math.max(goalAmountUSD, totalPledgedUSD > goalAmountUSD ? totalPledgedUSD * 1.15 : goalAmountUSD, 1);
+  /** A fixed goal-based calibration lets reached milestones stay put as pledges grow. */
+  const maxScale = Math.max(goalAmountUSD, 1);
 
 
   const formatAmount = (amount: number) =>
@@ -148,16 +148,21 @@ export function ImprovedThermometer({
 
   const ticks = [0, 25, 50, 75, 100].map((percentOfGoal) => {
     const valueUSD = goalAmountUSD * percentOfGoal / 100;
+    const growingValueUSD = Math.min(displayTotalUSD, valueUSD);
     return {
       percentOfScale: valueUSD / maxScale * 100,
-      labelUSD: formatLabelUSD(valueUSD),
-      labelKES: formatLabelKES(valueUSD * EXCHANGE_RATE),
+      labelUSD: formatLabelUSD(percentOfGoal ? growingValueUSD : 0),
+      labelKES: formatLabelKES(percentOfGoal ? growingValueUSD * EXCHANGE_RATE : 0),
+      fill: percentOfGoal && valueUSD > 0 ? Math.min(displayTotalUSD / valueUSD, 1) : 1,
       quarterLabel: percentOfGoal ? `${percentOfGoal}%` : null,
       isQuarter: percentOfGoal > 0,
       reached: percentOfGoal > 0 && valueUSD <= displayTotalUSD,
       isNext: percentOfGoal > 0 && displayTotalUSD < valueUSD && displayTotalUSD >= valueUSD - goalAmountUSD / 4,
     };
   });
+
+  // Fine 5% graduations stay in place; the four milestone bars fill as pledges arrive.
+  const graduations = Array.from({ length: 21 }, (_, index) => index * 5);
 
   const paidHeight = Math.min((displayPaidUSD / maxScale) * 100, 100);
   const unpaidHeight = Math.min((displayUnpaidUSD / maxScale) * 100, 100 - paidHeight);
@@ -341,17 +346,9 @@ export function ImprovedThermometer({
                 {tick.labelUSD}
               </span>
 
-              <div
-                className={cn(
-                  'rounded-full transition-all duration-700 ease-out',
-                   tick.reached
-                     ? 'h-[3px] w-3 sm:w-8 bg-success'
-                    : tick.isQuarter
-                     ? 'h-[3px] w-3 sm:w-6 bg-primary'
-                     : 'h-[2px] w-2 sm:w-3 bg-border',
-                   tick.isNext && 'h-[3px] w-3 sm:w-7 animate-tick-beckon bg-primary'
-                )}
-              />
+              <div className="h-[3px] w-3 shrink-0 overflow-hidden rounded-full bg-border sm:w-8" aria-hidden="true">
+                <div className={cn('h-full origin-right transition-transform duration-700 ease-out', tick.reached ? 'bg-success' : 'bg-primary')} style={{ transform: `scaleX(${tick.fill})` }} />
+              </div>
             </div>
           ))}
 
@@ -412,27 +409,14 @@ export function ImprovedThermometer({
               </div>
             )}
 
-            {/* Calibration ticks inside the tube — they light up as the level passes them */}
-            {ticks.map((tick) => {
-              const bar = cn(
-                'rounded-full transition-all duration-700 ease-out',
-                tick.reached
-                  ? tick.isQuarter
-                    ? 'h-[3px] w-6 bg-white/90'
-                    : 'h-[2px] w-3 bg-white/70'
-                  : tick.isQuarter
-                  ? 'h-[3px] w-5 bg-foreground/70'
-                  : 'h-[2px] w-2.5 bg-foreground/30',
-                tick.isNext && 'animate-tick-beckon'
-              );
+            {/* Visible thermometer graduations, with a stronger mark every quarter. */}
+            {graduations.map((percent) => {
+              const major = percent % 25 === 0;
+              const reached = displayPercentage >= percent;
+              const bar = cn('rounded-full transition-colors duration-700', major ? 'h-[3px] w-5 sm:w-6' : 'h-[2px] w-2 sm:w-3', reached ? 'bg-success-foreground/90' : 'bg-foreground/50');
               return (
-                <div
-                  key={tick.percentOfScale}
-                  className="absolute left-0 right-0 z-30 flex items-center justify-between px-1"
-                  style={{ bottom: `${tick.percentOfScale}%` }}
-                >
-                  <div className={bar} />
-                  <div className={bar} />
+                <div key={percent} className="absolute left-0 right-0 z-30 flex items-center justify-between px-1" style={{ bottom: `${percent * goalAmountUSD / maxScale}%` }} aria-hidden="true">
+                  <div className={bar} /><div className={bar} />
                 </div>
               );
             })}
@@ -464,17 +448,9 @@ export function ImprovedThermometer({
               style={{ bottom: `${tick.percentOfScale}%` }}
             >
 
-              <div
-                className={cn(
-                  'rounded-full transition-all duration-700 ease-out',
-                  tick.reached
-                     ? 'h-[3px] w-2 sm:w-8 bg-success'
-                    : tick.isQuarter
-                     ? 'h-[3px] w-2 sm:w-6 bg-success/70'
-                     : 'h-[2px] w-2 sm:w-3 bg-border',
-                   tick.isNext && 'h-[3px] w-2 sm:w-7 animate-tick-beckon bg-primary'
-                )}
-              />
+              <div className="h-[3px] w-2 shrink-0 overflow-hidden rounded-full bg-border sm:w-8" aria-hidden="true">
+                <div className={cn('h-full origin-left transition-transform duration-700 ease-out', tick.reached ? 'bg-success' : 'bg-primary')} style={{ transform: `scaleX(${tick.fill})` }} />
+              </div>
               <span
                 className={cn(
                   'rounded-md bg-card/85 px-1.5 py-0.5 tabular-nums leading-none whitespace-nowrap backdrop-blur-sm transition-all duration-700 ease-out',
