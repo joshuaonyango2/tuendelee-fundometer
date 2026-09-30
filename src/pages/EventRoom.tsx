@@ -1,3 +1,4 @@
+import { T } from "@/components/T";
 import { useEffect, useState } from 'react';
 import { Helmet } from "react-helmet-async";
 import { useParams, useNavigate } from 'react-router-dom';
@@ -19,7 +20,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useRealtimePledges } from "@/hooks/useRealtimePledges";
 import { formatDistanceToNow } from "date-fns";
 import { currencyService } from "@/services/currencyService";
-import { toast } from 'sonner';
+import { notify } from "@/lib/notify";
 import { formatAmountWithKES } from '@/lib/currencyUtils';
 import { useLanguage } from "@/contexts/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
@@ -236,7 +237,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
       }
     } catch (error) {
       console.error('Error loading event:', error);
-      toast.error('Failed to load event details');
+      notify.error('Failed to load event details');
     } finally {
       setIsEventLoading(false);
     }
@@ -303,7 +304,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
 
       if (pledgeError) {
         console.error('Pledge creation error:', pledgeError);
-        toast.error('Failed to create pledge');
+        notify.error('Failed to create pledge');
         return;
       }
 
@@ -334,7 +335,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
           setShowPaymentDialog(true);
         }
       } else {
-        toast.success(
+        notify.success(
           formData.pledgeDurationDays === 0
             ? 'Pledge created! Payment due today'
             : `Pledge created! Payment due in ${formData.pledgeDurationDays} days`
@@ -342,7 +343,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
       }
     } catch (error) {
       console.error('Error processing pledge:', error);
-      toast.error('Failed to process pledge');
+      notify.error('Failed to process pledge');
     }
   };
 
@@ -356,7 +357,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4">
           <LoadingSpinner size="lg" />
-          <p className="text-muted-foreground">Loading event...</p>
+          <p className="text-muted-foreground"><T>{"Loading event..."}</T></p>
         </div>
       </div>
     );
@@ -368,10 +369,10 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
         <Card>
           <CardContent className="p-8 text-center">
             <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="font-semibold text-lg mb-2">Event Not Found</h3>
-            <p className="text-muted-foreground">The event you're looking for doesn't exist or has been removed.</p>
+            <h3 className="font-semibold text-lg mb-2"><T>{"Event Not Found"}</T></h3>
+            <p className="text-muted-foreground"><T>{"The event you're looking for doesn't exist or has been removed."}</T></p>
             <Button onClick={() => navigate('/')} className="mt-4">
-              Go Home
+              <T>{"Go Home"}</T>
             </Button>
           </CardContent>
         </Card>
@@ -570,7 +571,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
               <CardContent>
                 {pledgesLoading ? (
                   <ThermometerSkeleton />
-                ) : pledgesError ? (
+                <T>{") : pledgesError ? ("}</T>
                   <ErrorFallback 
                     error={pledgesError} 
                     onRetry={reloadPledges}
@@ -601,7 +602,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
                     <CardContent className="pt-0">
                       {pledgesLoading ? (
                         <PledgeSkeleton count={3} />
-                      ) : pledgesError ? (
+                      <T>{") : pledgesError ? ("}</T>
                         <ErrorFallback error={pledgesError} onRetry={reloadPledges} />
                       ) : realtimePledges.length === 0 ? (
                         <p className="text-center text-muted-foreground py-8">

@@ -1,3 +1,4 @@
+import { T } from "@/components/T";
 import { useEffect, useRef, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -144,9 +145,7 @@ export function FeaturedImpactStory({ onDonateClick }: FeaturedImpactStoryProps)
                   <PlayCircle className="w-20 h-20 text-primary-foreground drop-shadow-lg" />
                 </span>
               </button>
-            )
-          ) : hasVideo ? (
-            isPlaying ? (
+            <T>{") ) : hasVideo ? ( isPlaying ? ("}</T>
               <video
                 ref={videoRef}
                 src={story.resolvedMedia ?? undefined}

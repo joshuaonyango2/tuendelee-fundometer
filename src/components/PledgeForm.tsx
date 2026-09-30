@@ -1,3 +1,4 @@
+import { T } from "@/components/T";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { toast } from "sonner";
+import { notify } from "@/lib/notify";
 import { Heart, DollarSign, User, Mail, MessageSquare } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -108,13 +109,13 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
   }, []);
   const handleSubmit = async (paymentType: 'immediate' | 'pledge') => {
     if (!formData.name || !formData.email || formData.amount <= 0) {
-      toast.error(t("pledge.requiredFields"));
+      notify.error(t("pledge.requiredFields"));
       return;
     }
 
     const days = formData.pledgeDurationDays;
     if (paymentType === 'pledge' && (days === undefined || isNaN(days) || days < 0 || days > 90 || (customDuration && days < 1))) {
-      toast.error("Please choose when you will pay (today, or 1–90 days)");
+      notify.error("Please choose when you will pay (today, or 1–90 days)");
       return;
     }
 
@@ -140,7 +141,7 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
         pledgeDurationDays: 7,
       });
     } catch (error) {
-      toast.error("Failed to submit. Please try again.");
+      notify.error("Failed to submit. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -263,12 +264,12 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="z-50 bg-background">
-                <SelectItem value="0">Today (pay now)</SelectItem>
+                <SelectItem value="0"><T>{"Today (pay now)"}</T></SelectItem>
                 <SelectItem value="7">7 {t("pledge.days")}</SelectItem>
                 <SelectItem value="14">14 {t("pledge.days")}</SelectItem>
                 <SelectItem value="21">21 {t("pledge.days")}</SelectItem>
                 <SelectItem value="30">{t("pledge.month")}</SelectItem>
-                <SelectItem value="custom">Choose my own number of days</SelectItem>
+                <SelectItem value="custom"><T>{"Choose my own number of days"}</T></SelectItem>
               </SelectContent>
             </Select>
             {customDuration && (

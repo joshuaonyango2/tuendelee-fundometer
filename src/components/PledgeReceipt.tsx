@@ -1,3 +1,4 @@
+import { T } from "@/components/T";
 import { format } from 'date-fns';
 import { Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -48,41 +49,41 @@ export function PledgeReceipt({ pledge, eventTitle }: PledgeReceiptProps) {
       </head>
       <body>
         <div class="header">
-          <h1>Tuendelee Foundation</h1>
-          <p>Official Donation Receipt</p>
+          <h1><T>{"Tuendelee Foundation"}</T></h1>
+          <p><T>{"Official Donation Receipt"}</T></p>
         </div>
         
         <div class="receipt-info">
           <div class="info-row">
-            <span class="label">Receipt ID:</span>
+            <span class="label"><T>{"Receipt ID:"}</T></span>
             <span class="value">${pledge.id}</span>
           </div>
           <div class="info-row">
-            <span class="label">Event:</span>
+            <span class="label"><T>{"Event:"}</T></span>
             <span class="value">${eventTitle}</span>
           </div>
           <div class="info-row">
-            <span class="label">Donor Name:</span>
+            <span class="label"><T>{"Donor Name:"}</T></span>
             <span class="value">${pledge.name}</span>
           </div>
           <div class="info-row">
-            <span class="label">Email:</span>
+            <span class="label"><T>{"Email:"}</T></span>
             <span class="value">${pledge.email}</span>
           </div>
           <div class="info-row">
-            <span class="label">Date:</span>
+            <span class="label"><T>{"Date:"}</T></span>
             <span class="value">${format(new Date(pledge.created_at), 'PPP')}</span>
           </div>
           <div class="info-row">
-            <span class="label">Payment Method:</span>
+            <span class="label"><T>{"Payment Method:"}</T></span>
             <span class="value">${pledge.payment_method || 'N/A'}</span>
           </div>
           <div class="info-row">
-            <span class="label">Reference:</span>
+            <span class="label"><T>{"Reference:"}</T></span>
             <span class="value">${pledge.payment_reference || 'N/A'}</span>
           </div>
           <div class="info-row">
-            <span class="label">Status:</span>
+            <span class="label"><T>{"Status:"}</T></span>
             <span class="value">
               <span class="status ${pledge.is_confirmed ? 'paid' : 'pending'}">
                 ${pledge.is_confirmed ? 'PAID' : 'PENDING'}
@@ -99,14 +100,14 @@ export function PledgeReceipt({ pledge, eventTitle }: PledgeReceiptProps) {
         </div>
         
         <div class="footer">
-          <p><strong>Thank you for supporting Tuendelee Foundation!</strong></p>
-          <p>This receipt confirms your generous donation. Your contribution helps us make a difference.</p>
-          <p style="margin-top: 20px;">For questions, please contact us at support@tuendelee.org</p>
+          <p><strong><T>{"Thank you for supporting Tuendelee Foundation!"}</T></strong></p>
+          <p><T>{"This receipt confirms your generous donation. Your contribution helps us make a difference."}</T></p>
+          <p style="margin-top: 20px;"><T>{"For questions, please contact us at support@tuendelee.org"}</T></p>
         </div>
         
         <div style="text-align: center; margin-top: 30px;">
           <button onclick="window.print()" style="background: #2563eb; color: white; padding: 12px 30px; border: none; border-radius: 6px; cursor: pointer; font-size: 16px;">
-            Print Receipt
+            <T>{"Print Receipt"}</T>
           </button>
         </div>
       </body>
@@ -124,12 +125,12 @@ export function PledgeReceipt({ pledge, eventTitle }: PledgeReceiptProps) {
   return (
     <Card className="mt-4">
       <CardHeader>
-        <CardTitle className="text-lg">Download Receipt</CardTitle>
+        <CardTitle className="text-lg"><T>{"Download Receipt"}</T></CardTitle>
       </CardHeader>
       <CardContent>
         <Button onClick={generatePDF} className="w-full">
           <Download className="w-4 h-4 mr-2" />
-          Download Payment Receipt
+          <T>{"Download Payment Receipt"}</T>
         </Button>
       </CardContent>
     </Card>
