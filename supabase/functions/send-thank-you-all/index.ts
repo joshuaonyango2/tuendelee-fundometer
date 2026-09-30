@@ -105,6 +105,7 @@ Deno.serve(async (req) => {
           currency: p.currency,
           ids: [p.id],
           badge: p.badge_rank,
+          lang: p.preferred_language,
         });
       }
     }
@@ -140,7 +141,7 @@ Deno.serve(async (req) => {
         subject ?? `Thank you for supporting ${event.title}`,
         html,
         await resolveSender(supabase, event),
-        pledge.preferred_language,
+        donor.lang,
       );
       if (result.status === "failed") failed += 1;
       else sent += 1;
