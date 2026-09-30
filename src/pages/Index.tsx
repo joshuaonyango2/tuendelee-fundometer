@@ -20,7 +20,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-background">
       <Helmet>
-        <title><T>{"Tuendelee Fundometer — Live Fundraising for Students"}</T></title>
+        <title>{"Tuendelee Fundometer — Live Fundraising for Students"}</title>
         <meta
           name="description"
           content="Pledge, donate and follow live fundraising progress for Tuendelee Foundation projects supporting bright, financially disadvantaged students."
