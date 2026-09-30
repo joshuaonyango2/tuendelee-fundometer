@@ -136,7 +136,7 @@ export function ImprovedThermometer({
 
   const formatLabelUSD = (value: number) => {
     if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(1)}M`;
-    if (value >= 1_000) return `$${(value / 1_000).toFixed(value >= 10_000 ? 0 : 1)}K`;
+    if (value >= 1_000) return `$${(value / 1_000).toFixed(1).replace(/\.0$/, '')}K`;
     return `$${Math.round(value).toLocaleString()}`;
   };
 
@@ -300,36 +300,36 @@ export function ImprovedThermometer({
       {/* Thermometer panel */}
        <div className="rounded-lg border border-border/70 bg-card p-2 sm:p-8 shadow-xl">
       {/* Currency headers */}
-      <div className="mx-auto grid max-w-4xl grid-cols-[1fr_auto_1fr] items-end gap-3 sm:gap-8 mb-8 sm:mb-10">
+       <div className="mx-auto grid max-w-4xl grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-end gap-1 sm:gap-8 mb-8 sm:mb-10">
 
-        <div className="flex items-center justify-end gap-2 text-primary font-bold">
+        <div className="flex items-center justify-end gap-1 sm:gap-2 text-primary font-bold min-w-0">
           <DollarSign className="h-5 w-5 shrink-0" />
-          <span className="text-sm sm:text-lg whitespace-nowrap"><T>{"US Dollars"}</T></span>
+          <span className="text-xs sm:text-lg whitespace-nowrap"><T>{"US Dollars"}</T></span>
         </div>
-        <div className="w-20" />
-        <div className="flex items-center justify-start gap-2 text-success font-bold">
+        <div className="w-16 sm:w-20" />
+        <div className="flex items-center justify-start gap-1 sm:gap-2 text-success font-bold min-w-0">
           <TrendingUp className="h-5 w-5 shrink-0" />
-          <span className="text-sm sm:text-lg whitespace-nowrap"><T>{"Kenya Shillings"}</T></span>
+          <span className="text-xs sm:text-lg whitespace-nowrap"><T>{"Kenya Shillings"}</T></span>
         </div>
       </div>
 
       {/* Thermometer with aligned bottom-up calibration */}
-      <div className="mx-auto mt-2 grid max-w-4xl grid-cols-[1fr_auto_1fr] gap-3 sm:gap-8">
+       <div className="mx-auto mt-2 grid max-w-4xl grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] gap-1 sm:gap-8">
 
         {/* USD scale (left) */}
         <div className="relative h-[420px] lg:h-[560px]">
           {ticks.map((tick) => (
             <div
               key={tick.percentOfScale}
-               className="absolute right-0 flex -translate-y-1/2 items-center justify-end gap-1 sm:gap-2 transition-all duration-700 ease-out"
+               className="absolute right-0 flex max-w-full -translate-y-1/2 items-center justify-end gap-1 sm:gap-2 transition-all duration-700 ease-out"
               style={{ bottom: `${tick.percentOfScale}%` }}
             >
               <span
                 className={cn(
                   'rounded-md bg-card/85 px-1.5 py-0.5 tabular-nums leading-none whitespace-nowrap backdrop-blur-sm transition-all duration-700 ease-out',
                   tick.isQuarter
-                    ? 'text-sm sm:text-base font-black'
-                    : 'text-[0.7rem] sm:text-sm font-semibold',
+                     ? 'text-xs sm:text-base font-black'
+                     : 'text-xs sm:text-sm font-semibold',
                    tick.reached
                      ? 'text-success'
                     : tick.isQuarter
@@ -345,11 +345,11 @@ export function ImprovedThermometer({
                 className={cn(
                   'rounded-full transition-all duration-700 ease-out',
                    tick.reached
-                     ? 'h-[3px] w-8 bg-success'
+                     ? 'h-[3px] w-3 sm:w-8 bg-success'
                     : tick.isQuarter
-                     ? 'h-[3px] w-6 bg-primary'
-                    : 'h-[2px] w-3 bg-border',
-                   tick.isNext && 'h-[3px] w-7 animate-tick-beckon bg-primary'
+                     ? 'h-[3px] w-3 sm:w-6 bg-primary'
+                     : 'h-[2px] w-2 sm:w-3 bg-border',
+                   tick.isNext && 'h-[3px] w-3 sm:w-7 animate-tick-beckon bg-primary'
                 )}
               />
             </div>
@@ -460,7 +460,7 @@ export function ImprovedThermometer({
             return (
             <div
               key={tick.percentOfScale}
-               className="absolute left-0 flex -translate-y-1/2 items-center justify-start gap-1 sm:gap-2 transition-all duration-700 ease-out"
+               className="absolute left-0 flex max-w-full -translate-y-1/2 items-center justify-start gap-1 sm:gap-2 transition-all duration-700 ease-out"
               style={{ bottom: `${tick.percentOfScale}%` }}
             >
 
@@ -468,19 +468,19 @@ export function ImprovedThermometer({
                 className={cn(
                   'rounded-full transition-all duration-700 ease-out',
                   tick.reached
-                     ? 'h-[3px] w-8 bg-success'
+                     ? 'h-[3px] w-2 sm:w-8 bg-success'
                     : tick.isQuarter
-                     ? 'h-[3px] w-6 bg-success/70'
-                    : 'h-[2px] w-3 bg-border',
-                   tick.isNext && 'h-[3px] w-7 animate-tick-beckon bg-primary'
+                     ? 'h-[3px] w-2 sm:w-6 bg-success/70'
+                     : 'h-[2px] w-2 sm:w-3 bg-border',
+                   tick.isNext && 'h-[3px] w-2 sm:w-7 animate-tick-beckon bg-primary'
                 )}
               />
               <span
                 className={cn(
                   'rounded-md bg-card/85 px-1.5 py-0.5 tabular-nums leading-none whitespace-nowrap backdrop-blur-sm transition-all duration-700 ease-out',
                   tick.isQuarter
-                    ? 'text-sm sm:text-base font-black'
-                    : 'text-[0.7rem] sm:text-sm font-semibold',
+                     ? 'text-xs sm:text-base font-black'
+                     : 'text-xs sm:text-sm font-semibold',
                   tick.reached
                      ? 'text-success'
                     : tick.isQuarter
@@ -494,7 +494,7 @@ export function ImprovedThermometer({
               {tick.quarterLabel && (
                 <span
                   className={cn(
-                     'shrink-0 rounded-md px-1 sm:px-2 py-0.5 text-xs font-black transition-colors duration-700',
+                     'shrink-0 rounded-md px-1 sm:px-2 py-0.5 text-[10px] sm:text-xs font-black transition-colors duration-700',
                     tick.reached
                        ? 'bg-success text-success-foreground shadow-sm'
                        : 'bg-accent text-accent-foreground'
