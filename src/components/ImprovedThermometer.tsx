@@ -84,11 +84,10 @@ export function ImprovedThermometer({
   }, [paidAmountUSD, paidAmountKES, unpaidAmountUSD, unpaidAmountKES]);
 
   const totalPledgedPercentage = goalAmountUSD > 0 ? (totalPledgedUSD / goalAmountUSD) * 100 : 0;
-  const paidPercentage = goalAmountUSD > 0 ? (paidAmountUSD / goalAmountUSD) * 100 : 0;
-  const displayPercentage = goalAmountUSD > 0 ? displayTotalUSD / goalAmountUSD * 100 : 0;
-  const remainingPercentage = Math.max(0, 100 - displayPercentage);
   const displayTotalUSD = displayPaidUSD + displayUnpaidUSD;
   const displayTotalKES = displayPaidKES + displayUnpaidKES;
+  const displayPercentage = goalAmountUSD > 0 ? displayTotalUSD / goalAmountUSD * 100 : 0;
+  const remainingPercentage = Math.max(0, 100 - displayPercentage);
   const displayRemainingUSD = Math.max(0, goalAmountUSD - displayTotalUSD);
   const displayRemainingKES = displayRemainingUSD * EXCHANGE_RATE;
 
