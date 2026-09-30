@@ -145,7 +145,7 @@ export function FeaturedImpactStory({ onDonateClick }: FeaturedImpactStoryProps)
                   <PlayCircle className="w-20 h-20 text-primary-foreground drop-shadow-lg" />
                 </span>
               </button>
-            <T>{") ) : hasVideo ? ( isPlaying ? ("}</T>
+            ) ) : hasVideo ? ( isPlaying ? (
               <video
                 ref={videoRef}
                 src={story.resolvedMedia ?? undefined}
