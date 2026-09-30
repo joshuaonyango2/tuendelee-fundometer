@@ -748,6 +748,78 @@ export type Database = {
         }
         Relationships: []
       }
+      mpesa_transactions: {
+        Row: {
+          amount: number
+          checkout_request_id: string | null
+          created_at: string
+          currency: string
+          event_id: string
+          id: string
+          merchant_request_id: string | null
+          mpesa_receipt: string | null
+          phone: string | null
+          pledge_id: string | null
+          raw_callback: Json | null
+          result_code: number | null
+          result_desc: string | null
+          source: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          checkout_request_id?: string | null
+          created_at?: string
+          currency?: string
+          event_id: string
+          id?: string
+          merchant_request_id?: string | null
+          mpesa_receipt?: string | null
+          phone?: string | null
+          pledge_id?: string | null
+          raw_callback?: Json | null
+          result_code?: number | null
+          result_desc?: string | null
+          source?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          checkout_request_id?: string | null
+          created_at?: string
+          currency?: string
+          event_id?: string
+          id?: string
+          merchant_request_id?: string | null
+          mpesa_receipt?: string | null
+          phone?: string | null
+          pledge_id?: string | null
+          raw_callback?: Json | null
+          result_code?: number | null
+          result_desc?: string | null
+          source?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mpesa_transactions_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "fundraising_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mpesa_transactions_pledge_id_fkey"
+            columns: ["pledge_id"]
+            isOneToOne: false
+            referencedRelation: "event_pledges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payment_methods: {
         Row: {
           account_details: Json
@@ -915,6 +987,16 @@ export type Database = {
       can_view_public_pledges: {
         Args: { p_event_id: string }
         Returns: boolean
+      }
+      claim_mpesa_payment: {
+        Args: {
+          p_amount: number
+          p_code: string
+          p_phone: string
+          p_pledge_id: string
+          p_session_token: string
+        }
+        Returns: undefined
       }
       confirm_pledge_payment: {
         Args: {

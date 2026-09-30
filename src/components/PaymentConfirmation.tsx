@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, CheckCircle } from "lucide-react";
+import { ArrowLeft, CheckCircle, Smartphone } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -36,10 +36,54 @@ export function PaymentConfirmation({
   const [formData, setFormData] = useState({
     phone: '',
     reference: '',
-    mpesaCode: ''
+    mpesaCode: '',
+    amountPaid: ''
   });
   const [proofFile, setProofFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isPaying, setIsPaying] = useState(false);
+  const [stkSent, setStkSent] = useState(false);
+
+  const handleStkPush = async () => {
+    if (!formData.phone.trim()) {
+      toast.error('Enter the M-Pesa phone number to pay from');
+      return;
+    }
+
+    const sessionData = localStorage.getItem('event_session');
+    if (!sessionData) {
+      toast.error('Session expired. Please rejoin the event.');
+      return;
+    }
+    const { sessionToken } = JSON.parse(sessionData);
+
+    const unavailable =
+      'Instant M-Pesa payment is not available yet. Please use the Paybill steps above, then enter your M-Pesa code below.';
+
+    setIsPaying(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('mpesa-stk-push', {
+        body: { pledgeId, phone: formData.phone, sessionToken }
+      });
+
+      const payload = data as any;
+
+      if (error || payload?.error) {
+        toast.info(unavailable);
+        return;
+      }
+
+      setStkSent(true);
+      toast.success(payload?.message || 'Check your phone and enter your M-Pesa PIN.');
+    } catch (err: any) {
+      console.error('STK push failed:', err);
+      toast.info(unavailable);
+    } finally {
+      setIsPaying(false);
+    }
+  };
+
+
 
   
   const { primary: displayAmount, kes: kesConversion } = formatAmountWithKES(amount, currency);
@@ -87,17 +131,39 @@ export function PaymentConfirmation({
       
       const { sessionToken } = JSON.parse(sessionData);
 
+      // M-Pesa: register the receipt number first so the same payment can never
+      // be recorded twice, then confirm the pledge.
+      if (paymentMethod.type === 'mpesa') {
+        const paidAmount = formData.amountPaid ? Number(formData.amountPaid) : amount;
+        if (!paidAmount || paidAmount <= 0) {
+          toast.error('Please enter the amount you paid');
+          setIsSubmitting(false);
+          return;
+        }
+
+        const { error: claimError } = await supabase.rpc('claim_mpesa_payment', {
+          p_pledge_id: pledgeId,
+          p_code: formData.mpesaCode.trim().toUpperCase(),
+          p_amount: paidAmount,
+          p_phone: formData.phone,
+          p_session_token: sessionToken
+        });
+
+        if (claimError) throw claimError;
+      }
+
       // Use secure RPC instead of direct update
       const { error } = await supabase.rpc('confirm_pledge_payment', {
         p_pledge_id: pledgeId,
         p_payment_method: paymentMethod.type,
-        p_payment_reference: paymentMethod.type === 'mpesa' ? formData.mpesaCode : formData.reference || null,
+        p_payment_reference: paymentMethod.type === 'mpesa' ? formData.mpesaCode.trim().toUpperCase() : formData.reference || null,
         p_donor_phone: formData.phone,
         p_donor_address: null,
         p_session_token: sessionToken
       });
 
       if (error) throw error;
+
 
       // Optional: upload payment proof (receipt/screenshot) to private storage
       if (proofFile) {
@@ -253,8 +319,8 @@ export function PaymentConfirmation({
   };
 
   return (
-    <Card className="w-full max-w-lg mx-auto">
-      <CardHeader>
+    <Card className="w-full max-w-lg mx-auto flex flex-col max-h-[85vh]">
+      <CardHeader className="shrink-0">
         <Button
           variant="ghost"
           size="sm"
@@ -269,7 +335,8 @@ export function PaymentConfirmation({
           {t("pay.subtitle")}
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex-1 overflow-y-auto overscroll-contain pb-6">
+
         {renderPaymentInstructions()}
 
         <div className="space-y-4">
@@ -286,17 +353,59 @@ export function PaymentConfirmation({
           </div>
 
           {paymentMethod.type === 'mpesa' && (
-            <div className="space-y-2">
-              <Label htmlFor="mpesaCode">{t("pay.mpesaCode")} *</Label>
-              <Input
-                id="mpesaCode"
-                value={formData.mpesaCode}
-                onChange={(e) => setFormData({ ...formData, mpesaCode: e.target.value })}
-                placeholder="e.g., QA12B3C4D5"
-                required
-              />
-            </div>
+            <>
+              <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 space-y-2">
+                <p className="text-sm font-semibold">Pay now with M-Pesa</p>
+                <p className="text-sm text-muted-foreground">
+                  We send a payment request to the phone number above. Enter your M-Pesa PIN and the
+                  donation is recorded for you automatically.
+                </p>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  className="w-full"
+                  onClick={handleStkPush}
+                  disabled={isPaying}
+                >
+                  <Smartphone className="mr-2 h-4 w-4" />
+                  {isPaying ? 'Sending request…' : stkSent ? 'Send the request again' : `Pay ${displayAmount} now`}
+                </Button>
+                {stkSent && (
+                  <p className="text-xs text-muted-foreground">
+                    Once you approve it on your phone, your pledge is marked as paid on its own.
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="mpesaCode">{t("pay.mpesaCode")} *</Label>
+                <Input
+                  id="mpesaCode"
+                  value={formData.mpesaCode}
+                  onChange={(e) => setFormData({ ...formData, mpesaCode: e.target.value })}
+                  placeholder="e.g., QA12B3C4D5"
+                  required
+                />
+                <p className="text-xs text-muted-foreground">
+                  Already paid? Enter the code from your M-Pesa message and the amount you sent.
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="amountPaid">Amount you paid (KES)</Label>
+                <Input
+                  id="amountPaid"
+                  type="number"
+                  min="1"
+                  inputMode="decimal"
+                  value={formData.amountPaid}
+                  onChange={(e) => setFormData({ ...formData, amountPaid: e.target.value })}
+                  placeholder={String(Math.round(amount))}
+                />
+              </div>
+            </>
           )}
+
 
           {paymentMethod.type !== 'mpesa' && (
             <div className="space-y-2">
