@@ -36,10 +36,50 @@ export function PaymentConfirmation({
   const [formData, setFormData] = useState({
     phone: '',
     reference: '',
-    mpesaCode: ''
+    mpesaCode: '',
+    amountPaid: ''
   });
   const [proofFile, setProofFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isPaying, setIsPaying] = useState(false);
+  const [stkSent, setStkSent] = useState(false);
+
+  const handleStkPush = async () => {
+    if (!formData.phone.trim()) {
+      toast.error('Enter the M-Pesa phone number to pay from');
+      return;
+    }
+
+    const sessionData = localStorage.getItem('event_session');
+    if (!sessionData) {
+      toast.error('Session expired. Please rejoin the event.');
+      return;
+    }
+    const { sessionToken } = JSON.parse(sessionData);
+
+    setIsPaying(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('mpesa-stk-push', {
+        body: { pledgeId, phone: formData.phone, sessionToken }
+      });
+
+      const message = (data as any)?.message || (data as any)?.error;
+
+      if (error || (data as any)?.error) {
+        toast.error(message || 'Could not start the M-Pesa payment. Use the Paybill steps instead.');
+        return;
+      }
+
+      setStkSent(true);
+      toast.success(message || 'Check your phone and enter your M-Pesa PIN.');
+    } catch (err: any) {
+      console.error('STK push failed:', err);
+      toast.error('Instant M-Pesa is not available yet. Use the Paybill steps instead.');
+    } finally {
+      setIsPaying(false);
+    }
+  };
+
 
   
   const { primary: displayAmount, kes: kesConversion } = formatAmountWithKES(amount, currency);
