@@ -315,8 +315,8 @@ export function PaymentConfirmation({
   };
 
   return (
-    <Card className="w-full max-w-lg mx-auto">
-      <CardHeader>
+    <Card className="w-full max-w-lg mx-auto flex flex-col max-h-[85vh]">
+      <CardHeader className="shrink-0">
         <Button
           variant="ghost"
           size="sm"
@@ -331,7 +331,8 @@ export function PaymentConfirmation({
           {t("pay.subtitle")}
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex-1 overflow-y-auto overscroll-contain pb-6">
+
         {renderPaymentInstructions()}
 
         <div className="space-y-4">
