@@ -33,7 +33,7 @@ export function PaymentConfirmation({
   onBack,
   onComplete 
 }: PaymentConfirmationProps) {
-  const { t } = useLanguage();
+  const { t, tr } = useLanguage();
   const [formData, setFormData] = useState({
     phone: '',
     reference: '',
@@ -368,7 +368,7 @@ export function PaymentConfirmation({
                   disabled={isPaying}
                 >
                   <Smartphone className="mr-2 h-4 w-4" />
-                  {isPaying ? 'Sending request…' : stkSent ? 'Send the request again' : `Pay ${displayAmount} now`}
+                  {isPaying ? tr('Sending request…') : stkSent ? tr('Send the request again') : `${tr('Pay now')}: ${displayAmount}`}
                 </Button>
                 {stkSent && (
                   <p className="text-xs text-muted-foreground">
@@ -383,7 +383,7 @@ export function PaymentConfirmation({
                   id="mpesaCode"
                   value={formData.mpesaCode}
                   onChange={(e) => setFormData({ ...formData, mpesaCode: e.target.value })}
-                  placeholder="e.g., QA12B3C4D5"
+                  placeholder={`${tr("e.g.")} QA12B3C4D5`}
                   required
                 />
                 <p className="text-xs text-muted-foreground">

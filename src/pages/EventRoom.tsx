@@ -66,7 +66,7 @@ interface EventPledge {
 export default function EventRoom() {
   const { eventId } = useParams();
   const navigate = useNavigate();
-  const { t, language } = useLanguage();
+  const { t, tr, language } = useLanguage();
   const { custom } = useEventTexts(eventId);
   const et = (key: string) => custom(key) ?? t(key);
   const [event, setEvent] = useState<EventDetails | null>(null);

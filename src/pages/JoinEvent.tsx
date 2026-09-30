@@ -36,7 +36,7 @@ interface Event {
 
 export default function JoinEvent() {
   const navigate = useNavigate();
-  const { t, language } = useLanguage();
+  const { t, tr, language } = useLanguage();
   const [activeEvent, setActiveEvent] = useState<Event | null>(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
