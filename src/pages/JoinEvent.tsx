@@ -132,6 +132,7 @@ export default function JoinEvent() {
           session_token: sessionToken,
           attendee_name: result.data.name,
           attendee_email: result.data.email,
+          preferred_language: language,
         });
 
       if (sessionError) throw sessionError;

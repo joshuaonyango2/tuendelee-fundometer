@@ -286,6 +286,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
           {
             id: generatedId,
             event_id: eventId!,
+            preferred_language: language,
             name: formData.name,
             email: formData.email,
             amount: formData.amount,
