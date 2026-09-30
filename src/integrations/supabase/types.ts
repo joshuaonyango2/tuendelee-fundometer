@@ -419,6 +419,7 @@ export type Database = {
           payment_type: string
           pledge_duration_days: number | null
           possible_duplicate_of: string | null
+          preferred_language: string
           proof_path: string | null
           proof_uploaded_at: string | null
           receipt_sent_at: string | null
@@ -455,6 +456,7 @@ export type Database = {
           payment_type: string
           pledge_duration_days?: number | null
           possible_duplicate_of?: string | null
+          preferred_language?: string
           proof_path?: string | null
           proof_uploaded_at?: string | null
           receipt_sent_at?: string | null
@@ -491,6 +493,7 @@ export type Database = {
           payment_type?: string
           pledge_duration_days?: number | null
           possible_duplicate_of?: string | null
+          preferred_language?: string
           proof_path?: string | null
           proof_uploaded_at?: string | null
           receipt_sent_at?: string | null
@@ -520,6 +523,7 @@ export type Database = {
           id: string
           joined_at: string
           last_activity: string
+          preferred_language: string
           session_token: string
         }
         Insert: {
@@ -529,6 +533,7 @@ export type Database = {
           id?: string
           joined_at?: string
           last_activity?: string
+          preferred_language?: string
           session_token: string
         }
         Update: {
@@ -538,6 +543,7 @@ export type Database = {
           id?: string
           joined_at?: string
           last_activity?: string
+          preferred_language?: string
           session_token?: string
         }
         Relationships: [
@@ -924,6 +930,33 @@ export type Database = {
           sort_order?: number
           updated_at?: string
           value?: string
+        }
+        Relationships: []
+      }
+      translation_cache: {
+        Row: {
+          created_at: string
+          id: string
+          language: string
+          source_hash: string
+          translated: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          language: string
+          source_hash: string
+          translated: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          language?: string
+          source_hash?: string
+          translated?: string
+          updated_at?: string
         }
         Relationships: []
       }

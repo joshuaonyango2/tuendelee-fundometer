@@ -19,7 +19,7 @@ export interface LocalizableEvent {
 export const EVENT_TEXT_COLUMNS =
   "title, description, title_it, title_fr, title_sw, title_es, title_de, description_it, description_fr, description_sw, description_es, description_de";
 
-const pick = (value?: string | null, fallback?: string | null) => {
+export const pick = (value?: string | null, fallback?: string | null) => {
   const trimmed = (value ?? "").trim();
   return trimmed.length > 0 ? trimmed : (fallback ?? "");
 };
@@ -28,7 +28,11 @@ const pick = (value?: string | null, fallback?: string | null) => {
  * Returns the admin-authored title/description for the chosen language,
  * falling back to the original English text when no translation was provided.
  */
-export function localizedEventText(event: LocalizableEvent | null | undefined, language: Language) {
+export function localizedEventText(
+  event: LocalizableEvent | null | undefined,
+  language: Language,
+  tr?: (text: string) => string,
+) {
   if (!event) return { title: "", description: "" };
 
   const map: Partial<Record<Language, { title?: string | null; description?: string | null }>> = {
@@ -41,7 +45,8 @@ export function localizedEventText(event: LocalizableEvent | null | undefined, l
 
   const localized = map[language];
   return {
-    title: pick(localized?.title, event.title),
-    description: pick(localized?.description, event.description),
+    title: (localized?.title ?? "").trim() || (tr ? tr(event.title ?? "") : event.title ?? ""),
+    description:
+      (localized?.description ?? "").trim() || (tr ? tr(event.description ?? "") : event.description ?? ""),
   };
 }

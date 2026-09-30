@@ -1,3 +1,4 @@
+import { T } from "@/components/T";
 import { Link, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
@@ -19,7 +20,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-background">
       <Helmet>
-        <title>Tuendelee Fundometer — Live Fundraising for Students</title>
+        <title>{"Tuendelee Fundometer — Live Fundraising for Students"}</title>
         <meta
           name="description"
           content="Pledge, donate and follow live fundraising progress for Tuendelee Foundation projects supporting bright, financially disadvantaged students."
@@ -42,7 +43,7 @@ const Index = () => {
           to="/impact-stories"
           className="text-primary font-medium underline underline-offset-4 hover:opacity-80"
         >
-          Read our impact stories — Kenyan student scholarships
+          <T>{"Read our impact stories — Kenyan student scholarships"}</T>
         </Link>
       </div>
 

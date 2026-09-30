@@ -1,10 +1,11 @@
+import { T } from "@/components/T";
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CreditCard, Smartphone, Building, Heart, ChevronRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PaymentConfirmation } from './PaymentConfirmation';
-import { toast } from 'sonner';
+import { notify } from "@/lib/notify";
 import { formatAmountWithKES } from "@/lib/currencyUtils";
 
 interface ImprovedPaymentOptionsProps {
@@ -47,7 +48,7 @@ export function ImprovedPaymentOptions({
 
     if (error) {
       console.error('Error loading payment methods:', error);
-      toast.error('Failed to load payment methods');
+      notify.error('Failed to load payment methods');
       return;
     }
 
@@ -104,7 +105,7 @@ export function ImprovedPaymentOptions({
   return (
     <Card className="w-full max-w-lg mx-auto shadow-2xl border-primary/10">
       <CardHeader className="bg-gradient-success text-white rounded-t-lg">
-        <CardTitle>Choose Payment Method</CardTitle>
+        <CardTitle><T>{"Choose Payment Method"}</T></CardTitle>
         <CardDescription className="text-success-foreground/90">
           Select how you'd like to complete your donation of {displayAmount} {kesConversion && `(${kesConversion})`}
         </CardDescription>
@@ -112,20 +113,20 @@ export function ImprovedPaymentOptions({
       <CardContent className="pt-6 space-y-4">
         <div className="p-4 bg-accent rounded-lg">
           <p className="text-sm text-accent-foreground">
-            <strong>Donor:</strong> {name}
+            <strong><T>{"Donor:"}</T></strong> {name}
           </p>
           <p className="text-sm text-accent-foreground">
-            <strong>Email:</strong> {email}
+            <strong><T>{"Email:"}</T></strong> {email}
           </p>
           <p className="text-sm text-accent-foreground">
-            <strong>Amount:</strong> {displayAmount} {kesConversion && <span className="text-muted-foreground">({kesConversion})</span>}
+            <strong><T>{"Amount:"}</T></strong> {displayAmount} {kesConversion && <span className="text-muted-foreground">({kesConversion})</span>}
           </p>
         </div>
 
         <div className="space-y-3">
           {paymentMethods.length === 0 ? (
             <p className="text-center text-muted-foreground py-4">
-              No payment methods available. Please contact the administrator.
+              <T>{"No payment methods available. Please contact the administrator."}</T>
             </p>
           ) : (
             paymentMethods.map((method) => (
@@ -164,14 +165,14 @@ export function ImprovedPaymentOptions({
 
         <div className="pt-4 border-t">
           <p className="text-sm text-muted-foreground text-center mb-4">
-            You will receive payment instructions for your selected method
+            <T>{"You will receive payment instructions for your selected method"}</T>
           </p>
           <Button
             onClick={onClose}
             variant="ghost"
             className="w-full"
           >
-            Cancel
+            <T>{"Cancel"}</T>
           </Button>
         </div>
       </CardContent>

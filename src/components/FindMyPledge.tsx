@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { toast } from "sonner";
+import { notify } from "@/lib/notify";
 import { Search, CreditCard, Clock, CheckCircle2, ArrowRight, Download } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PaymentConfirmation } from "./PaymentConfirmation";
@@ -90,7 +90,7 @@ export function FindMyPledge({ eventId }: FindMyPledgeProps) {
 
   const handleSearch = async () => {
     if (!searchTerm || searchTerm.trim().length < 2) {
-      toast.error("Please enter at least 2 characters to search");
+      notify.error("Please enter at least 2 characters to search");
       return;
     }
 
@@ -104,7 +104,7 @@ export function FindMyPledge({ eventId }: FindMyPledgeProps) {
       if (error) throw error;
 
       if (!data || data.length === 0) {
-        toast.info("No pledges found. Try searching with your email, full name, or phone number.");
+        notify.info("No pledges found. Try searching with your email, full name, or phone number.");
         setPledges([]);
       } else {
         // Map the data to include the missing fields with default values
@@ -114,13 +114,13 @@ export function FindMyPledge({ eventId }: FindMyPledgeProps) {
           amount_in_kes: pledge.amount_in_kes || pledge.amount * 128
         }));
         setPledges(mappedData);
-        toast.success(`Found ${data.length} pledge${data.length > 1 ? 's' : ''}`);
+        notify.success(`Found ${data.length} pledge${data.length > 1 ? 's' : ''}`);
       }
     } catch (error: any) {
       console.error('Error searching pledges:', error);
       const msg = error?.message || 'Unknown error';
       const code = error?.code ? ` (${error.code})` : '';
-      toast.error(`Unable to search pledges${code}: ${msg}`);
+      notify.error(`Unable to search pledges${code}: ${msg}`);
     } finally {
       setIsSearching(false);
     }
@@ -148,7 +148,7 @@ export function FindMyPledge({ eventId }: FindMyPledgeProps) {
 
   const handleProceedToPayment = () => {
     if (!selectedPaymentMethod) {
-      toast.error("Please select a payment method");
+      notify.error("Please select a payment method");
       return;
     }
     setShowPaymentMethodSelector(false);
@@ -162,7 +162,7 @@ export function FindMyPledge({ eventId }: FindMyPledgeProps) {
     setSelectedPaymentMethod(null);
     // Refresh the pledges list
     handleSearch();
-    toast.success(`${t("find.updated")} 🎉`);
+    notify.success(`${t("find.updated")} 🎉`);
   };
 
   const formatDate = (dateString: string) => {

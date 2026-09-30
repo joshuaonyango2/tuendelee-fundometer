@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { defaultEventText } from "@/lib/eventCustomTexts";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 /**
  * Loads the admin's custom text overrides for an event.
@@ -9,6 +10,7 @@ import { defaultEventText } from "@/lib/eventCustomTexts";
  *   useful when the component should fall back to a translation instead.
  */
 export function useEventTexts(eventId: string | undefined) {
+  const { tr } = useLanguage();
   const [overrides, setOverrides] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -33,11 +35,14 @@ export function useEventTexts(eventId: string | undefined) {
   }, [eventId]);
 
   const text = useCallback(
-    (key: string) => overrides[key] ?? defaultEventText(key),
-    [overrides]
+    (key: string) => tr(overrides[key] ?? defaultEventText(key)),
+    [overrides, tr]
   );
 
-  const custom = useCallback((key: string) => overrides[key], [overrides]);
+  const custom = useCallback(
+    (key: string) => (overrides[key] ? tr(overrides[key]) : undefined),
+    [overrides, tr]
+  );
 
   return { text, custom, overrides };
 }

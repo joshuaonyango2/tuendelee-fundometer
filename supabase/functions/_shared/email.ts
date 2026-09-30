@@ -1,4 +1,6 @@
 // Shared email + template helpers for Tuendelee Fundometer notifications.
+import { createClient } from "npm:@supabase/supabase-js@2";
+import { normalizeLang, translateTexts } from "./translate.ts";
 const GATEWAY_URL = "https://connector-gateway.lovable.dev/resend";
 
 export const FROM_ADDRESS =
@@ -19,7 +21,17 @@ export async function sendEmail(
   subject: string,
   html: string,
   from?: string,
+  language?: string | null,
 ): Promise<SendResult> {
+  const lang = normalizeLang(language);
+  if (lang !== "en") {
+    try {
+      const client = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+      [subject, html] = await translateTexts(client, [subject, html], lang);
+    } catch (e) {
+      console.error("Email translation failed, sending original", e);
+    }
+  }
   const lovableKey = Deno.env.get("LOVABLE_API_KEY");
   const resendKey = Deno.env.get("RESEND_API_KEY");
 

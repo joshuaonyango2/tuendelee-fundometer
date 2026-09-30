@@ -76,7 +76,7 @@ Deno.serve(async (req) => {
 
     let query = admin
       .from("event_pledges")
-      .select("id, name, email, amount, currency, is_confirmed, badge_rank")
+      .select("id, name, email, amount, currency, is_confirmed, badge_rank, preferred_language")
       .eq("event_id", eventId)
       .not("email", "is", null);
 
@@ -89,7 +89,7 @@ Deno.serve(async (req) => {
     // One email per donor address, totalling their contributions.
     const donors = new Map<
       string,
-      { name: string; total: number; currency: string; ids: string[]; badge: number | null }
+      { name: string; total: number; currency: string; ids: string[]; badge: number | null; lang?: string | null }
     >();
     for (const p of pledges ?? []) {
       const key = (p.email as string).toLowerCase().trim();
@@ -105,6 +105,7 @@ Deno.serve(async (req) => {
           currency: p.currency,
           ids: [p.id],
           badge: p.badge_rank,
+          lang: p.preferred_language,
         });
       }
     }
@@ -140,6 +141,7 @@ Deno.serve(async (req) => {
         subject ?? `Thank you for supporting ${event.title}`,
         html,
         await resolveSender(supabase, event),
+        donor.lang,
       );
       if (result.status === "failed") failed += 1;
       else sent += 1;

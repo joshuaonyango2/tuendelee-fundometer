@@ -1,3 +1,4 @@
+import { T } from "@/components/T";
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 import {
@@ -301,7 +302,7 @@ export function ImprovedThermometer({
       {/* Live progress banner */}
       <div className="mx-auto mb-8 max-w-3xl rounded-2xl sm:rounded-3xl border border-primary/20 bg-gradient-to-r from-purple-500/10 via-blue-500/10 to-emerald-500/10 px-4 sm:px-6 py-5 sm:py-6 text-center shadow-md">
         <p className="text-sm sm:text-base font-bold uppercase tracking-[0.18em] text-muted-foreground">
-          Live Progress
+          <T>{"Live Progress"}</T>
         </p>
 
         <p className="mt-1 text-[clamp(1.75rem,5vw,3rem)] font-black leading-none tabular-nums text-foreground">
@@ -327,12 +328,12 @@ export function ImprovedThermometer({
 
         <div className="flex items-center justify-end gap-2 text-blue-600 font-bold">
           <DollarSign className="h-5 w-5 shrink-0" />
-          <span className="text-sm sm:text-lg whitespace-nowrap">US Dollars</span>
+          <span className="text-sm sm:text-lg whitespace-nowrap"><T>{"US Dollars"}</T></span>
         </div>
         <div className="w-20" />
         <div className="flex items-center justify-start gap-2 text-emerald-600 font-bold">
           <TrendingUp className="h-5 w-5 shrink-0" />
-          <span className="text-sm sm:text-lg whitespace-nowrap">Kenya Shillings</span>
+          <span className="text-sm sm:text-lg whitespace-nowrap"><T>{"Kenya Shillings"}</T></span>
         </div>
       </div>
 
@@ -587,19 +588,19 @@ export function ImprovedThermometer({
       <div className="mt-8 flex flex-wrap justify-center gap-3 sm:gap-6">
         <div className="flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 shadow-sm">
           <div className="h-4 w-4 rounded-full bg-emerald-500" />
-          <span className="text-base font-semibold text-foreground">Paid pledges</span>
+          <span className="text-base font-semibold text-foreground"><T>{"Paid pledges"}</T></span>
         </div>
         <div className="flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 shadow-sm">
           <div className="h-4 w-4 rounded-full bg-blue-500" />
-          <span className="text-base font-semibold text-foreground">Pledged, not yet paid</span>
+          <span className="text-base font-semibold text-foreground"><T>{"Pledged, not yet paid"}</T></span>
         </div>
         <div className="flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 shadow-sm">
           <div className="h-4 w-4 rounded-full bg-orange-400" />
-          <span className="text-base font-semibold text-foreground">Still needed</span>
+          <span className="text-base font-semibold text-foreground"><T>{"Still needed"}</T></span>
         </div>
         <div className="flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 shadow-sm">
           <div className="w-5 border-t-2 border-dashed border-purple-600" />
-          <span className="text-base font-semibold text-foreground">Goal line</span>
+          <span className="text-base font-semibold text-foreground"><T>{"Goal line"}</T></span>
         </div>
       </div>
 

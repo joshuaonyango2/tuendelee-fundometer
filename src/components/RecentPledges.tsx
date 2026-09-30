@@ -1,3 +1,4 @@
+import { T } from "@/components/T";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Heart, TrendingUp } from "lucide-react";
@@ -27,7 +28,7 @@ export function RecentPledges({ pledges }: RecentPledgesProps) {
       <CardHeader className="bg-gradient-primary text-white">
         <CardTitle className="flex items-center gap-2">
           <TrendingUp className="w-5 h-5" />
-          Recent Donations
+          <T>{"Recent Donations"}</T>
         </CardTitle>
       </CardHeader>
       <CardContent className="p-0">
@@ -35,7 +36,7 @@ export function RecentPledges({ pledges }: RecentPledgesProps) {
           <div className="divide-y divide-border">
             {pledges.length === 0 ? (
               <p className="text-center text-muted-foreground py-8">
-                Be the first to make a pledge!
+                <T>{"Be the first to make a pledge!"}</T>
               </p>
             ) : (
               <>

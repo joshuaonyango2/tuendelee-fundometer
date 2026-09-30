@@ -1,3 +1,4 @@
+import { T } from "@/components/T";
 import { useEffect, useRef, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -31,7 +32,7 @@ interface FeaturedImpactStoryProps {
 }
 
 export function FeaturedImpactStory({ onDonateClick }: FeaturedImpactStoryProps) {
-  const { language, t } = useLanguage();
+  const { language, t, tr } = useLanguage();
   const [story, setStory] = useState<Resolved | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -82,15 +83,15 @@ export function FeaturedImpactStory({ onDonateClick }: FeaturedImpactStoryProps)
     if (!story) return { title: "", description: null as string | null };
     if (language === "it")
       return {
-        title: story.title_it || story.title,
-        description: story.description_it || story.description,
+        title: story.title_it || tr(story.title),
+        description: story.description_it || tr(story.description),
       };
     if (language === "fr")
       return {
-        title: story.title_fr || story.title,
-        description: story.description_fr || story.description,
+        title: story.title_fr || tr(story.title),
+        description: story.description_fr || tr(story.description),
       };
-    return { title: story.title, description: story.description };
+    return { title: tr(story.title), description: story.description ? tr(story.description) : story.description };
   };
 
   if (isLoading || !story) return null;
@@ -144,9 +145,7 @@ export function FeaturedImpactStory({ onDonateClick }: FeaturedImpactStoryProps)
                   <PlayCircle className="w-20 h-20 text-primary-foreground drop-shadow-lg" />
                 </span>
               </button>
-            )
-          ) : hasVideo ? (
-            isPlaying ? (
+            ) ) : hasVideo ? ( isPlaying ? (
               <video
                 ref={videoRef}
                 src={story.resolvedMedia ?? undefined}

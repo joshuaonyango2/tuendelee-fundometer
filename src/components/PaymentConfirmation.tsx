@@ -1,3 +1,4 @@
+import { T } from "@/components/T";
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, CheckCircle, Smartphone } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from 'sonner';
+import { notify } from "@/lib/notify";
 import { z } from 'zod';
 import standardCharteredLogo from "@/assets/standard-chartered-logo.jpg";
 import mpesaLogo from "@/assets/mpesa-logo.png";
@@ -32,7 +33,7 @@ export function PaymentConfirmation({
   onBack,
   onComplete 
 }: PaymentConfirmationProps) {
-  const { t } = useLanguage();
+  const { t, tr } = useLanguage();
   const [formData, setFormData] = useState({
     phone: '',
     reference: '',
@@ -46,13 +47,13 @@ export function PaymentConfirmation({
 
   const handleStkPush = async () => {
     if (!formData.phone.trim()) {
-      toast.error('Enter the M-Pesa phone number to pay from');
+      notify.error('Enter the M-Pesa phone number to pay from');
       return;
     }
 
     const sessionData = localStorage.getItem('event_session');
     if (!sessionData) {
-      toast.error('Session expired. Please rejoin the event.');
+      notify.error('Session expired. Please rejoin the event.');
       return;
     }
     const { sessionToken } = JSON.parse(sessionData);
@@ -69,15 +70,15 @@ export function PaymentConfirmation({
       const payload = data as any;
 
       if (error || payload?.error) {
-        toast.info(unavailable);
+        notify.info(unavailable);
         return;
       }
 
       setStkSent(true);
-      toast.success(payload?.message || 'Check your phone and enter your M-Pesa PIN.');
+      notify.success(payload?.message || 'Check your phone and enter your M-Pesa PIN.');
     } catch (err: any) {
       console.error('STK push failed:', err);
-      toast.info(unavailable);
+      notify.info(unavailable);
     } finally {
       setIsPaying(false);
     }
@@ -110,12 +111,12 @@ export function PaymentConfirmation({
 
     const result = paymentSchema.safeParse(validationData);
     if (!result.success) {
-      toast.error(result.error.errors[0].message);
+      notify.error(result.error.errors[0].message);
       return;
     }
 
     if (paymentMethod.type === 'mpesa' && !formData.mpesaCode) {
-      toast.error('Please enter the M-Pesa transaction code');
+      notify.error('Please enter the M-Pesa transaction code');
       return;
     }
 
@@ -125,7 +126,7 @@ export function PaymentConfirmation({
       // Get session token from localStorage
       const sessionData = localStorage.getItem('event_session');
       if (!sessionData) {
-        toast.error('Session expired. Please rejoin the event.');
+        notify.error('Session expired. Please rejoin the event.');
         return;
       }
       
@@ -136,7 +137,7 @@ export function PaymentConfirmation({
       if (paymentMethod.type === 'mpesa') {
         const paidAmount = formData.amountPaid ? Number(formData.amountPaid) : amount;
         if (!paidAmount || paidAmount <= 0) {
-          toast.error('Please enter the amount you paid');
+          notify.error('Please enter the amount you paid');
           setIsSubmitting(false);
           return;
         }
@@ -175,7 +176,7 @@ export function PaymentConfirmation({
 
         if (uploadError) {
           console.error('Proof upload failed:', uploadError);
-          toast.error('Payment saved, but the proof upload failed. You can share it later.');
+          notify.error('Payment saved, but the proof upload failed. You can share it later.');
         } else {
           const { error: attachError } = await supabase.rpc('attach_payment_proof', {
             p_pledge_id: pledgeId,
@@ -195,11 +196,11 @@ export function PaymentConfirmation({
       }
 
 
-      toast.success('Payment confirmed successfully!');
+      notify.success('Payment confirmed successfully!');
       onComplete();
     } catch (error: any) {
       console.error('Error confirming payment:', error);
-      toast.error(error.message || 'Failed to confirm payment');
+      notify.error(error.message || 'Failed to confirm payment');
     } finally {
       setIsSubmitting(false);
     }
@@ -215,16 +216,16 @@ export function PaymentConfirmation({
             <div className="flex items-center gap-3 mb-3">
               <img src={mpesaLogo} alt="M-Pesa" className="h-10 object-contain" />
             </div>
-            <h4 className="font-semibold mb-2">M-Pesa Payment Instructions:</h4>
+            <h4 className="font-semibold mb-2"><T>{"M-Pesa Payment Instructions:"}</T></h4>
             <ol className="list-decimal list-inside space-y-1 text-sm">
-              <li>Go to M-Pesa on your phone</li>
+              <li><T>{"Go to M-Pesa on your phone"}</T></li>
               <li>Select "Lipa na M-Pesa"</li>
               <li>Select "Pay Bill"</li>
-              <li>Enter Business Number: <strong>{details.paybill}</strong></li>
-              <li>Enter Account Number: <strong>{details.account_name}</strong></li>
-              <li>Enter Amount: <strong>{displayAmount}</strong> {kesConversion && `(${kesConversion})`}</li>
-              <li>Enter your M-Pesa PIN and confirm</li>
-              <li>Enter the transaction code below</li>
+              <li><T>{"Enter Business Number:"}</T> <strong>{details.paybill}</strong></li>
+              <li><T>{"Enter Account Number:"}</T> <strong>{details.account_name}</strong></li>
+              <li><T>{"Enter Amount:"}</T> <strong>{displayAmount}</strong> {kesConversion && `(${kesConversion})`}</li>
+              <li><T>{"Enter your M-Pesa PIN and confirm"}</T></li>
+              <li><T>{"Enter the transaction code below"}</T></li>
             </ol>
             {details.instructions && (
               <p className="mt-2 text-sm text-muted-foreground">{details.instructions}</p>
@@ -238,18 +239,18 @@ export function PaymentConfirmation({
             <div className="flex items-center gap-3 mb-3">
               <img src={paypalLogo} alt="PayPal" className="h-10 object-contain" />
             </div>
-            <h4 className="font-semibold mb-2">PayPal Payment Instructions:</h4>
-            <p className="text-sm mb-3">Click the button below to donate via PayPal:</p>
+            <h4 className="font-semibold mb-2"><T>{"PayPal Payment Instructions:"}</T></h4>
+            <p className="text-sm mb-3"><T>{"Click the button below to donate via PayPal:"}</T></p>
             <Button
               onClick={() => window.open('https://www.paypal.com/donate/?hosted_button_id=ZWJ9K8JBR7GZC', '_blank')}
               className="w-full mb-2"
               variant="default"
             >
-              Donate via PayPal
+              <T>{"Donate via PayPal"}</T>
             </Button>
-            <p className="text-sm mt-2">Amount: <strong>{displayAmount}</strong> {kesConversion && <span className="text-muted-foreground">({kesConversion})</span>}</p>
+            <p className="text-sm mt-2"><T>{"Amount:"}</T> <strong>{displayAmount}</strong> {kesConversion && <span className="text-muted-foreground">({kesConversion})</span>}</p>
             <p className="text-sm text-muted-foreground mt-2">
-              After completing your donation, please return here and confirm your payment below.
+              <T>{"After completing your donation, please return here and confirm your payment below."}</T>
             </p>
           </div>
         );
@@ -260,26 +261,26 @@ export function PaymentConfirmation({
             <div className="flex items-center gap-3 mb-3">
               <img src={standardCharteredLogo} alt="Standard Chartered" className="h-12 object-contain bg-white p-1 rounded" />
             </div>
-            <h4 className="font-semibold mb-2">Bank Transfer Details:</h4>
+            <h4 className="font-semibold mb-2"><T>{"Bank Transfer Details:"}</T></h4>
             <div className="space-y-2 text-sm">
               <div className="border-b border-border pb-2">
-                <p><strong>Bank:</strong> Standard Chartered Bank</p>
-                <p><strong>Account Name:</strong> TUENDELEE FOUNDATION</p>
+                <p><strong><T>{"Bank:"}</T></strong> <T>{"Standard Chartered Bank"}</T></p>
+                <p><strong><T>{"Account Name:"}</T></strong> <T>{"TUENDELEE FOUNDATION"}</T></p>
               </div>
               <div>
-                <p className="font-semibold text-primary">Account Number (KES):</p>
+                <p className="font-semibold text-primary"><T>{"Account Number (KES):"}</T></p>
                 <p className="font-mono text-base">0102853403700</p>
               </div>
               <div>
-                <p className="font-semibold text-primary">Account Number (USD):</p>
+                <p className="font-semibold text-primary"><T>{"Account Number (USD):"}</T></p>
                 <p className="font-mono text-base">8702853403700</p>
               </div>
               <div className="border-t border-border pt-2 space-y-1">
-                <p><strong>Branch:</strong> KENYATTA AVENUE</p>
-                <p><strong>SWIFT Code:</strong> SCBLKENXXXX</p>
+                <p><strong><T>{"Branch:"}</T></strong> <T>{"KENYATTA AVENUE"}</T></p>
+                <p><strong><T>{"SWIFT Code:"}</T></strong> <T>{"SCBLKENXXXX"}</T></p>
               </div>
               <div className="mt-2 pt-2 border-t border-border">
-                <p><strong>Amount:</strong> {displayAmount}</p>
+                <p><strong><T>{"Amount:"}</T></strong> {displayAmount}</p>
                 {kesConversion && <p className="text-sm text-muted-foreground">{kesConversion}</p>}
               </div>
             </div>
@@ -292,22 +293,22 @@ export function PaymentConfirmation({
             <div className="flex items-center gap-3 mb-3">
               <img src={benevityLogo} alt="Benevity" className="h-10 object-contain" />
             </div>
-            <h4 className="font-semibold mb-2">Benevity Donation Instructions:</h4>
+            <h4 className="font-semibold mb-2"><T>{"Benevity Donation Instructions:"}</T></h4>
             <div className="space-y-2 text-sm">
               <div>
-                <p className="font-semibold">Charity Name:</p>
-                <p>Tuendelee Foundation</p>
+                <p className="font-semibold"><T>{"Charity Name:"}</T></p>
+                <p><T>{"Tuendelee Foundation"}</T></p>
               </div>
               <div>
-                <p className="font-semibold">Charity ID:</p>
-                <p className="font-mono">404-5660043209913_a8af</p>
+                <p className="font-semibold"><T>{"Charity ID:"}</T></p>
+                <p className="font-mono"><T>{"404-5660043209913_a8af"}</T></p>
               </div>
               <p className="mt-3 pt-3 border-t border-border">
-                <strong>Amount:</strong> {displayAmount}
+                <strong><T>{"Amount:"}</T></strong> {displayAmount}
                 {kesConversion && <span className="text-sm text-muted-foreground ml-2">({kesConversion})</span>}
               </p>
               <p className="text-muted-foreground">
-                Please complete your donation through your company's Benevity portal
+                <T>{"Please complete your donation through your company's Benevity portal"}</T>
               </p>
             </div>
           </div>
@@ -355,10 +356,9 @@ export function PaymentConfirmation({
           {paymentMethod.type === 'mpesa' && (
             <>
               <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 space-y-2">
-                <p className="text-sm font-semibold">Pay now with M-Pesa</p>
+                <p className="text-sm font-semibold"><T>{"Pay now with M-Pesa"}</T></p>
                 <p className="text-sm text-muted-foreground">
-                  We send a payment request to the phone number above. Enter your M-Pesa PIN and the
-                  donation is recorded for you automatically.
+                  <T>{"We send a payment request to the phone number above. Enter your M-Pesa PIN and the donation is recorded for you automatically."}</T>
                 </p>
                 <Button
                   type="button"
@@ -368,11 +368,11 @@ export function PaymentConfirmation({
                   disabled={isPaying}
                 >
                   <Smartphone className="mr-2 h-4 w-4" />
-                  {isPaying ? 'Sending request…' : stkSent ? 'Send the request again' : `Pay ${displayAmount} now`}
+                  {isPaying ? tr('Sending request…') : stkSent ? tr('Send the request again') : `${tr('Pay now')}: ${displayAmount}`}
                 </Button>
                 {stkSent && (
                   <p className="text-xs text-muted-foreground">
-                    Once you approve it on your phone, your pledge is marked as paid on its own.
+                    <T>{"Once you approve it on your phone, your pledge is marked as paid on its own."}</T>
                   </p>
                 )}
               </div>
@@ -383,16 +383,16 @@ export function PaymentConfirmation({
                   id="mpesaCode"
                   value={formData.mpesaCode}
                   onChange={(e) => setFormData({ ...formData, mpesaCode: e.target.value })}
-                  placeholder="e.g., QA12B3C4D5"
+                  placeholder={`${tr("e.g.")} QA12B3C4D5`}
                   required
                 />
                 <p className="text-xs text-muted-foreground">
-                  Already paid? Enter the code from your M-Pesa message and the amount you sent.
+                  <T>{"Already paid? Enter the code from your M-Pesa message and the amount you sent."}</T>
                 </p>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="amountPaid">Amount you paid (KES)</Label>
+                <Label htmlFor="amountPaid"><T>{"Amount you paid (KES)"}</T></Label>
                 <Input
                   id="amountPaid"
                   type="number"
@@ -420,7 +420,7 @@ export function PaymentConfirmation({
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="proof">Upload payment proof (optional)</Label>
+            <Label htmlFor="proof"><T>{"Upload payment proof (optional)"}</T></Label>
             <Input
               id="proof"
               type="file"
@@ -438,33 +438,32 @@ export function PaymentConfirmation({
                   /\.(png|jpe?g|webp|heic|pdf)$/i.test(file.name);
 
                 if (!looksAllowed) {
-                  toast.error('Unsupported file. Upload a photo (PNG/JPG/WEBP/HEIC) or a PDF receipt.');
+                  notify.error('Unsupported file. Upload a photo (PNG/JPG/WEBP/HEIC) or a PDF receipt.');
                   e.target.value = '';
                   setProofFile(null);
                   return;
                 }
 
                 if (file.size > 5 * 1024 * 1024) {
-                  toast.error('File too large. Maximum size is 5MB.');
+                  notify.error('File too large. Maximum size is 5MB.');
                   e.target.value = '';
                   setProofFile(null);
                   return;
                 }
 
                 if (file.size < 1024) {
-                  toast.error('That file looks empty. Please upload the full receipt or screenshot.');
+                  notify.error('That file looks empty. Please upload the full receipt or screenshot.');
                   e.target.value = '';
                   setProofFile(null);
                   return;
                 }
 
                 setProofFile(file);
-                toast.success(`${file.name} attached`);
+                notify.success(`${file.name} attached`);
               }}
             />
             <p className="text-xs text-muted-foreground">
-              Attach your M-Pesa message screenshot, bank slip or PayPal receipt (image or PDF, max 5MB).
-              Your proof is stored privately and only visible to the fundraising admin.
+              <T>{"Attach your M-Pesa message screenshot, bank slip or PayPal receipt (image or PDF, max 5MB). Your proof is stored privately and only visible to the fundraising admin."}</T>
             </p>
           </div>
 

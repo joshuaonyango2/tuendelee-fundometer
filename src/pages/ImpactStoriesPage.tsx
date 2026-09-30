@@ -1,3 +1,4 @@
+import { T } from "@/components/T";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
@@ -67,30 +68,27 @@ export default function ImpactStoriesPage() {
 
       <header className="container mx-auto px-4 pt-6 pb-10 text-center max-w-3xl">
         <h1 className="text-3xl md:text-4xl font-bold mb-4">
-          Impact stories: what your pledge changes
+          <T>{"Impact stories: what your pledge changes"}</T>
         </h1>
         <p className="text-base md:text-lg text-muted-foreground">
-          Tuendelee Foundation supports bright, financially disadvantaged students through
-          scholarships, mentorship and career opportunities. This page collects the stories,
-          photos, videos and voice notes shared by the foundation so you can see the work
-          before you pledge.
+          <T>{"Tuendelee Foundation supports bright, financially disadvantaged students through scholarships, mentorship and career opportunities. This page collects the stories, photos, videos and voice notes shared by the foundation so you can see the work before you pledge."}</T>
         </p>
         <div className="mt-6 flex flex-wrap gap-3 justify-center">
           <Button asChild size="lg" className="bg-gradient-primary text-white font-bold">
             <Link to="/join">
-              Pledge or donate now
+              <T>{"Pledge or donate now"}</T>
               <ArrowRight className="w-4 h-4 ml-2" />
             </Link>
           </Button>
           <Button asChild size="lg" variant="outline">
-            <Link to="/">Back to the Fundometer</Link>
+            <Link to="/"><T>{"Back to the Fundometer"}</T></Link>
           </Button>
         </div>
       </header>
 
       <section className="container mx-auto px-4 pb-12">
         <h2 className="text-2xl md:text-3xl font-bold text-center mb-8">
-          Where donations to Kenyan students go
+          <T>{"Where donations to Kenyan students go"}</T>
         </h2>
         <div className="grid gap-6 md:grid-cols-3 max-w-5xl mx-auto">
           {pillars.map(({ icon: Icon, title, body }) => (
@@ -115,16 +113,14 @@ export default function ImpactStoriesPage() {
 
       <section className="container mx-auto px-4 pb-16 max-w-3xl text-center">
         <h2 className="text-2xl md:text-3xl font-bold mb-3">
-          Ready to sponsor a student's education?
+          <T>{"Ready to sponsor a student's education?"}</T>
         </h2>
         <p className="text-base text-muted-foreground mb-6">
-          Pledges are made in USD, EUR, KES or GBP and can be paid by M-Pesa, PayPal, bank
-          transfer or Benevity. You can follow the live fundraising total on the Fundometer,
-          come back later to mark a pledge as paid, and download your receipt.
+          <T>{"Pledges are made in USD, EUR, KES or GBP and can be paid by M-Pesa, PayPal, bank transfer or Benevity. You can follow the live fundraising total on the Fundometer, come back later to mark a pledge as paid, and download your receipt."}</T>
         </p>
         <Button asChild size="lg" className="bg-gradient-primary text-white font-bold">
           <Link to="/join">
-            Make a pledge
+            <T>{"Make a pledge"}</T>
             <ArrowRight className="w-4 h-4 ml-2" />
           </Link>
         </Button>

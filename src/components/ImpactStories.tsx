@@ -26,7 +26,7 @@ interface ResolvedStory extends ImpactStory {
 }
 
 export function ImpactStories() {
-  const { language, t } = useLanguage();
+  const { language, t, tr } = useLanguage();
   const [stories, setStories] = useState<ResolvedStory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -76,17 +76,17 @@ export function ImpactStories() {
   const localized = (story: ResolvedStory) => {
     if (language === "it") {
       return {
-        title: story.title_it || story.title,
-        description: story.description_it || story.description,
+        title: story.title_it || tr(story.title),
+        description: story.description_it || tr(story.description),
       };
     }
     if (language === "fr") {
       return {
-        title: story.title_fr || story.title,
-        description: story.description_fr || story.description,
+        title: story.title_fr || tr(story.title),
+        description: story.description_fr || tr(story.description),
       };
     }
-    return { title: story.title, description: story.description };
+    return { title: tr(story.title), description: story.description ? tr(story.description) : story.description };
   };
 
   if (isLoading) {

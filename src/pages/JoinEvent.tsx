@@ -1,3 +1,4 @@
+import { T } from "@/components/T";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
@@ -8,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { Shield, AlertCircle, Calendar } from "lucide-react";
-import { toast } from "sonner";
+import { notify } from "@/lib/notify";
 import { z } from 'zod';
 import { format } from "date-fns";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -35,7 +36,7 @@ interface Event {
 
 export default function JoinEvent() {
   const navigate = useNavigate();
-  const { t, language } = useLanguage();
+  const { t, tr, language } = useLanguage();
   const [activeEvent, setActiveEvent] = useState<Event | null>(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -94,7 +95,7 @@ export default function JoinEvent() {
       setActiveEvent(fromLink ?? nearest);
     } catch (err: any) {
       console.error("Error loading event:", err);
-      toast.error("Failed to load active event");
+      notify.error("Failed to load active event");
     } finally {
       setIsLoading(false);
     }
@@ -131,6 +132,7 @@ export default function JoinEvent() {
           session_token: sessionToken,
           attendee_name: result.data.name,
           attendee_email: result.data.email,
+          preferred_language: language,
         });
 
       if (sessionError) throw sessionError;
@@ -150,11 +152,11 @@ export default function JoinEvent() {
       }));
 
 
-      toast.success(t("join.welcome"));
+      notify.success(t("join.welcome"));
       navigate(`/event/${activeEvent.id}`);
     } catch (err: any) {
       setError(err.message || "Failed to join event");
-      toast.error(err.message);
+      notify.error(err.message);
     } finally {
       setIsSubmitting(false);
     }
@@ -197,7 +199,7 @@ export default function JoinEvent() {
     );
   }
 
-  const localizedEvent = localizedEventText(activeEvent, language);
+  const localizedEvent = localizedEventText(activeEvent, language, tr);
 
   return (
 
@@ -216,7 +218,7 @@ export default function JoinEvent() {
         />
         <meta property="og:url" content="https://tuendelee-fundometer.lovable.app/join" />
       </Helmet>
-      <h1 className="sr-only">Join Fundraising Event</h1>
+      <h1 className="sr-only"><T>{"Join Fundraising Event"}</T></h1>
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="flex justify-end">
