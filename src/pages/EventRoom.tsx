@@ -572,7 +572,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
               <CardContent>
                 {pledgesLoading ? (
                   <ThermometerSkeleton />
-                <T>{") : pledgesError ? ("}</T>
+                ) : pledgesError ? (
                   <ErrorFallback 
                     error={pledgesError} 
                     onRetry={reloadPledges}
@@ -603,7 +603,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
                     <CardContent className="pt-0">
                       {pledgesLoading ? (
                         <PledgeSkeleton count={3} />
-                      <T>{") : pledgesError ? ("}</T>
+                      ) : pledgesError ? (
                         <ErrorFallback error={pledgesError} onRetry={reloadPledges} />
                       ) : realtimePledges.length === 0 ? (
                         <p className="text-center text-muted-foreground py-8">
