@@ -127,17 +127,39 @@ export function PaymentConfirmation({
       
       const { sessionToken } = JSON.parse(sessionData);
 
+      // M-Pesa: register the receipt number first so the same payment can never
+      // be recorded twice, then confirm the pledge.
+      if (paymentMethod.type === 'mpesa') {
+        const paidAmount = formData.amountPaid ? Number(formData.amountPaid) : amount;
+        if (!paidAmount || paidAmount <= 0) {
+          toast.error('Please enter the amount you paid');
+          setIsSubmitting(false);
+          return;
+        }
+
+        const { error: claimError } = await supabase.rpc('claim_mpesa_payment', {
+          p_pledge_id: pledgeId,
+          p_code: formData.mpesaCode.trim().toUpperCase(),
+          p_amount: paidAmount,
+          p_phone: formData.phone,
+          p_session_token: sessionToken
+        });
+
+        if (claimError) throw claimError;
+      }
+
       // Use secure RPC instead of direct update
       const { error } = await supabase.rpc('confirm_pledge_payment', {
         p_pledge_id: pledgeId,
         p_payment_method: paymentMethod.type,
-        p_payment_reference: paymentMethod.type === 'mpesa' ? formData.mpesaCode : formData.reference || null,
+        p_payment_reference: paymentMethod.type === 'mpesa' ? formData.mpesaCode.trim().toUpperCase() : formData.reference || null,
         p_donor_phone: formData.phone,
         p_donor_address: null,
         p_session_token: sessionToken
       });
 
       if (error) throw error;
+
 
       // Optional: upload payment proof (receipt/screenshot) to private storage
       if (proofFile) {
