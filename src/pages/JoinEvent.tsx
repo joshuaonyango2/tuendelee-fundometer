@@ -198,7 +198,7 @@ export default function JoinEvent() {
     );
   }
 
-  const localizedEvent = localizedEventText(activeEvent, language);
+  const localizedEvent = localizedEventText(activeEvent, language, tr);
 
   return (
 

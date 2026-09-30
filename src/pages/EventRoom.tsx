@@ -380,7 +380,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
     );
   }
 
-  const localized = localizedEventText(event, language);
+  const localized = localizedEventText(event, language, tr);
 
   return (
     <div className="min-h-screen bg-gradient-background">
