@@ -348,17 +348,59 @@ export function PaymentConfirmation({
           </div>
 
           {paymentMethod.type === 'mpesa' && (
-            <div className="space-y-2">
-              <Label htmlFor="mpesaCode">{t("pay.mpesaCode")} *</Label>
-              <Input
-                id="mpesaCode"
-                value={formData.mpesaCode}
-                onChange={(e) => setFormData({ ...formData, mpesaCode: e.target.value })}
-                placeholder="e.g., QA12B3C4D5"
-                required
-              />
-            </div>
+            <>
+              <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 space-y-2">
+                <p className="text-sm font-semibold">Pay now with M-Pesa</p>
+                <p className="text-sm text-muted-foreground">
+                  We send a payment request to the phone number above. Enter your M-Pesa PIN and the
+                  donation is recorded for you automatically.
+                </p>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  className="w-full"
+                  onClick={handleStkPush}
+                  disabled={isPaying}
+                >
+                  <Smartphone className="mr-2 h-4 w-4" />
+                  {isPaying ? 'Sending request…' : stkSent ? 'Send the request again' : `Pay ${displayAmount} now`}
+                </Button>
+                {stkSent && (
+                  <p className="text-xs text-muted-foreground">
+                    Once you approve it on your phone, your pledge is marked as paid on its own.
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="mpesaCode">{t("pay.mpesaCode")} *</Label>
+                <Input
+                  id="mpesaCode"
+                  value={formData.mpesaCode}
+                  onChange={(e) => setFormData({ ...formData, mpesaCode: e.target.value })}
+                  placeholder="e.g., QA12B3C4D5"
+                  required
+                />
+                <p className="text-xs text-muted-foreground">
+                  Already paid? Enter the code from your M-Pesa message and the amount you sent.
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="amountPaid">Amount you paid (KES)</Label>
+                <Input
+                  id="amountPaid"
+                  type="number"
+                  min="1"
+                  inputMode="decimal"
+                  value={formData.amountPaid}
+                  onChange={(e) => setFormData({ ...formData, amountPaid: e.target.value })}
+                  placeholder={String(Math.round(amount))}
+                />
+              </div>
+            </>
           )}
+
 
           {paymentMethod.type !== 'mpesa' && (
             <div className="space-y-2">
