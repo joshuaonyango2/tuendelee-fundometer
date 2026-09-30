@@ -57,28 +57,32 @@ export function PaymentConfirmation({
     }
     const { sessionToken } = JSON.parse(sessionData);
 
+    const unavailable =
+      'Instant M-Pesa payment is not available yet. Please use the Paybill steps above, then enter your M-Pesa code below.';
+
     setIsPaying(true);
     try {
       const { data, error } = await supabase.functions.invoke('mpesa-stk-push', {
         body: { pledgeId, phone: formData.phone, sessionToken }
       });
 
-      const message = (data as any)?.message || (data as any)?.error;
+      const payload = data as any;
 
-      if (error || (data as any)?.error) {
-        toast.error(message || 'Could not start the M-Pesa payment. Use the Paybill steps instead.');
+      if (error || payload?.error) {
+        toast.info(unavailable);
         return;
       }
 
       setStkSent(true);
-      toast.success(message || 'Check your phone and enter your M-Pesa PIN.');
+      toast.success(payload?.message || 'Check your phone and enter your M-Pesa PIN.');
     } catch (err: any) {
       console.error('STK push failed:', err);
-      toast.error('Instant M-Pesa is not available yet. Use the Paybill steps instead.');
+      toast.info(unavailable);
     } finally {
       setIsPaying(false);
     }
   };
+
 
 
   
