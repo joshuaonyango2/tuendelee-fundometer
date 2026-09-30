@@ -206,7 +206,7 @@ export function ImprovedThermometer({
     {
       title: 'Still Needed',
       Icon: ArrowUp,
-      gradient: 'from-secondary to-secondary-dark',
+      gradient: 'from-secondary-dark to-secondary',
       usd: displayRemainingUSD,
       kes: displayRemainingKES,
       subLabel: 'To Reach Goal',
@@ -277,7 +277,7 @@ export function ImprovedThermometer({
       )}
 
       {/* Live progress banner */}
-      <div className="mx-auto mb-8 max-w-3xl rounded-2xl sm:rounded-3xl border border-primary/20 bg-gradient-to-r from-purple-500/10 via-blue-500/10 to-emerald-500/10 px-4 sm:px-6 py-5 sm:py-6 text-center shadow-md">
+       <div className="mx-auto mb-8 max-w-3xl rounded-lg border border-primary/20 bg-accent/40 px-4 sm:px-6 py-5 sm:py-6 text-center shadow-md">
         <p className="text-sm sm:text-base font-bold uppercase tracking-[0.18em] text-muted-foreground">
           <T>{"Live Progress"}</T>
         </p>
@@ -299,7 +299,7 @@ export function ImprovedThermometer({
       </div>
 
       {/* Thermometer panel */}
-      <div className="rounded-3xl border border-border/70 bg-gradient-to-b from-card to-muted/40 p-4 sm:p-8 shadow-xl">
+       <div className="rounded-lg border border-border/70 bg-card p-2 sm:p-8 shadow-xl">
       {/* Currency headers */}
       <div className="mx-auto grid max-w-4xl grid-cols-[1fr_auto_1fr] items-end gap-3 sm:gap-8 mb-8 sm:mb-10">
 
@@ -377,7 +377,7 @@ export function ImprovedThermometer({
 
             {/* Still-needed zone (orange, matches the Still Needed card) */}
             <div
-               className="absolute left-0 right-0 top-0 bg-secondary/15 transition-all duration-1000 ease-out"
+             className="absolute left-0 right-0 top-0 bg-secondary/25 transition-all duration-1000 ease-out"
               style={{ height: `${100 - totalHeight}%` }}
             />
 
@@ -540,19 +540,19 @@ export function ImprovedThermometer({
       {/* Legend */}
       <div className="mt-8 flex flex-wrap justify-center gap-3 sm:gap-6">
         <div className="flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 shadow-sm">
-          <div className="h-4 w-4 rounded-full bg-emerald-500" />
+           <div className="h-4 w-4 rounded-full bg-success" />
           <span className="text-base font-semibold text-foreground"><T>{"Paid pledges"}</T></span>
         </div>
         <div className="flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 shadow-sm">
-          <div className="h-4 w-4 rounded-full bg-blue-500" />
+           <div className="h-4 w-4 rounded-full bg-primary" />
           <span className="text-base font-semibold text-foreground"><T>{"Pledged, not yet paid"}</T></span>
         </div>
         <div className="flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 shadow-sm">
-          <div className="h-4 w-4 rounded-full bg-orange-400" />
+           <div className="h-4 w-4 rounded-full bg-secondary" />
           <span className="text-base font-semibold text-foreground"><T>{"Still needed"}</T></span>
         </div>
         <div className="flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 shadow-sm">
-          <div className="w-5 border-t-2 border-dashed border-purple-600" />
+           <div className="w-5 border-t-2 border-dashed border-navy" />
           <span className="text-base font-semibold text-foreground"><T>{"Goal line"}</T></span>
         </div>
       </div>
