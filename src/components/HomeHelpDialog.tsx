@@ -187,7 +187,7 @@ export function HomeHelpDialog() {
                 <AccordionTrigger className="text-left">
                   <div className="flex items-center gap-2">
                     <Search className="w-5 h-5 text-amber-500" />
-                    <span className="font-semibold text-base">Finding & Paying Existing Pledges</span>
+                    <span className="font-semibold text-base"><T>{"Finding & Paying Existing Pledges"}</T></span>
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="space-y-3 text-base">
@@ -255,7 +255,7 @@ export function HomeHelpDialog() {
                 <AccordionTrigger className="text-left">
                   <div className="flex items-center gap-2">
                     <Calendar className="w-5 h-5 text-pink-500" />
-                    <span className="font-semibold text-base">Event Information & Details</span>
+                    <span className="font-semibold text-base"><T>{"Event Information & Details"}</T></span>
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="space-y-3 text-base">
@@ -279,7 +279,7 @@ export function HomeHelpDialog() {
                 <AccordionTrigger className="text-left">
                   <div className="flex items-center gap-2">
                     <Shield className="w-5 h-5 text-emerald-600" />
-                    <span className="font-semibold text-base">Proving & Verifying Your Payment</span>
+                    <span className="font-semibold text-base"><T>{"Proving & Verifying Your Payment"}</T></span>
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="space-y-3 text-base">
@@ -305,7 +305,7 @@ export function HomeHelpDialog() {
                 <AccordionTrigger className="text-left">
                   <div className="flex items-center gap-2">
                     <CheckCircle className="w-5 h-5 text-purple-500" />
-                    <span className="font-semibold text-base">Watching Impact Stories & Our Videos</span>
+                    <span className="font-semibold text-base"><T>{"Watching Impact Stories & Our Videos"}</T></span>
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="space-y-3 text-base">
@@ -327,7 +327,7 @@ export function HomeHelpDialog() {
                 <AccordionTrigger className="text-left">
                   <div className="flex items-center gap-2">
                     <Shield className="w-5 h-5 text-red-500" />
-                    <span className="font-semibold text-base">Security & Privacy Protection</span>
+                    <span className="font-semibold text-base"><T>{"Security & Privacy Protection"}</T></span>
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="space-y-3 text-base">
@@ -370,7 +370,7 @@ export function HomeHelpDialog() {
                 <AccordionTrigger className="text-left">
                   <div className="flex items-center gap-2">
                     <CheckCircle className="w-5 h-5 text-teal-500" />
-                    <span className="font-semibold text-base">Getting Help & Support</span>
+                    <span className="font-semibold text-base"><T>{"Getting Help & Support"}</T></span>
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="space-y-3 text-base">

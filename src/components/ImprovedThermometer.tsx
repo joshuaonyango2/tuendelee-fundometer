@@ -164,7 +164,7 @@ export function ImprovedThermometer({
       const percentOfScale = i * 10;
       const valueUSD = (maxScale * percentOfScale) / 100;
       const percentOfGoal = goalAmountUSD > 0 ? (valueUSD / goalAmountUSD) * 100 : 0;
-      const isQuarter = [25, 50, 75, 100].some((q) => Math.abs(percentOfGoal - q) < 3.5);
+      const isQuarter = [25, 50, 75, 100].some((q) => <T>{"Math.abs(percentOfGoal - q)"}</T> < 3.5);
       return {
         percentOfScale,
         valueUSD,
