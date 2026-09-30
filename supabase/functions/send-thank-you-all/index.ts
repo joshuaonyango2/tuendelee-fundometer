@@ -89,7 +89,7 @@ Deno.serve(async (req) => {
     // One email per donor address, totalling their contributions.
     const donors = new Map<
       string,
-      { name: string; total: number; currency: string; ids: string[]; badge: number | null }
+      { name: string; total: number; currency: string; ids: string[]; badge: number | null; lang?: string | null }
     >();
     for (const p of pledges ?? []) {
       const key = (p.email as string).toLowerCase().trim();
