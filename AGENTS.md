@@ -1,0 +1,1 @@
+- Donor-facing free text uses `<T>` / `tr()` (auto-translate via `translate` edge function + translation_cache); emails pass `preferred_language` to `sendEmail`. Why: every language without hand-writing 6 dictionaries.
