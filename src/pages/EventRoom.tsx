@@ -685,7 +685,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
 
       {/* Payment Options Dialog */}
       <Dialog open={showPaymentDialog} onOpenChange={setShowPaymentDialog}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="w-[calc(100%-2rem)] max-w-lg max-h-[calc(100dvh-2rem)] overflow-y-auto overscroll-contain">
           <DialogHeader>
             <DialogTitle>{t("room.completeDonation")}</DialogTitle>
             <DialogDescription>
@@ -712,7 +712,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
 
       {/* Direct Payment Confirmation Dialog */}
       <Dialog open={showPaymentConfirmation} onOpenChange={setShowPaymentConfirmation}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="w-[calc(100%-2rem)] max-w-lg max-h-[calc(100dvh-2rem)] overflow-y-auto overscroll-contain">
           {currentPledge && currentPledgeId && selectedPaymentMethod && (
             <PaymentConfirmation
               pledgeId={currentPledgeId}
