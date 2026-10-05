@@ -255,11 +255,11 @@ export function ImprovedThermometer({
                 KSh {formatCompact(kes)}
               </p>
 
-               <div className="mt-2 w-full border-t border-primary-foreground/25 pt-2">
+               <div className="mt-2 flex flex-wrap items-center justify-center gap-x-2 w-full border-t border-primary-foreground/25 pt-1">
                  <p className="text-xs font-medium uppercase text-primary-foreground/80">
                    <T>{subLabel}</T>
                 </p>
-                <p className="mt-1 text-lg font-black tabular-nums leading-none">
+                <p className="text-base font-black tabular-nums leading-none">
                   {subValue}
                 </p>
               </div>
@@ -304,7 +304,7 @@ export function ImprovedThermometer({
       {/* Thermometer panel */}
        <div className="px-1 pt-2 pb-1">
       {/* Currency headers */}
-       <div className="mx-auto grid max-w-4xl grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-end gap-1 sm:gap-4 mb-5">
+       <div className="mx-auto grid max-w-4xl grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-end gap-1 sm:gap-4 mb-4">
 
         <div className="flex items-center justify-end gap-1 sm:gap-2 text-primary font-bold min-w-0">
           <DollarSign className="hidden sm:block h-5 w-5 shrink-0" />
@@ -325,7 +325,7 @@ export function ImprovedThermometer({
           {ticks.map((tick) => (
             <div
               key={tick.percentOfScale}
-               className="absolute right-0 flex max-w-full -translate-y-1/2 items-center justify-end gap-1 sm:gap-2 transition-all duration-700 ease-out"
+               className="absolute right-0 flex max-w-full translate-y-1/2 items-center justify-end gap-1 sm:gap-2 transition-all duration-700 ease-out"
               style={{ bottom: `${tick.percentOfScale}%` }}
             >
               <span
@@ -443,7 +443,7 @@ export function ImprovedThermometer({
             return (
             <div
               key={tick.percentOfScale}
-               className="absolute left-0 flex max-w-full -translate-y-1/2 items-center justify-start gap-1 sm:gap-2 transition-all duration-700 ease-out"
+               className="absolute left-0 flex max-w-full translate-y-1/2 items-center justify-start gap-1 sm:gap-2 transition-all duration-700 ease-out"
               style={{ bottom: `${tick.percentOfScale}%` }}
             >
 
@@ -469,7 +469,7 @@ export function ImprovedThermometer({
               {tick.quarterLabel && (
                 <span
                   className={cn(
-                     'inline-block shrink-0 rounded-md px-1 sm:px-2 py-0.5 text-xs font-black transition-colors duration-700',
+                     'inline-block shrink-0 rounded-md px-1 py-0.5 text-xs font-black transition-colors duration-700',
                     tick.reached
                        ? 'bg-success text-success-foreground shadow-sm'
                        : 'bg-accent text-accent-foreground'

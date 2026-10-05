@@ -199,7 +199,7 @@ All colors MUST be HSL.
 /* Shared fundraising display: size to the available screen, not a tall fixed tube. */
 .fundraising-display {
   container-type: inline-size;
-  --thermometer-track-height: min(280px, 35svh);
+  --thermometer-track-height: min(240px, 30svh);
   letter-spacing: 0;
 }
 @container (min-width: 580px) {
