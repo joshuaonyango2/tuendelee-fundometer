@@ -188,6 +188,40 @@ export default function AdminDashboard() {
     }
   };
 
+  const openTimeEditor = (event: FundraisingEvent) => {
+    // Pre-fill with the event's current time in the admin's local timezone
+    const d = new Date(event.scheduled_at);
+    const pad = (n: number) => String(n).padStart(2, "0");
+    const local = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    setEditScheduledAt(local);
+    setEditDuration(event.duration_minutes);
+    setEditingTimeEvent(event);
+  };
+
+  const saveEventTime = async () => {
+    if (!editingTimeEvent || !editScheduledAt) return;
+    setIsSavingTime(true);
+    try {
+      const { error } = await supabase
+        .from("fundraising_events")
+        .update({
+          scheduled_at: new Date(editScheduledAt).toISOString(),
+          duration_minutes: editDuration,
+        })
+        .eq("id", editingTimeEvent.id);
+
+      if (error) throw error;
+
+      toast.success("Event time updated successfully!");
+      setEditingTimeEvent(null);
+      loadEvents();
+    } catch (error: any) {
+      toast.error("Failed to update event time: " + error.message);
+    } finally {
+      setIsSavingTime(false);
+    }
+  };
+
   const toggleEventStatus = async (eventId: string, currentStatus: boolean) => {
     try {
       const { error } = await supabase
