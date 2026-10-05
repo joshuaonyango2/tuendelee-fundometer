@@ -56,6 +56,10 @@ export default function AdminDashboard() {
   const [newEmail, setNewEmail] = useState("");
   const [showCreateMeeting, setShowCreateMeeting] = useState(false);
   const [selectedEventForMeeting, setSelectedEventForMeeting] = useState<FundraisingEvent | null>(null);
+  const [editingTimeEvent, setEditingTimeEvent] = useState<FundraisingEvent | null>(null);
+  const [editScheduledAt, setEditScheduledAt] = useState("");
+  const [editDuration, setEditDuration] = useState(60);
+  const [isSavingTime, setIsSavingTime] = useState(false);
 
   // New event form state
   const [newEvent, setNewEvent] = useState({
@@ -181,6 +185,40 @@ export default function AdminDashboard() {
       toast.error("Failed to create event");
     } finally {
       setIsCreating(false);
+    }
+  };
+
+  const openTimeEditor = (event: FundraisingEvent) => {
+    // Pre-fill with the event's current time in the admin's local timezone
+    const d = new Date(event.scheduled_at);
+    const pad = (n: number) => String(n).padStart(2, "0");
+    const local = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    setEditScheduledAt(local);
+    setEditDuration(event.duration_minutes);
+    setEditingTimeEvent(event);
+  };
+
+  const saveEventTime = async () => {
+    if (!editingTimeEvent || !editScheduledAt) return;
+    setIsSavingTime(true);
+    try {
+      const { error } = await supabase
+        .from("fundraising_events")
+        .update({
+          scheduled_at: new Date(editScheduledAt).toISOString(),
+          duration_minutes: editDuration,
+        })
+        .eq("id", editingTimeEvent.id);
+
+      if (error) throw error;
+
+      toast.success("Event time updated successfully!");
+      setEditingTimeEvent(null);
+      loadEvents();
+    } catch (error: any) {
+      toast.error("Failed to update event time: " + error.message);
+    } finally {
+      setIsSavingTime(false);
     }
   };
 
@@ -535,6 +573,14 @@ export default function AdminDashboard() {
 
                         <Button
                           variant="outline"
+                          onClick={() => openTimeEditor(event)}
+                        >
+                          <Calendar className="w-4 h-4 mr-2" />
+                          Edit Time
+                        </Button>
+
+                        <Button
+                          variant="outline"
                           onClick={() => navigate(`/event/${event.id}/manage`)}
                         >
                           <Users className="w-4 h-4 mr-2" />
@@ -724,6 +770,48 @@ export default function AdminDashboard() {
         />
       )}
       
+      {/* Edit Event Time Dialog */}
+      <Dialog open={!!editingTimeEvent} onOpenChange={(open) => !open && setEditingTimeEvent(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Event Time</DialogTitle>
+            <DialogDescription>
+              Change the date, time and duration for "{editingTimeEvent?.title}". The time you pick is the time that will be shown.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-2">
+              <Label htmlFor="edit-scheduled-at">Date &amp; Time</Label>
+              <Input
+                id="edit-scheduled-at"
+                type="datetime-local"
+                value={editScheduledAt}
+                onChange={(e) => setEditScheduledAt(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-duration">Duration (minutes)</Label>
+              <Input
+                id="edit-duration"
+                type="number"
+                min={15}
+                step={15}
+                value={editDuration}
+                onChange={(e) => setEditDuration(parseInt(e.target.value) || 60)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditingTimeEvent(null)}>
+              Cancel
+            </Button>
+            <Button onClick={saveEventTime} disabled={isSavingTime || !editScheduledAt}>
+              {isSavingTime ? "Saving..." : "Save Time"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Password Change Dialog */}
       <Dialog open={showPasswordChange} onOpenChange={setShowPasswordChange}>
         <DialogContent>
