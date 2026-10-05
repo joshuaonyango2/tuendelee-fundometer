@@ -195,3 +195,13 @@ All colors MUST be HSL.
     line-height: 1.5rem;
   }
 }
+
+/* Shared fundraising display: size to the available screen, not a tall fixed tube. */
+.fundraising-display {
+  container-type: inline-size;
+  --thermometer-track-height: min(280px, 35svh);
+  letter-spacing: 0;
+}
+@container (min-width: 580px) {
+  .fundraising-summary { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}

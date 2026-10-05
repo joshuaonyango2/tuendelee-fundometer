@@ -1,1 +1,2 @@
 - Donor-facing free text uses `<T>` / `tr()` (auto-translate via `translate` edge function + translation_cache); emails pass `preferred_language` to `sendEmail`. Why: every language without hand-writing 6 dictionaries.
+- Keep the shared fundraising display container-responsive with one viewport-height-based track size for the tube and both scales; this keeps donor and admin displays aligned and screen-shareable.
