@@ -153,7 +153,7 @@ export default function AdminDashboard() {
         admin_id: user.id,
         title: newEvent.title,
         description: newEvent.description,
-        scheduled_at: newEvent.scheduled_at,
+        scheduled_at: new Date(newEvent.scheduled_at).toISOString(),
         duration_minutes: newEvent.duration_minutes,
         goal_amount: newEvent.goal_amount,
         meeting_link: newEvent.meeting_link.trim() || null,
