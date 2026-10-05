@@ -770,6 +770,48 @@ export default function AdminDashboard() {
         />
       )}
       
+      {/* Edit Event Time Dialog */}
+      <Dialog open={!!editingTimeEvent} onOpenChange={(open) => !open && setEditingTimeEvent(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Event Time</DialogTitle>
+            <DialogDescription>
+              Change the date, time and duration for "{editingTimeEvent?.title}". The time you pick is the time that will be shown.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-2">
+              <Label htmlFor="edit-scheduled-at">Date &amp; Time</Label>
+              <Input
+                id="edit-scheduled-at"
+                type="datetime-local"
+                value={editScheduledAt}
+                onChange={(e) => setEditScheduledAt(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-duration">Duration (minutes)</Label>
+              <Input
+                id="edit-duration"
+                type="number"
+                min={15}
+                step={15}
+                value={editDuration}
+                onChange={(e) => setEditDuration(parseInt(e.target.value) || 60)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditingTimeEvent(null)}>
+              Cancel
+            </Button>
+            <Button onClick={saveEventTime} disabled={isSavingTime || !editScheduledAt}>
+              {isSavingTime ? "Saving..." : "Save Time"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Password Change Dialog */}
       <Dialog open={showPasswordChange} onOpenChange={setShowPasswordChange}>
         <DialogContent>
