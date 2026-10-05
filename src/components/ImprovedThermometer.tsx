@@ -4,7 +4,6 @@ import { cn } from '@/lib/utils';
 import {
   Target,
   CheckCircle,
-  Clock,
   Flame,
   ArrowUp,
   DollarSign,
@@ -220,18 +219,18 @@ export function ImprovedThermometer({
   ];
 
   return (
-    <div className={cn('w-full max-w-7xl mx-auto py-8 px-4', className)}>
+    <div className={cn('fundraising-display w-full min-w-0 max-w-7xl mx-auto py-2', className)}>
       <p className="sr-only" role="status" aria-live="polite">
         {progressLabel}
       </p>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5 mb-8 min-w-0">
+      <div className="fundraising-summary grid grid-cols-2 gap-2 mb-3 min-w-0">
         {cards.map(({ title, Icon, gradient, usd, kes, subLabel, subValue, tint }) => (
           <div
             key={title}
             className={cn(
-               'relative overflow-hidden rounded-lg p-4 sm:p-5 text-primary-foreground shadow-xl ring-1 ring-primary-foreground/20 min-w-0',
+               'relative overflow-hidden rounded-lg p-2 text-primary-foreground shadow-xl ring-1 ring-primary-foreground/20 min-w-0',
               'bg-gradient-to-br transition-transform duration-300 hover:-translate-y-1 hover:shadow-2xl',
               gradient
             )}
@@ -239,28 +238,28 @@ export function ImprovedThermometer({
             <div className="relative flex flex-col items-center text-center min-w-0">
               <div className="flex items-center justify-center gap-1.5 sm:gap-2 min-w-0">
                 <Icon className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
-                <h3 className="text-[clamp(0.8rem,1.4vw,1.125rem)] font-bold tracking-tight leading-tight">
+                <h3 className="text-sm font-bold tracking-normal leading-tight">
                    <T>{title}</T>
                 </h3>
               </div>
 
-              <p className="mt-3 sm:mt-4 w-full text-[clamp(1.5rem,3.2vw,2.25rem)] font-black leading-none tabular-nums tracking-tight break-words">
+              <p className="mt-2 w-full text-2xl font-black leading-none tabular-nums tracking-normal break-words">
                 ${formatCompact(usd)}
               </p>
               <p
                 className={cn(
-                  'mt-1 sm:mt-2 w-full text-[clamp(0.75rem,1.2vw,0.95rem)] font-semibold tabular-nums leading-snug break-words',
+                  'mt-1 w-full text-sm font-semibold tabular-nums leading-snug break-words',
                   tint
                 )}
               >
                 KSh {formatCompact(kes)}
               </p>
 
-               <div className="mt-4 sm:mt-5 w-full border-t border-primary-foreground/25 pt-3 sm:pt-4">
+               <div className="mt-1 flex flex-wrap items-center justify-center gap-x-2 w-full border-t border-primary-foreground/25 pt-1">
                  <p className="text-xs font-medium uppercase text-primary-foreground/80">
                    <T>{subLabel}</T>
                 </p>
-                <p className="mt-1 text-[clamp(1.125rem,2.2vw,1.75rem)] font-black tabular-nums leading-none">
+                <p className="text-base font-black tabular-nums leading-none">
                   {subValue}
                 </p>
               </div>
@@ -271,9 +270,9 @@ export function ImprovedThermometer({
 
       {/* Milestone celebration banner */}
       {milestone && (
-        <div className="mx-auto mb-6 max-w-3xl animate-milestone-pop rounded-2xl bg-gradient-to-r from-emerald-500 via-blue-500 to-purple-600 p-[2px] shadow-2xl">
-          <div className="rounded-[calc(1rem-2px)] bg-background/95 px-5 py-4 text-center">
-            <p className="text-[clamp(1.05rem,2.4vw,1.6rem)] font-black leading-tight text-foreground">
+        <div className="mx-auto mb-3 max-w-3xl animate-milestone-pop rounded-2xl bg-gradient-to-r from-emerald-500 via-blue-500 to-purple-600 p-[2px] shadow-2xl">
+          <div className="rounded-[calc(1rem-2px)] bg-background/95 px-3 py-2 text-center">
+            <p className="text-lg font-black leading-tight text-foreground">
               {MILESTONE_MESSAGES[milestone]}
             </p>
           </div>
@@ -281,16 +280,16 @@ export function ImprovedThermometer({
       )}
 
       {/* Live progress banner */}
-       <div className="mx-auto mb-8 max-w-3xl rounded-lg border border-primary/20 bg-accent/40 px-4 sm:px-6 py-5 sm:py-6 text-center shadow-md">
-        <p className="text-sm sm:text-base font-bold uppercase tracking-[0.18em] text-muted-foreground">
+       <div className="mx-auto mb-2 max-w-3xl rounded-lg border border-primary/20 bg-accent/40 px-3 py-2 text-center shadow-md">
+        <p className="text-sm font-bold uppercase tracking-normal text-muted-foreground">
           <T>{"Live Progress"}</T>
         </p>
 
-        <p className="mt-1 text-[clamp(1.75rem,5vw,3rem)] font-black leading-none tabular-nums text-foreground">
+        <p className="mt-1 text-2xl font-black leading-none tabular-nums text-foreground">
            {displayPercentage.toFixed(1)}%
         </p>
-        <p className="mt-2 text-sm sm:text-base font-semibold text-foreground/80 leading-tight">
-          {totalPledgedPercentage >= 100
+        <p className="mt-1 text-sm font-semibold text-foreground/80 leading-tight">
+          <T>{totalPledgedPercentage >= 100
             ? '🎉 Goal reached — thank you! Every extra gift goes further.'
             : totalPledgedPercentage >= 75
             ? '🔥 So close! Your gift can push the mercury to the top.'
@@ -298,20 +297,20 @@ export function ImprovedThermometer({
             ? '💪 Past halfway — add yours and watch it rise.'
             : totalPledgedPercentage >= 25
             ? '🚀 Momentum is building — make the level jump.'
-            : '🌟 Be the spark — your pledge lifts the thermometer now.'}
+            : '🌟 Be the spark — your pledge lifts the thermometer now.'}</T>
         </p>
       </div>
 
       {/* Thermometer panel */}
-       <div className="rounded-lg border border-border/70 bg-card p-2 sm:p-8 shadow-xl">
+       <div className="px-1 pt-2 pb-1">
       {/* Currency headers */}
-       <div className="mx-auto grid max-w-4xl grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-end gap-1 sm:gap-8 mb-8 sm:mb-10">
+       <div className="mx-auto grid max-w-4xl grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-end gap-1 sm:gap-4 mb-4">
 
         <div className="flex items-center justify-end gap-1 sm:gap-2 text-primary font-bold min-w-0">
           <DollarSign className="hidden sm:block h-5 w-5 shrink-0" />
           <span className="text-xs sm:text-lg whitespace-nowrap"><span className="sm:hidden">USD</span><span className="hidden sm:inline"><T>{"US Dollars"}</T></span></span>
         </div>
-        <div className="w-16 sm:w-20" />
+        <div className="w-12 sm:w-14" />
         <div className="flex items-center justify-start gap-1 sm:gap-2 text-success font-bold min-w-0">
           <TrendingUp className="hidden sm:block h-5 w-5 shrink-0" />
           <span className="text-xs sm:text-lg whitespace-nowrap"><span className="sm:hidden">KES</span><span className="hidden sm:inline"><T>{"Kenya Shillings"}</T></span></span>
@@ -319,14 +318,14 @@ export function ImprovedThermometer({
       </div>
 
       {/* Thermometer with aligned bottom-up calibration */}
-       <div className="mx-auto mt-2 grid max-w-4xl grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] gap-1 sm:gap-8">
+       <div className="mx-auto mt-2 grid max-w-4xl grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] gap-1 sm:gap-4">
 
         {/* USD scale (left) */}
-        <div className="relative h-[420px] lg:h-[560px]">
+        <div className="relative h-[var(--thermometer-track-height)]">
           {ticks.map((tick) => (
             <div
               key={tick.percentOfScale}
-               className="absolute right-0 flex max-w-full -translate-y-1/2 items-center justify-end gap-1 sm:gap-2 transition-all duration-700 ease-out"
+               className="absolute right-0 flex max-w-full translate-y-1/2 items-center justify-end gap-1 sm:gap-2 transition-all duration-700 ease-out"
               style={{ bottom: `${tick.percentOfScale}%` }}
             >
               <span
@@ -358,7 +357,7 @@ export function ImprovedThermometer({
         <div className="relative">
           <div
             className={cn(
-               'relative h-[420px] w-16 sm:w-20 overflow-hidden rounded-full border-[3px] border-border bg-card shadow-xl lg:h-[560px]',
+               'relative h-[var(--thermometer-track-height)] w-12 sm:w-14 overflow-hidden rounded-full border-[3px] border-border bg-card shadow-xl',
               totalPledgedPercentage >= 100 && 'animate-goal-glow'
             )}
             role="progressbar"
@@ -430,21 +429,21 @@ export function ImprovedThermometer({
           </div>
 
           {/* Bulb */}
-           <div className="relative z-30 -mt-3 mx-auto h-20 w-20 sm:h-24 sm:w-24 animate-mercury-pulse overflow-hidden rounded-full border-4 border-card bg-success shadow-xl">
+           <div className="relative z-30 -mt-3 mx-auto h-16 w-16 animate-mercury-pulse overflow-hidden rounded-full border-4 border-card bg-success shadow-xl">
             <div className="absolute inset-0 bg-gradient-to-tr from-emerald-300/40 to-transparent" />
              <div className="absolute inset-0 flex items-center justify-center">
-               <Flame className="h-10 w-10 text-success-foreground" />
+               <Flame className="h-8 w-8 text-success-foreground" />
             </div>
           </div>
         </div>
 
         {/* KES scale (right) */}
-        <div className="relative h-[420px] lg:h-[560px]">
+        <div className="relative h-[var(--thermometer-track-height)]">
           {ticks.map((tick) => {
             return (
             <div
               key={tick.percentOfScale}
-               className="absolute left-0 flex max-w-full -translate-y-1/2 items-center justify-start gap-1 sm:gap-2 transition-all duration-700 ease-out"
+               className="absolute left-0 flex max-w-full translate-y-1/2 items-center justify-start gap-1 sm:gap-2 transition-all duration-700 ease-out"
               style={{ bottom: `${tick.percentOfScale}%` }}
             >
 
@@ -465,12 +464,12 @@ export function ImprovedThermometer({
                    tick.isNext && 'animate-tick-beckon text-primary'
                 )}
               >
-                {tick.labelKES}
+                <span className="sm:hidden">{tick.labelKES.replace(/^KSh /, "")}</span><span className="hidden sm:inline">{tick.labelKES}</span>
               </span>
               {tick.quarterLabel && (
                 <span
                   className={cn(
-                     'hidden sm:inline-block shrink-0 rounded-md px-1 sm:px-2 py-0.5 text-xs font-black transition-colors duration-700',
+                     'inline-block shrink-0 rounded-md px-1 py-0.5 text-xs font-black transition-colors duration-700',
                     tick.reached
                        ? 'bg-success text-success-foreground shadow-sm'
                        : 'bg-accent text-accent-foreground'
@@ -488,47 +487,30 @@ export function ImprovedThermometer({
       </div>
 
        {/* Current pledge level and remaining gap stay with the changing total. */}
-       <div className="mt-6 flex flex-wrap items-center justify-center gap-3 text-sm font-semibold tabular-nums">
-         <span className="rounded-md bg-primary px-3 py-2 text-primary-foreground"><T>{"Total pledged"}</T>: ${formatCompact(displayTotalUSD)} · KSh {formatCompact(displayTotalKES)}</span>
-         <span className="rounded-md bg-secondary px-3 py-2 text-secondary-foreground"><T>{"Still needed"}</T>: ${formatCompact(displayRemainingUSD)} · KSh {formatCompact(displayRemainingKES)}</span>
+       <div className="mt-2 flex flex-wrap items-center justify-center gap-2 text-sm font-semibold tabular-nums">
+         <span className="rounded-md bg-primary px-2 py-1 text-primary-foreground"><T>{"Total pledged"}</T>: ${formatCompact(displayTotalUSD)} · KSh {formatCompact(displayTotalKES)}</span>
+         <span className="rounded-md bg-secondary px-2 py-1 text-secondary-foreground"><T>{"Still needed"}</T>: ${formatCompact(displayRemainingUSD)} · KSh {formatCompact(displayRemainingKES)}</span>
          {riseAmount !== null && <span className="animate-rise-bubble text-success">+${formatCompact(riseAmount)} <T>{"just pledged"}</T></span>}
        </div>
 
 
-      <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-        {paidAmountUSD > 0 && (
-           <div className="flex items-center gap-2 rounded-md bg-success px-5 py-2.5 text-success-foreground shadow-lg">
-            <CheckCircle className="h-5 w-5" />
-            <span className="text-lg font-bold tabular-nums">Paid: ${formatCompact(paidAmountUSD)}</span>
-          </div>
-        )}
-        {unpaidAmountUSD > 0 && (
-           <div className="flex items-center gap-2 rounded-md bg-primary px-5 py-2.5 text-primary-foreground shadow-lg">
-            <Clock className="h-5 w-5" />
-            <span className="text-lg font-bold tabular-nums">
-              Pledged, unpaid: ${formatCompact(unpaidAmountUSD)}
-            </span>
-          </div>
-        )}
-      </div>
-
       {/* Legend */}
-      <div className="mt-8 flex flex-wrap justify-center gap-3 sm:gap-6">
-        <div className="flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 shadow-sm">
+      <div className="mt-3 flex flex-wrap justify-center gap-x-4 gap-y-1">
+        <div className="flex items-center gap-1.5">
            <div className="h-4 w-4 rounded-full bg-success" />
-          <span className="text-base font-semibold text-foreground"><T>{"Paid pledges"}</T></span>
+          <span className="text-sm font-semibold text-foreground"><T>{"Paid pledges"}</T></span>
         </div>
-        <div className="flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 shadow-sm">
+        <div className="flex items-center gap-1.5">
            <div className="h-4 w-4 rounded-full bg-primary" />
-          <span className="text-base font-semibold text-foreground"><T>{"Pledged, not yet paid"}</T></span>
+          <span className="text-sm font-semibold text-foreground"><T>{"Pledged, not yet paid"}</T></span>
         </div>
-        <div className="flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 shadow-sm">
+        <div className="flex items-center gap-1.5">
            <div className="h-4 w-4 rounded-full bg-secondary" />
-          <span className="text-base font-semibold text-foreground"><T>{"Still needed"}</T></span>
+          <span className="text-sm font-semibold text-foreground"><T>{"Still needed"}</T></span>
         </div>
-        <div className="flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 shadow-sm">
+        <div className="flex items-center gap-1.5">
            <div className="w-5 border-t-2 border-dashed border-navy" />
-          <span className="text-base font-semibold text-foreground"><T>{"Goal line"}</T></span>
+          <span className="text-sm font-semibold text-foreground"><T>{"Goal line"}</T></span>
         </div>
       </div>
 
