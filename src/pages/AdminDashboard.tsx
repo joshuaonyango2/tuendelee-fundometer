@@ -56,6 +56,10 @@ export default function AdminDashboard() {
   const [newEmail, setNewEmail] = useState("");
   const [showCreateMeeting, setShowCreateMeeting] = useState(false);
   const [selectedEventForMeeting, setSelectedEventForMeeting] = useState<FundraisingEvent | null>(null);
+  const [editingTimeEvent, setEditingTimeEvent] = useState<FundraisingEvent | null>(null);
+  const [editScheduledAt, setEditScheduledAt] = useState("");
+  const [editDuration, setEditDuration] = useState(60);
+  const [isSavingTime, setIsSavingTime] = useState(false);
 
   // New event form state
   const [newEvent, setNewEvent] = useState({
