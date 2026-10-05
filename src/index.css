@@ -205,3 +205,5 @@ All colors MUST be HSL.
 @container (min-width: 580px) {
   .fundraising-summary { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
+
+html, body { overflow-x: clip; max-width: 100%; }

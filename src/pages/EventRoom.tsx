@@ -415,9 +415,9 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
             {/* Event Header */}
             <Card>
               <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-3xl font-bold">{localized.title}</CardTitle>
-                  <div className="flex items-center gap-2">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between min-w-0">
+                  <CardTitle className="text-2xl sm:text-3xl font-bold break-words min-w-0">{localized.title}</CardTitle>
+                  <div className="flex flex-wrap items-center gap-2">
                     <LanguageSwitcher />
                     <HelpDialog />
                     <ConnectionStatus 
