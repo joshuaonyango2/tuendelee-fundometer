@@ -62,7 +62,7 @@ export default function CreateMeetingDialog({
       defaultTime.setHours(defaultTime.getHours() + 1);
       setMeetingDetails(prev => ({
         ...prev,
-        start_time: defaultTime.toISOString().slice(0, 16)
+        start_time: format(defaultTime, "yyyy-MM-dd'T'HH:mm")
       }));
     }
   }, [open, eventTitle]);
@@ -212,7 +212,7 @@ export default function CreateMeetingDialog({
           join_url: joinUrl,
           host_url: hostUrl,
           passcode: passcode,
-          start_time: meetingDetails.start_time,
+          start_time: new Date(meetingDetails.start_time).toISOString(),
           duration_minutes: meetingDetails.duration_minutes,
           status: "scheduled"
         })
