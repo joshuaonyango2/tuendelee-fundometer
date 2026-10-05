@@ -573,6 +573,14 @@ export default function AdminDashboard() {
 
                         <Button
                           variant="outline"
+                          onClick={() => openTimeEditor(event)}
+                        >
+                          <Calendar className="w-4 h-4 mr-2" />
+                          Edit Time
+                        </Button>
+
+                        <Button
+                          variant="outline"
                           onClick={() => navigate(`/event/${event.id}/manage`)}
                         >
                           <Users className="w-4 h-4 mr-2" />
