@@ -230,7 +230,7 @@ export function ImprovedThermometer({
           <div
             key={title}
             className={cn(
-               'relative overflow-hidden rounded-lg p-3 text-primary-foreground shadow-xl ring-1 ring-primary-foreground/20 min-w-0',
+               'relative overflow-hidden rounded-lg p-2 text-primary-foreground shadow-xl ring-1 ring-primary-foreground/20 min-w-0',
               'bg-gradient-to-br transition-transform duration-300 hover:-translate-y-1 hover:shadow-2xl',
               gradient
             )}
@@ -255,7 +255,7 @@ export function ImprovedThermometer({
                 KSh {formatCompact(kes)}
               </p>
 
-               <div className="mt-2 flex flex-wrap items-center justify-center gap-x-2 w-full border-t border-primary-foreground/25 pt-1">
+               <div className="mt-1 flex flex-wrap items-center justify-center gap-x-2 w-full border-t border-primary-foreground/25 pt-1">
                  <p className="text-xs font-medium uppercase text-primary-foreground/80">
                    <T>{subLabel}</T>
                 </p>
@@ -280,8 +280,8 @@ export function ImprovedThermometer({
       )}
 
       {/* Live progress banner */}
-       <div className="mx-auto mb-3 max-w-3xl rounded-lg border border-primary/20 bg-accent/40 px-3 py-2 text-center shadow-md">
-        <p className="text-sm sm:text-base font-bold uppercase tracking-normal text-muted-foreground">
+       <div className="mx-auto mb-2 max-w-3xl rounded-lg border border-primary/20 bg-accent/40 px-3 py-2 text-center shadow-md">
+        <p className="text-sm font-bold uppercase tracking-normal text-muted-foreground">
           <T>{"Live Progress"}</T>
         </p>
 
@@ -464,7 +464,7 @@ export function ImprovedThermometer({
                    tick.isNext && 'animate-tick-beckon text-primary'
                 )}
               >
-                {tick.labelKES}
+                <span className="sm:hidden">{tick.labelKES.replace(/^KSh /, "")}</span><span className="hidden sm:inline">{tick.labelKES}</span>
               </span>
               {tick.quarterLabel && (
                 <span
