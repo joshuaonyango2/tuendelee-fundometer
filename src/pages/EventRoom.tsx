@@ -414,6 +414,11 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
             <div className="flex flex-wrap items-center gap-2">
               <LanguageSwitcher />
               <HelpDialog />
+              {liveMeeting && (
+                <Button variant="outline" size="sm" onClick={() => window.open(liveMeeting.join_url || liveMeeting.meeting_url, '_blank', 'noopener,noreferrer')}>
+                  <Video className="mr-2 h-4 w-4" />{t("room.joinMeeting")}
+                </Button>
+              )}
               <Badge variant={event.is_active ? "default" : "secondary"}>{event.is_active ? t("room.live") : t("room.ended")}</Badge>
             </div>
           </div>
