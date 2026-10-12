@@ -1,2 +1,4 @@
 - Donor-facing free text uses `<T>` / `tr()` (auto-translate via `translate` edge function + translation_cache); emails pass `preferred_language` to `sendEmail`. Why: every language without hand-writing 6 dictionaries.
 - Keep the shared fundraising display container-responsive with one viewport-height-based track size for the tube and both scales; this keeps donor and admin displays aligned and screen-shareable.
+- Event pages allow public browsing and establish a donor session from validated pledge details on submission; this removes separate sign-on without changing payment authorization.
+- Share event-specific `/event/:eventId` links and resolve `/pledge` to the active event; this sends donors directly to the correct pledge form.

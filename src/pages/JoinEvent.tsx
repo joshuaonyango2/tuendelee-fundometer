@@ -1,6 +1,6 @@
 import { T } from "@/components/T";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -36,6 +36,7 @@ interface Event {
 
 export default function JoinEvent({ direct = false }: { direct?: boolean }) {
   const navigate = useNavigate();
+  const { shareLink: legacyShareLink } = useParams();
   const { t, tr, language } = useLanguage();
   const [activeEvent, setActiveEvent] = useState<Event | null>(null);
   const [name, setName] = useState("");
@@ -59,7 +60,7 @@ export default function JoinEvent({ direct = false }: { direct?: boolean }) {
 
   useEffect(() => {
     loadActiveEvent();
-  }, []);
+  }, [legacyShareLink]);
 
   useEffect(() => {
     if (direct && activeEvent) navigate(`/event/${activeEvent.id}`, { replace: true });
@@ -84,7 +85,11 @@ export default function JoinEvent({ direct = false }: { direct?: boolean }) {
 
       // Honour a shared link (?event=<share_link>) when present, otherwise pick the
       // live event closest to now so multiple active events never block joining.
-      const shareLink = new URLSearchParams(window.location.search).get("event");
+      const shareLink = new URLSearchParams(window.location.search).get("event") || legacyShareLink;
+      if (shareLink && !events.some((e) => e.share_link === shareLink || e.id === shareLink)) {
+        setActiveEvent(null);
+        return;
+      }
       const fromLink = shareLink
         ? events.find((e: any) => e.share_link === shareLink || e.id === shareLink)
         : undefined;
