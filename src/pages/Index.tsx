@@ -69,7 +69,7 @@ const Index = () => {
             <div className="flex justify-center">
               <Button 
                 size="lg" 
-                onClick={() => navigate("/join")}
+                onClick={() => navigate("/pledge")}
                 className="bg-white text-primary hover:bg-white/90 font-bold text-base py-6 px-8 shadow-lg"
               >
                 <Users className="w-5 h-5 mr-2" />
@@ -81,7 +81,7 @@ const Index = () => {
 
 
         {/* Featured Impact Story (latest uploaded by admin) */}
-        <FeaturedImpactStory onDonateClick={() => navigate("/join")} />
+        <FeaturedImpactStory onDonateClick={() => navigate("/pledge")} />
 
 
         {/* How It Works Section */}
@@ -112,7 +112,7 @@ const Index = () => {
           <p className="text-xl mb-6 font-medium">{t("home.finalCtaText")}</p>
           <Button 
             size="lg" 
-            onClick={() => navigate("/join")}
+            onClick={() => navigate("/pledge")}
             className="bg-gradient-primary hover:opacity-90 text-white font-bold text-lg py-6 px-10"
           >
             <Users className="w-5 h-5 mr-2" />

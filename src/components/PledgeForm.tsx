@@ -17,12 +17,14 @@ import { Heart, DollarSign, User, Mail, MessageSquare } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
 interface PledgeFormProps {
-  onSubmit: (pledge: PledgeData) => void;
+  onSubmit: (pledge: PledgeData) => Promise<void> | void;
+  title?: string;
 }
 
 export interface PledgeData {
   name: string;
   email: string;
+  phone?: string;
   amount: number;
   currency: string;
   paymentMethod: string;
@@ -40,7 +42,7 @@ const currencies = [
 
 // Payment methods will be loaded dynamically from Supabase
 
-export function PledgeForm({ onSubmit }: PledgeFormProps) {
+export function PledgeForm({ onSubmit, title }: PledgeFormProps) {
   const { t } = useLanguage();
   // Load saved donor info from localStorage
   const getSavedDonorInfo = () => {
@@ -59,6 +61,7 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
   const [formData, setFormData] = useState<PledgeData>({
     name: savedInfo.name || "",
     email: savedInfo.email || "",
+    phone: savedInfo.phone || "",
     amount: 0,
     currency: "KES",
     paymentMethod: "",
@@ -113,6 +116,11 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
       return;
     }
 
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim()) || !/^\+[1-9]\d{7,14}$/.test((formData.phone || '').replace(/[\s()-]/g, ''))) {
+      notify.error("Please enter a valid email and phone number with country code");
+      return;
+    }
+
     const days = formData.pledgeDurationDays;
     if (paymentType === 'pledge' && (days === undefined || isNaN(days) || days < 0 || days > 90 || (customDuration && days < 1))) {
       notify.error("Please choose when you will pay (today, or 1–90 days)");
@@ -124,7 +132,8 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
       // Save donor info to localStorage for future use
       localStorage.setItem('donor_info', JSON.stringify({
         name: formData.name,
-        email: formData.email
+        email: formData.email,
+        phone: formData.phone
       }));
 
       await onSubmit({ ...formData, paymentType });
@@ -133,6 +142,7 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
       setFormData({
         name: formData.name,
         email: formData.email,
+        phone: formData.phone,
         amount: 0,
         currency: "KES",
         paymentMethod: "",
@@ -149,14 +159,11 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
 
   return (
     <Card className="w-full max-w-md mx-auto shadow-xl border-primary/10">
-      <CardHeader className="bg-gradient-primary text-white rounded-t-lg">
+      <CardHeader className="bg-gradient-primary text-primary-foreground rounded-t-lg py-4">
         <CardTitle className="flex items-center gap-2">
           <Heart className="w-5 h-5" />
-          {t("pledge.formTitle")}
+          {title || t("pledge.formTitle")}
         </CardTitle>
-        <CardDescription className="text-primary-foreground/90">
-          {t("pledge.formSubtitle")}
-        </CardDescription>
       </CardHeader>
       <CardContent className="pt-6">
         <div className="space-y-4">
@@ -189,6 +196,12 @@ export function PledgeForm({ onSubmit }: PledgeFormProps) {
               required
               className="border-primary/20 focus:border-primary"
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="pledge-phone"><T>{"Phone number"}</T> *</Label>
+            <Input id="pledge-phone" type="tel" autoComplete="tel" placeholder="+254712345678"
+              value={formData.phone || ""} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} required />
           </div>
 
           <div className="grid grid-cols-2 gap-4">

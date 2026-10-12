@@ -34,7 +34,7 @@ interface Event {
   scheduled_at: string;
 }
 
-export default function JoinEvent() {
+export default function JoinEvent({ direct = false }: { direct?: boolean }) {
   const navigate = useNavigate();
   const { t, tr, language } = useLanguage();
   const [activeEvent, setActiveEvent] = useState<Event | null>(null);
@@ -60,6 +60,10 @@ export default function JoinEvent() {
   useEffect(() => {
     loadActiveEvent();
   }, []);
+
+  useEffect(() => {
+    if (direct && activeEvent) navigate(`/event/${activeEvent.id}`, { replace: true });
+  }, [direct, activeEvent, navigate]);
 
   const loadActiveEvent = async () => {
     setIsLoading(true);
@@ -162,7 +166,7 @@ export default function JoinEvent() {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || (direct && activeEvent)) {
     return (
       <div className="min-h-screen bg-gradient-background flex items-center justify-center p-4">
         <Card className="w-full max-w-md">

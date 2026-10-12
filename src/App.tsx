@@ -26,6 +26,8 @@ const App = () => (
           <Route path="/admin/auth" element={<AdminAuth />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/join" element={<JoinEvent />} />
+          <Route path="/pledge" element={<JoinEvent direct />} />
+          <Route path="/join/:shareLink" element={<JoinEvent direct />} />
           <Route path="/impact-stories" element={<ImpactStoriesPage />} />
           <Route path="/event/:eventId" element={<EventRoom />} />
           <Route path="/event/:eventId/manage" element={<EventManagement />} />
