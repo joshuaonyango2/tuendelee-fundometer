@@ -242,7 +242,7 @@ export default function AdminDashboard() {
   };
 
   const copyShareLink = (event: FundraisingEvent) => {
-    const fullLink = `${window.location.origin}/join/${event.share_link}`;
+    const fullLink = `${window.location.origin}/event/${event.id}`;
     navigator.clipboard.writeText(fullLink);
     setCopiedLink(event.id);
     toast.success("Link copied to clipboard!");

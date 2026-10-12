@@ -94,7 +94,6 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
   } = useRealtimePledges({ eventId: eventId || '', enableOptimistic: true });
 
   useEffect(() => {
-    checkSession();
     loadEventDetails();
   }, [eventId]);
 
@@ -137,37 +136,34 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
     calculatePledges();
   }, [eventId, realtimePledges]);
 
-  const checkSession = async () => {
-    const session = localStorage.getItem('event_session');
-    if (!session) {
-      navigate('/');
-      return;
-    }
-
-    const sessionData = JSON.parse(session);
-    if (sessionData.eventId !== eventId) {
-      navigate('/');
-      return;
-    }
-
-    // Verify session is still valid using secure function
-    try {
-      const { data } = await supabase
-        .rpc('get_session_by_token', { p_session_token: sessionData.sessionToken })
-        .single();
-
-      if (!data || data.event_id !== eventId) {
-        localStorage.removeItem('event_session');
-        navigate('/');
-        return;
+  // Browsing is public; a donor session is established from the pledge details only on submission.
+  const ensureDonorSession = async (formData: PledgeData) => {
+    if (!eventId) throw new Error('Event not found');
+    const saved = localStorage.getItem('event_session');
+    if (saved) {
+      try {
+        const session = JSON.parse(saved);
+        if (session.eventId === eventId && session.attendeeEmail === formData.email.trim()) {
+          const { data } = await supabase.rpc('get_session_by_token', { p_session_token: session.sessionToken }).single();
+          if (data?.event_id === eventId) {
+            const { error } = await supabase.rpc('update_session_activity', { p_session_token: session.sessionToken });
+            if (!error) return;
+          }
+        }
+      } catch {
+        // An invalid or expired saved session is replaced, not used for payment authorization.
       }
-
-      // Update activity using secure function
-      await supabase.rpc('update_session_activity', { p_session_token: sessionData.sessionToken });
-    } catch (error) {
-      localStorage.removeItem('event_session');
-      navigate('/');
     }
+    const sessionToken = Array.from(crypto.getRandomValues(new Uint8Array(32)))
+      .map(b => b.toString(16).padStart(2, '0')).join('');
+    const { error } = await supabase.from('event_sessions').insert({
+      event_id: eventId, session_token: sessionToken,
+      attendee_name: formData.name.trim(), attendee_email: formData.email.trim(), preferred_language: language,
+    });
+    if (error) throw error;
+    localStorage.setItem('event_session', JSON.stringify({
+      eventId, sessionToken, attendeeName: formData.name.trim(), attendeeEmail: formData.email.trim(),
+    }));
   };
 
   const loadEventDetails = async () => {
@@ -248,6 +244,8 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
     console.log('Form data:', formData);
     
     try {
+      if (!eventId || !event?.is_active) throw new Error('This event is not open for pledges');
+      await ensureDonorSession(formData);
       // Convert currency if needed
       const amountInUSD = await currencyService.convertAmount(formData.amount, formData.currency, 'USD');
       const amountInKES = await currencyService.convertAmount(formData.amount, formData.currency, 'KES');
@@ -285,10 +283,11 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
         .insert(
           {
             id: generatedId,
-            event_id: eventId!,
+            event_id: eventId,
             preferred_language: language,
             name: formData.name,
-            email: formData.email,
+            email: formData.email.trim(),
+            donor_phone: formData.phone?.replace(/[\s()-]/g, ""),
             amount: formData.amount,
             amount_in_usd: amountInUSD,
             amount_in_kes: amountInKES,
@@ -305,8 +304,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
 
       if (pledgeError) {
         console.error('Pledge creation error:', pledgeError);
-        notify.error('Failed to create pledge');
-        return;
+        throw pledgeError;
       }
 
       const sessionData = localStorage.getItem('event_session');
@@ -320,6 +318,8 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
           console.error('Failed to send pledge confirmation email:', emailError);
         }
       }
+
+      await reloadPledges();
 
       // For immediate payments, go directly to payment confirmation if method is selected
       if (formData.paymentType === 'immediate') {
@@ -344,7 +344,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
       }
     } catch (error) {
       console.error('Error processing pledge:', error);
-      notify.error('Failed to process pledge');
+      throw error;
     }
   };
 
@@ -407,52 +407,21 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
         />
         <meta property="og:url" content={`https://tuendelee-fundometer.lovable.app/event/${event.id}`} />
       </Helmet>
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="sr-only">{`${localized.title} — Fundraising Room`}</h1>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Event Header */}
-            <Card>
-              <CardHeader>
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between min-w-0">
-                  <CardTitle className="text-2xl sm:text-3xl font-bold break-words min-w-0">{localized.title}</CardTitle>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <LanguageSwitcher />
-                    <HelpDialog />
-                    <ConnectionStatus 
-                      isConnected={connectionStatus.isConnected}
-                      isReconnecting={connectionStatus.isReconnecting}
-                    />
-                    {liveMeeting ? (
-                      <Badge 
-                        className="bg-green-500 hover:bg-green-600 text-white cursor-pointer"
-                        onClick={() => window.open(liveMeeting.join_url || liveMeeting.meeting_url, '_blank', 'noopener,noreferrer')}
-                      >
-                        {t("room.online")}
-                      </Badge>
-                    ) : (
-                      <Badge variant="secondary" className="bg-red-500 text-white">
-                        {t("room.offline")}
-                      </Badge>
-                    )}
-                    <Badge variant={event.is_active ? "default" : "secondary"}>
-                      {event.is_active ? t("room.live") : t("room.ended")}
-                    </Badge>
-                  </div>
-                </div>
-                {localized.description && (
-                  <CardDescription className="text-lg">
-                    <Linkify text={localized.description} className="whitespace-pre-line" />
-                  </CardDescription>
-                )}
-              </CardHeader>
-              <CardContent>
-                {/* Find My Pledge Button */}
-                <div className="mb-6 flex justify-center">
-                  <FindMyPledge eventId={eventId!} />
-                </div>
-                
+      <div className="container mx-auto px-4 py-4 pb-20">
+        <header className="mb-4 space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h1 className="text-xl sm:text-2xl font-bold break-words min-w-0 flex-1">{localized.title}</h1>
+            <div className="flex flex-wrap items-center gap-2">
+              <LanguageSwitcher />
+              <HelpDialog />
+              <Badge variant={event.is_active ? "default" : "secondary"}>{event.is_active ? t("room.live") : t("room.ended")}</Badge>
+            </div>
+          </div>
+          <Accordion type="single" collapsible>
+            <AccordionItem value="details" className="border-b">
+              <AccordionTrigger className="py-2"><T>{"Event details"}</T></AccordionTrigger>
+              <AccordionContent className="space-y-4">
+                {localized.description && <Linkify text={localized.description} className="whitespace-pre-line text-muted-foreground" />}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                   <div className="flex items-center gap-2">
                     <Calendar className="h-5 w-5 text-primary" />
@@ -491,76 +460,17 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
                   </div>
                 </div>
                 
-                {/* Fundraising Room Section */}
-                <div className="mt-4">
-                  {liveMeeting ? (
-                    <Button
-                      onClick={() => window.open(liveMeeting.join_url || liveMeeting.meeting_url, '_blank', 'noopener,noreferrer')}
-                      className="w-full p-6 h-auto bg-gradient-secondary hover:bg-gradient-secondary/90 rounded-lg border-2 border-white/20"
-                    >
-                      <div className="flex flex-col w-full gap-3">
-                        <div className="flex items-center justify-between w-full">
-                          <div className="flex items-center gap-3">
-                            <Video className="h-6 w-6 text-white" />
-                            <div className="text-left">
-                              <h2 className="font-semibold text-white text-lg">{t("room.joinMeeting")}</h2>
-                              <p className="text-xs text-white/70">
-                                {liveMeeting.meeting_platforms?.display_name || t("room.virtualMeeting")}
-                              </p>
-                            </div>
-                          </div>
-                          <Badge className="bg-green-500 text-white">
-                            {liveMeeting.status === 'active' ? t("room.liveNow") : t("room.scheduled")}
-                          </Badge>
-                        </div>
-                         <div className="w-full bg-white/10 rounded p-3 text-left text-xs text-white/90 space-y-2">
-                          {liveMeeting.description ? (
-                            <div className="whitespace-pre-wrap">{liveMeeting.description}</div>
-                          ) : (
-                            <>
-                              {liveMeeting.meeting_id && (
-                                <div className="flex justify-between">
-                                  <span className="font-medium">{t("room.meetingId")}:</span>
-                                  <span className="font-mono">{liveMeeting.meeting_id}</span>
-                                </div>
-                              )}
-
-                              {liveMeeting.passcode && (
-                                <div className="flex justify-between">
-                                  <span className="font-medium">{t("room.passcode")}:</span>
-                                  <span className="font-mono font-semibold">{liveMeeting.passcode}</span>
-                                </div>
-                              )}
-                              {liveMeeting.start_time && (
-                                <div className="flex justify-between">
-                                  <span className="font-medium">{t("room.time")}:</span>
-                                  <span>{new Date(liveMeeting.start_time).toLocaleString()}</span>
-                                </div>
-                              )}
-                            </>
-                          )}
-                        </div>
-                        <p className="text-xs text-white/80 text-center">{t("room.openNewTab")}</p>
-                      </div>
-                    </Button>
-                  ) : (
-                    <div className="w-full p-6 bg-muted rounded-lg border-2 border-border">
-                      <div className="flex items-center justify-between w-full">
-                        <div className="flex items-center gap-3">
-                          <Video className="h-6 w-6 text-muted-foreground" />
-                          <div className="text-left">
-                            <h2 className="font-semibold text-muted-foreground text-lg">{t("room.fundraisingRoom")}</h2>
-                            <p className="text-xs text-muted-foreground/70">{t("room.noMeeting")}</p>
-                          </div>
-                        </div>
-                        <Badge variant="secondary" className="bg-red-500 text-white">{t("room.offline")}</Badge>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-
+                {liveMeeting && (
+                  <Button variant="outline" onClick={() => window.open(liveMeeting.join_url || liveMeeting.meeting_url, '_blank', 'noopener,noreferrer')}>
+                    <Video className="mr-2 h-4 w-4" />{t("room.joinMeeting")}
+                  </Button>
+                )}
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </header>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+          <div className="lg:col-span-2 space-y-6 order-2 lg:order-1">
             {/* Fundraising Progress */}
             <Card>
               <CardHeader>
@@ -588,11 +498,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
                 )}
               </CardContent>
             </Card>
-          </div>
-
-          {/* Sidebar */}
-          <div className="space-y-6">
-            <Accordion type="multiple" defaultValue={["donations"]} className="space-y-4">
+            <Accordion type="multiple" defaultValue={["donations"]}>
               {/* Recent Pledges - Collapsible */}
               <AccordionItem value="donations" className="border rounded-lg">
                 <Card className="border-0">
@@ -652,16 +558,13 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
                 </Card>
               </AccordionItem>
 
+            </Accordion>
+          </div>
+
+          <div id="make-pledge" className="space-y-4 min-w-0 order-1 lg:order-2">
               {/* Pledge Form - Always Visible */}
               {event.is_active ? (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">{et("room.makePledge")}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <PledgeForm onSubmit={handlePledgeSubmit} />
-                  </CardContent>
-                </Card>
+                <PledgeForm title={et("room.makePledge")} onSubmit={handlePledgeSubmit} />
               ) : (
                 <Card>
                   <CardContent className="text-center py-8">
@@ -671,7 +574,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
                   </CardContent>
                 </Card>
               )}
-            </Accordion>
+            <FindMyPledge eventId={event.id} />
           </div>
         </div>
 
