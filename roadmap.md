@@ -1,0 +1,3 @@
+- [ ] Provide direct pledge access while preserving donor session authorization.
+- [ ] Collapse secondary event information and put pledging above recent donations.
+- [ ] Verify direct access and layout in the running app.
