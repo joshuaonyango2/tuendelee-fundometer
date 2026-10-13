@@ -367,34 +367,15 @@ export function PaymentConfirmation({
                 </p>
                 <Button
                   type="button"
-                  variant="secondary"
                   className="w-full"
-                  onClick={handleStkPush}
-                  disabled={isPaying}
+                  onClick={() => window.open(TUENDELEE_DONATE_URL, '_blank', 'noopener,noreferrer')}
                 >
-                  <Smartphone className="mr-2 h-4 w-4" />
-                  {isPaying ? tr('Sending request…') : stkSent ? tr('Send the request again') : `${tr('Pay now')}: ${displayAmount}`}
+                  <ExternalLink className="mr-2 h-4 w-4" />
+                  {`${tr('Pay now')}: ${displayAmount}`}
                 </Button>
-                {stkUnavailable && (
-                  <>
-                    <Button
-                      type="button"
-                      className="w-full"
-                      onClick={() => window.open(TUENDELEE_DONATE_URL, '_blank', 'noopener,noreferrer')}
-                    >
-                      <ExternalLink className="mr-2 h-4 w-4" />
-                      {tr('Pay now on tuendelee.org')}
-                    </Button>
-                    <p className="text-xs text-muted-foreground">
-                      <T>{"Our donate page opens in a new tab. After paying, come back here and enter your M-Pesa code so your pledge is marked as paid."}</T>
-                    </p>
-                  </>
-                )}
-                {stkSent && (
-                  <p className="text-xs text-muted-foreground">
-                    <T>{"Once you approve it on your phone, your pledge is marked as paid on its own."}</T>
-                  </p>
-                )}
+                <p className="text-xs text-muted-foreground">
+                  <T>{"Our donate page opens in a new tab. After paying, come back here and enter your M-Pesa code so your pledge is marked as paid."}</T>
+                </p>
               </div>
 
               <div className="space-y-2">
