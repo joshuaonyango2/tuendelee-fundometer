@@ -5,7 +5,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, CheckCircle, Smartphone } from "lucide-react";
+import { ArrowLeft, CheckCircle, ExternalLink, Smartphone } from "lucide-react";
+
+const TUENDELEE_DONATE_URL = "https://tuendelee.org/shop/donate-now/";
 import { supabase } from "@/integrations/supabase/client";
 import { notify } from "@/lib/notify";
 import { z } from 'zod';
@@ -44,6 +46,7 @@ export function PaymentConfirmation({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isPaying, setIsPaying] = useState(false);
   const [stkSent, setStkSent] = useState(false);
+  const [stkUnavailable, setStkUnavailable] = useState(false);
 
   const handleStkPush = async () => {
     if (!formData.phone.trim()) {
@@ -59,7 +62,7 @@ export function PaymentConfirmation({
     const { sessionToken } = JSON.parse(sessionData);
 
     const unavailable =
-      'Instant M-Pesa payment is not available yet. Please use the Paybill steps above, then enter your M-Pesa code below.';
+      'Instant M-Pesa payment is not switched on yet. You can pay now on our donate page instead, then enter your M-Pesa code below.';
 
     setIsPaying(true);
     try {
@@ -70,6 +73,7 @@ export function PaymentConfirmation({
       const payload = data as any;
 
       if (error || payload?.error) {
+        setStkUnavailable(true);
         notify.info(unavailable);
         return;
       }
@@ -78,6 +82,7 @@ export function PaymentConfirmation({
       notify.success(payload?.message || 'Check your phone and enter your M-Pesa PIN.');
     } catch (err: any) {
       console.error('STK push failed:', err);
+      setStkUnavailable(true);
       notify.info(unavailable);
     } finally {
       setIsPaying(false);
@@ -370,6 +375,21 @@ export function PaymentConfirmation({
                   <Smartphone className="mr-2 h-4 w-4" />
                   {isPaying ? tr('Sending request…') : stkSent ? tr('Send the request again') : `${tr('Pay now')}: ${displayAmount}`}
                 </Button>
+                {stkUnavailable && (
+                  <>
+                    <Button
+                      type="button"
+                      className="w-full"
+                      onClick={() => window.open(TUENDELEE_DONATE_URL, '_blank', 'noopener,noreferrer')}
+                    >
+                      <ExternalLink className="mr-2 h-4 w-4" />
+                      {tr('Pay now on tuendelee.org')}
+                    </Button>
+                    <p className="text-xs text-muted-foreground">
+                      <T>{"Our donate page opens in a new tab. After paying, come back here and enter your M-Pesa code so your pledge is marked as paid."}</T>
+                    </p>
+                  </>
+                )}
                 {stkSent && (
                   <p className="text-xs text-muted-foreground">
                     <T>{"Once you approve it on your phone, your pledge is marked as paid on its own."}</T>
