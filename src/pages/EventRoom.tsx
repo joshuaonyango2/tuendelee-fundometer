@@ -584,7 +584,7 @@ const [liveMeeting, setLiveMeeting] = useState<any>(null);
         </div>
 
         {/* Leave Event Button */}
-        <div className="fixed bottom-4 right-4">
+        <div className="mt-6 flex justify-end">
           <Button variant="outline" onClick={handleLeaveEvent}>
             {t("room.leave")}
           </Button>
