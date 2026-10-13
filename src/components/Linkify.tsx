@@ -6,7 +6,7 @@ import { Fragment, ReactNode } from "react";
  * link into their text and donors can click it.
  */
 const PATTERN =
-  /((?:https?:\/\/|www\.)[^\s<]+[^\s<.,;:!?)"']|[\w.+-]+@[\w-]+\.[\w.]{2,}|(?:\+\d[\d\s-]{7,}\d))/gi;
+  /((?:https?:\/\/|www\.)[^\s<]+[^\s<.,;:!?)"']|[\w.+-]+@[\w-]+\.[\w.]{2,}|(?:\+\d[\d\s-]{7,}\d)|\b(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+(?:com|org|net|io|co|ke|app|dev|ly|me|info|edu|gov|ai)(?:\/[^\s<]*)?)/gi;
 
 export function Linkify({
   text,
@@ -21,8 +21,11 @@ export function Linkify({
   const nodes: ReactNode[] = parts.map((part, index) => {
     if (!part) return null;
 
-    const isUrl = /^(https?:\/\/|www\.)/i.test(part);
-    const isEmail = !isUrl && /^[\w.+-]+@[\w-]+\.[\w.]{2,}$/.test(part);
+    const isEmail = /^[\w.+-]+@[\w-]+\.[\w.]{2,}$/.test(part);
+    const isUrl =
+      !isEmail &&
+      (/^(https?:\/\/|www\.)/i.test(part) ||
+        /^(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}(?:\/|$)/i.test(part));
     const isPhone = !isUrl && !isEmail && /^\+\d[\d\s-]{7,}\d$/.test(part);
 
     if (isUrl || isEmail || isPhone) {
