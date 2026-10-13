@@ -60,6 +60,10 @@ export default function AdminDashboard() {
   const [editScheduledAt, setEditScheduledAt] = useState("");
   const [editDuration, setEditDuration] = useState(60);
   const [isSavingTime, setIsSavingTime] = useState(false);
+  const [editTitle, setEditTitle] = useState("");
+  const [editDescription, setEditDescription] = useState("");
+  const [editGoal, setEditGoal] = useState(0);
+  const [editPasscode, setEditPasscode] = useState("");
 
   // New event form state
   const [newEvent, setNewEvent] = useState({
@@ -195,6 +199,10 @@ export default function AdminDashboard() {
     const local = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
     setEditScheduledAt(local);
     setEditDuration(event.duration_minutes);
+    setEditTitle(event.title || "");
+    setEditDescription((event as any).description || "");
+    setEditGoal(event.goal_amount || 0);
+    setEditPasscode((event as any).passcode || "");
     setEditingTimeEvent(event);
   };
 
@@ -207,12 +215,16 @@ export default function AdminDashboard() {
         .update({
           scheduled_at: new Date(editScheduledAt).toISOString(),
           duration_minutes: editDuration,
+          title: editTitle.trim(),
+          description: editDescription.trim() || null,
+          goal_amount: editGoal,
+          ...(editPasscode.trim() ? { passcode: editPasscode.trim() } : {}),
         })
         .eq("id", editingTimeEvent.id);
 
       if (error) throw error;
 
-      toast.success("Event time updated successfully!");
+      toast.success("Event updated successfully!");
       setEditingTimeEvent(null);
       loadEvents();
     } catch (error: any) {
@@ -576,7 +588,7 @@ export default function AdminDashboard() {
                           onClick={() => openTimeEditor(event)}
                         >
                           <Calendar className="w-4 h-4 mr-2" />
-                          Edit Time
+                          Edit Event
                         </Button>
 
                         <Button
@@ -774,12 +786,28 @@ export default function AdminDashboard() {
       <Dialog open={!!editingTimeEvent} onOpenChange={(open) => !open && setEditingTimeEvent(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Edit Event Time</DialogTitle>
+            <DialogTitle>Edit Event</DialogTitle>
             <DialogDescription>
-              Change the date, time and duration for "{editingTimeEvent?.title}". The time you pick is the time that will be shown.
+              Change any detail of this event. The time you pick is the time that will be shown.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 py-2">
+          <div className="space-y-4 py-2 max-h-[65dvh] overflow-y-auto pr-1">
+            <div className="space-y-2">
+              <Label htmlFor="edit-title">Title</Label>
+              <Input id="edit-title" value={editTitle} onChange={(e) => setEditTitle(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-description">Description</Label>
+              <Textarea id="edit-description" rows={8} value={editDescription} onChange={(e) => setEditDescription(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-goal">Goal Amount (USD)</Label>
+              <Input id="edit-goal" type="number" min={1} value={editGoal} onChange={(e) => setEditGoal(parseFloat(e.target.value) || 0)} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-passcode">Passcode</Label>
+              <Input id="edit-passcode" value={editPasscode} onChange={(e) => setEditPasscode(e.target.value)} />
+            </div>
             <div className="space-y-2">
               <Label htmlFor="edit-scheduled-at">Date &amp; Time</Label>
               <Input
@@ -805,8 +833,8 @@ export default function AdminDashboard() {
             <Button variant="outline" onClick={() => setEditingTimeEvent(null)}>
               Cancel
             </Button>
-            <Button onClick={saveEventTime} disabled={isSavingTime || !editScheduledAt}>
-              {isSavingTime ? "Saving..." : "Save Time"}
+            <Button onClick={saveEventTime} disabled={isSavingTime || !editScheduledAt || !editTitle.trim() || editGoal <= 0}>
+              {isSavingTime ? "Saving..." : "Save Changes"}
             </Button>
           </DialogFooter>
         </DialogContent>
